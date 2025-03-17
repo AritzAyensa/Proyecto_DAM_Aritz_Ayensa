@@ -1,9 +1,18 @@
+    <!-- CLARO -->
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Proyecto_DAM_Aritz_Ayensa" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
-    </style>
+<!-- Tema base claro -->
+<style name="Base.Theme.Proyecto_DAM_Aritz_Ayensa" parent="Theme.Material3.Light.NoActionBar">
+    <item name="colorPrimary">@color/rojo</item>
+    <item name="colorPrimaryVariant">@color/rojo_oscuro</item>
+    <item name="colorOnPrimary">@color/blanco</item>
 
-    <style name="Theme.Proyecto_DAM_Aritz_Ayensa" parent="Base.Theme.Proyecto_DAM_Aritz_Ayensa" />
+    <!-- Fondo y textos -->
+    <item name="android:windowBackground">@color/blanco</item>
+    <item name="android:textColorPrimary">@color/negro</item>
+    <item name="android:textColorHint">@color/negro</item>
+
+</style>
+
+<!-- Tema final claro -->
+<style name="Theme.Proyecto_DAM_Aritz_Ayensa" parent="Base.Theme.Proyecto_DAM_Aritz_Ayensa" />
 </resources>

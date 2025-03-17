@@ -1,7 +1,17 @@
+    <!-- OSCURO -->
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Proyecto_DAM_Aritz_Ayensa" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
-    </style>
+<!-- Tema base oscuro -->
+<style name="Base.Theme.Proyecto_DAM_Aritz_Ayensa" parent="Theme.Material3.Dark.NoActionBar">
+    <item name="colorPrimary">@color/rojo</item>
+    <item name="colorPrimaryVariant">@color/rojo_oscuro</item>
+    <item name="colorOnPrimary">@color/gris_oscuro</item>
+
+    <!-- Fondo y textos en oscuro -->
+    <item name="android:windowBackground">@color/gris_oscuro</item>
+    <item name="android:textColorPrimary">@color/blanco</item>
+    <item name="android:textColorHint">@color/gris</item>
+</style>
+
+<!-- Tema final oscuro -->
+<style name="Theme.Proyecto_DAM_Aritz_Ayensa" parent="Base.Theme.Proyecto_DAM_Aritz_Ayensa" />
 </resources>
