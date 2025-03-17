@@ -14,17 +14,17 @@
         <!-- Logo de la aplicación -->
         <ImageView
             android:id="@+id/splash_iv_logoCalendario"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
-            android:src="@mipmap/logo_foreground"
-            android:layout_centerInParent="true"/>
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:layout_centerInParent="true"
+            android:src="@mipmap/logo" />
 
         <!-- Texto del nombre de la aplicación -->
         <TextView
             android:id="@+id/splash_tv_nombEmpresa"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Titulo"
+            android:text="@string/proyecto_dam"
             android:textSize="30sp"
             android:textStyle="bold"
             android:layout_marginTop="16sp"
