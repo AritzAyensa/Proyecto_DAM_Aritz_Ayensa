@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "595325360155",
+    "project_id": "proyecto-dam-aritz-ayensa",
+    "storage_bucket": "proyecto-dam-aritz-ayensa.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:595325360155:android:186b0227159bb6bd4b80be",
+        "android_client_info": {
+          "package_name": "com.example.proyecto_dam_aritz_ayensa"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9CrqOJKb-r-CAKRXcBLv7qpRaSpQWfcM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,6 +1,14 @@
 plugins {
-    alias(libs.plugins.androidApplication)
-    alias(libs.plugins.jetbrainsKotlinAndroid)
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+
+    // Add the Google services Gradle plugin
+    id("com.google.gms.google-services")
+}
+
+dependencies {
+    // Import the Firebase BoM
+    implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
 }
 
 android {
@@ -9,8 +17,8 @@ android {
 
     defaultConfig {
         applicationId = "com.example.proyecto_dam_aritz_ayensa"
-        minSdk = 25
-        targetSdk = 34
+        minSdk = 26
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 
@@ -28,7 +36,6 @@ android {
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
         jvmTarget = "1.8"
@@ -36,13 +43,25 @@ android {
 }
 
 dependencies {
+    implementation("com.google.firebase:firebase-firestore-ktx:24.7.0")
+    // BoM para Firebase
+    //implementation("com.google.firebase:firebase-firestore:25.1.1")
 
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    implementation("com.google.ar.sceneform:filament-android:1.17.1")
+    implementation("androidx.activity:activity:1.8.0")
+
+
+
+    /* DEFAULT */
+    implementation("androidx.core:core-ktx:1.9.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.android.material:material:1.11.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
+    //AUTH FIREBASE
+    implementation ("com.google.firebase:firebase-auth:21.0.1")
+    implementation ("com.google.android.gms:play-services-safetynet:18.0.0")
 }
