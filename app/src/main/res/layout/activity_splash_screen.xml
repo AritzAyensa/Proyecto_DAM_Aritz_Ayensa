@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/splash"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:elevation="4dp">
+
+    <!-- Contenedor de Splash -->
+    <RelativeLayout
+        android:id="@+id/splash_rl_splash"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- Logo de la aplicación -->
+        <ImageView
+            android:id="@+id/splash_iv_logoCalendario"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:src="@mipmap/logo_foreground"
+            android:layout_centerInParent="true"/>
+
+        <!-- Texto del nombre de la aplicación -->
+        <TextView
+            android:id="@+id/splash_tv_nombEmpresa"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Titulo"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16sp"
+            android:layout_below="@id/splash_iv_logoCalendario"
+            android:layout_centerHorizontal="true"/>
+
+    </RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
