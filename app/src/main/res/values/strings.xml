@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">Proyecto_DAM</string>
     <string name="proyecto_dam">Proyecto_DAM</string>
+    <string name="logo_aplicacion">Logo de la aplicacion</string>
+
+    <!--       REGISTER      -->
+    <string name="register_et_registrarse">Registrarse</string>
+    <string name="register_et_usuario">Usuario</string>
+    <string name="register_et_contrasena">Contraseña</string>
+    <string name="register_et_cancelar">Cancelar</string>
+
+
 </resources>

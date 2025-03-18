@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/register"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    android:elevation="4dp"
+    tools:context=".activities.RegisterActivity">
+
+
+    <!-- Contenedor de Register -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/register_cl_register"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- Logo de la aplicación -->
+        <ImageView
+            android:id="@+id/register_iv_logoCalendar"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:src="@mipmap/logo_round"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="@string/logo_aplicacion" />
+
+        <!-- Texto de Registrarese -->
+        <TextView
+            android:id="@+id/register_tv_textRegister"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/register_et_registrarse"
+            android:textSize="28sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/register_iv_logoCalendar" />
+
+        <!-- Editar Texto de Correo Electrónico -->
+        <EditText
+            android:id="@+id/register_et_usuario"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginEnd="30dp"
+            android:hint="@string/register_et_usuario"
+            android:inputType="text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/register_tv_textRegister"
+            android:autofillHints="" />
+
+        <!-- Editar Texto de Contraseña -->
+        <EditText
+            android:id="@+id/register_et_contraUser"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="30dp"
+            android:hint="@string/register_et_contrasena"
+            android:inputType="textPassword"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/register_et_usuario"
+            android:autofillHints="" />
+
+        <!-- Bóton de Register en el que te lleva a la ventana Register -->
+        <Button
+            style="@style/ButtonAccept"
+            android:id="@+id/register_bt_register"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginEnd="40dp"
+            android:onClick="registrarUsuario"
+            android:text="@string/register_et_registrarse"
+            app:layout_constraintTop_toBottomOf="@id/register_et_contraUser" />
+
+        <!-- Bóton de Cancelar que te lleva a la ventana Login-->
+        <Button
+            style="@style/ButtonCancel"
+            android:id="@+id/register_bt_cancelar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="40dp"
+            android:text="@string/register_et_cancelar"
+            android:onClick="goToCancelar"
+            app:layout_constraintTop_toBottomOf="@id/register_bt_register" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

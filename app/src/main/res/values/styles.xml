@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="PopupAnimation">
+        <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
+    </style>
+
+    <!-- Botones -->
+    <!-- Estilo para el botón de cancelar (rojo) -->
+    <style name="ButtonCancel">
+        <item name="android:backgroundTint">@color/rojo_oscuro</item>
+        <item name="android:textColor">@color/blanco</item>
+    </style>
+
+    <!-- Estilo para el botón de aceptar (verde) -->
+    <style name="ButtonAccept">
+        <item name="android:backgroundTint">@color/rojo</item>
+        <item name="android:textColor">@color/blanco</item>
+    </style>
+
+</resources>
