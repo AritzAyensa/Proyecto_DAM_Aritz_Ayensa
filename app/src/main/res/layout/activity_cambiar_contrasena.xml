@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="32dp"
+    android:gravity="center">
+    <ImageView
+        android:id="@+id/register_iv_logoCalendar"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:src="@mipmap/logo_round"
+        android:layout_marginBottom="20dp"
+        android:contentDescription="@string/logo_aplicacion" />
+
+    <!-- Título o mensaje para la actividad -->
+    <TextView
+        android:id="@+id/forgotPasswordTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/cambiar_contraseña_et_correo_de_recuperaci_n_de_contrase_a"
+        android:textSize="24sp"
+        android:layout_marginBottom="24dp"
+        android:fontFamily="sans-serif-medium"/>
+
+    <!-- Campo para ingresar el correo electrónico -->
+    <EditText
+        android:id="@+id/emailEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/cambiar_contraseña_et_correo"
+        android:inputType="textEmailAddress"
+        android:padding="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@android:drawable/edit_text"
+        android:autofillHints="" />
+
+    <!-- Botón para enviar el enlace de restablecimiento -->
+    <Button
+        android:id="@+id/sendResetLinkButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/cambiar_contraseña_et_enviar_correo_de_recuperaci_n"
+        style="@style/ButtonAccept"
+        android:padding="16dp" />
+
+</LinearLayout>

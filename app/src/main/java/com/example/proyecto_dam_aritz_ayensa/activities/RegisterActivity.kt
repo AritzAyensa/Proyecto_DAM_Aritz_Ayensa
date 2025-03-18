@@ -1,5 +1,7 @@
 package com.example.proyecto_dam_aritz_ayensa.activities
 
+import android.content.Intent
+import android.util.Log
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
@@ -7,6 +9,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.example.proyecto_dam_aritz_ayensa.R
 import com.example.proyecto_dam_aritz_ayensa.model.service.UsuarioService
+import com.example.proyecto_dam_aritz_ayensa.model.dao.UsuarioDAO
+import com.example.proyecto_dam_aritz_ayensa.model.entity.Usuario
 import com.example.proyecto_dam_aritz_ayensa.utils.Utils
 
 class RegisterActivity : AppCompatActivity() {
@@ -27,15 +31,11 @@ class RegisterActivity : AppCompatActivity() {
     fun registrarUsuario(view: View) {
         val textCorreoUser = inputCorreo.text.toString().trim()
 
-        val textContraUser = inputContra.text.toString().trim()
+        val textContraUser = inputContraseña.text.toString().trim()
 
         if (textCorreoUser.isNotEmpty() && textContraUser.isNotEmpty()) {
             crearUsuario(textCorreoUser, textContraUser,
                 onSuccess = {
-                    // Solo se navega a LoginActivity si el usuario fue creado correctamente
-                    val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
                     finish()
                 },
                 onFailure = {

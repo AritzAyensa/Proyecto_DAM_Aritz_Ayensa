@@ -12,7 +12,7 @@ class Utils {
     companion object {
 
         fun mostrarMensaje(context: Context?, mensaje: String?) {
-            Toast.makeText(context, mensaje, Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, mensaje, Toast.LENGTH_LONG).show()
         }
 
 

@@ -1,7 +1,6 @@
 package com.example.proyecto_dam_aritz_ayensa.model.service
-
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Usuario
-import com.example.proyecto_dam_aritz_ayensa.model.entity.UsuarioDAO
+import com.example.proyecto_dam_aritz_ayensa.model.dao.UsuarioDAO
 
 /**
  * Clase UsuarioService

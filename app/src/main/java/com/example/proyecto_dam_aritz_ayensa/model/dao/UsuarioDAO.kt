@@ -1,4 +1,4 @@
-package com.example.proyecto_dam_aritz_ayensa.model.entity
+package com.example.proyecto_dam_aritz_ayensa.model.dao
 
 
 import android.util.Log
@@ -38,17 +38,17 @@ class UsuarioDAO {
      * @param onFailure Función de callback que se ejecuta si ocurre un error durante la operación.
      */
     fun saveUser(usuario: Usuario, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
-        // Crear un usuario en Firebase Authentication con el email y la contraseña proporcionados
         auth.createUserWithEmailAndPassword(usuario.email, usuario.contrasena)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    // Obtener el ID del usuario recién creado
-                    val userId = auth.currentUser?.uid
+                    // Obtener el usuario desde task.result (no de auth.currentUser)
+                    val user = task.result?.user
+                    val userId = user?.uid
 
-                    // Cifrar la contraseña antes de almacenarla en Firestore
+                    // Cifrar la contraseña
                     val hashedPassword = HashUtil.hashPassword(usuario.contrasena)
 
-                    // Crear un mapa con los datos del usuario para almacenar en Firestore
+                    // Crear el mapa de datos
                     val usuarioData = hashMapOf(
                         "id" to userId,
                         "nombre" to usuario.nombre,
@@ -56,21 +56,21 @@ class UsuarioDAO {
                         "contrasena" to hashedPassword
                     )
 
-                    // Verificar que el ID del usuario no sea nulo
                     if (userId != null) {
-                        // Guardar los datos del usuario en Firestore
                         usuariosCollection.document(userId).set(usuarioData)
                             .addOnSuccessListener {
-                                // Registrar éxito y ejecutar el callback onSuccess
-                                Log.d("UsuarioService", "Usuario registrado con éxito en auth y firestore")
+                                Log.d("UsuarioService", "Usuario registrado con éxito")
                                 onSuccess()
                             }
                             .addOnFailureListener { e ->
-                                // Registrar error y ejecutar el callback onFailure
-                                Log.e("UsuarioService", "Error al registrar al usuario")
+                                Log.e("UsuarioService", "Error al guardar en Firestore", e)
                                 onFailure(e)
                             }
+                    } else {
+                        onFailure(NullPointerException("User ID is null"))
                     }
+                } else {
+                    onFailure(task.exception ?: Exception("Error desconocido"))
                 }
             }
     }

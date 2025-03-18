@@ -9,7 +9,7 @@
     <!-- Fondo y textos en oscuro -->
     <item name="android:windowBackground">@color/gris_oscuro</item>
     <item name="android:textColorPrimary">@color/blanco</item>
-    <item name="android:textColorHint">@color/gris</item>
+    <item name="android:textColorHint">@color/blanco</item>
 </style>
 
 <!-- Tema final oscuro -->

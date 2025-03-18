@@ -1,14 +1,13 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-
-    // Add the Google services Gradle plugin
     id("com.google.gms.google-services")
 }
 
 dependencies {
     // Import the Firebase BoM
     implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
+
 }
 
 android {
@@ -43,7 +42,9 @@ android {
 }
 
 dependencies {
-    implementation("com.google.firebase:firebase-firestore-ktx:24.7.0")
+    implementation("com.google.firebase:firebase-firestore-ktx")
+    implementation("com.google.firebase:firebase-auth")
+
     // BoM para Firebase
     //implementation("com.google.firebase:firebase-firestore:25.1.1")
 
@@ -62,6 +63,6 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
     //AUTH FIREBASE
-    implementation ("com.google.firebase:firebase-auth:21.0.1")
+    //implementation ("com.google.firebase:firebase-auth:21.0.1")
     implementation ("com.google.android.gms:play-services-safetynet:18.0.0")
 }

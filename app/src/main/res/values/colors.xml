@@ -5,7 +5,7 @@
     <color name="rojo">#ff0000</color>
     <color name="rojo_oscuro">#a10202</color>
 
-    <color name="gris">#707070</color>
+    <color name="gris">#ffffff</color>
 
     <color name="gris_oscuro">#525050</color>
 </resources>
