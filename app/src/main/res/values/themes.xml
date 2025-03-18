@@ -12,6 +12,13 @@
     <item name="android:textColorHint">@color/negro</item>
 
 </style>
+    <style name="Widget.Material3.BottomNavigationView.ActiveIndicator" parent="">
+        <item name="android:width">@dimen/m3_bottom_nav_item_active_indicator_width</item>
+        <item name="android:height">@dimen/m3_bottom_nav_item_active_indicator_height</item>
+        <item name="marginHorizontal">@dimen/m3_bottom_nav_item_active_indicator_margin_horizontal</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.Material3.NavigationBarView.ActiveIndicator</item>
+        <item name="android:color">@color/rojo</item>
+    </style>
 
 <!-- Tema final claro -->
 <style name="Theme.Proyecto_DAM_Aritz_Ayensa" parent="Base.Theme.Proyecto_DAM_Aritz_Ayensa" />

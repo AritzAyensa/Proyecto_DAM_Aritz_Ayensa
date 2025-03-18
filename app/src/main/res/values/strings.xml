@@ -8,6 +8,8 @@
     <string name="register_et_usuario">Usuario</string>
     <string name="register_et_contrasena">Contraseña</string>
     <string name="register_et_cancelar">Cancelar</string>
+
+    <!--       LOGIN      -->
     <string name="login_et_iniciar_sesion">Iniciar Sesion</string>
     <string name="login_et_usuario">Usuario</string>
     <string name="login_et_contrasena">Contraseña</string>
@@ -16,11 +18,20 @@
     <string name="login_et_registrate_ahora">Registrate ahora</string>
     <string name="login_et_cambiar_contraseña">He olvidado mi contraseña</string>
     <string name="login_et_no_tienes_cuenta">¿No tienes cuenta?</string>
+
+    <!--       CAMBIAR CONTRASEÑA      -->
     <string name="cambiar_contraseña_et_enviar_correo_de_recuperaci_n">Enviar correo de recuperación</string>
     <string name="cambiar_contraseña_et_correo">Correo</string>
     <string name="cambiar_contraseña_et_correo_de_recuperaci_n_de_contrase_a">Correo de recuperación de contraseña</string>
     <string name="login_et_correo">Correo</string>
     <string name="register_et_correo">Correo</string>
+
+    <!--       MENU      -->
+    <string name="title_activity_bottom_navigation">BottomNavigationActivity</string>
+    <string name="title_configuracion">Configuración</string>
+    <string name="title_cuenta">Cuenta</string>
+    <string name="title_inicio">Inicio</string>
+    <string name="title_notificaciones">Notificaciones</string>
 
 
 </resources>

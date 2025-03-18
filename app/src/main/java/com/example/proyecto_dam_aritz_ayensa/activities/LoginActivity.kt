@@ -52,7 +52,7 @@ class LoginActivity : AppCompatActivity() {
         if (sessionManager.isLoggedIn()) {
             val usuarioID: String? = sessionManager.getUserId()
             println("ID usuario = $usuarioID")
-            startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+            startActivity(Intent(this@LoginActivity, BottomNavigationActivity::class.java))
             finish()
         } else if (sessionManager.isChecked()) {
             inputCorreo.setText(sessionManager.getUserEmail())
