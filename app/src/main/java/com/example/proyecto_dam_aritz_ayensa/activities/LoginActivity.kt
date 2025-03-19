@@ -14,7 +14,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.example.proyecto_dam_aritz_ayensa.MainActivity
 import com.example.proyecto_dam_aritz_ayensa.R
 import com.example.proyecto_dam_aritz_ayensa.model.dao.UsuarioDAO
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Usuario
@@ -155,7 +154,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun iniciarSesion() {
-        startActivity(Intent(this, MainActivity::class.java))
+        startActivity(Intent(this, BottomNavigationActivity::class.java))
         sessionManager.saveUserSession(usuario.id)
         finish()
     }

@@ -33,5 +33,12 @@
     <string name="title_inicio">Inicio</string>
     <string name="title_notificaciones">Notificaciones</string>
 
+    <!--       Editar cuenta      -->
+    <string name="foto_de_perfil">Foto de perfil</string>
+    <string name="cuenta_fragment_et_usuario">Usuario</string>
+    <string name="cuenta_fragment_et_email">Email</string>
+    <string name="cuenta_fragment_et_boton_de_editar">Boton editar</string>
+    <string name="cuenta_fragment_et_cerrar_sesion">Cerrar sesión</string>
+
 
 </resources>
