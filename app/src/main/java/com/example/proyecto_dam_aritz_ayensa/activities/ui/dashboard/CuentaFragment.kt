@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.proyecto_dam_aritz_ayensa.R
+import com.example.proyecto_dam_aritz_ayensa.activities.EditarPerfilActivity
 import com.example.proyecto_dam_aritz_ayensa.activities.LoginActivity
 import com.example.proyecto_dam_aritz_ayensa.databinding.FragmentCuentaBinding
 import com.example.proyecto_dam_aritz_ayensa.model.dao.UsuarioDAO
@@ -60,11 +61,17 @@ class CuentaFragment : Fragment() {
         buttonEditar = binding.btnEditar // Si está definido en el XML del binding
         if (buttonEditar != null) {
             buttonEditar.setOnClickListener {
+                goToEditarPerfil()
             }
         }
         cargarDatosUsuario()
 
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        cargarDatosUsuario()
     }
     private fun cargarDatosUsuario() {
         val usuario = usuarioService.getUser(userId,
@@ -95,6 +102,13 @@ class CuentaFragment : Fragment() {
             requireActivity().finish()
         } else {
             Log.e("CuentaFragment", "Contexto nulo al cerrar sesión")
+        }
+    }
+
+    private fun goToEditarPerfil() {
+        activity?.let { safeActivity ->
+            val intent = Intent(safeActivity, EditarPerfilActivity::class.java)
+            safeActivity.startActivity(intent)
         }
     }
 

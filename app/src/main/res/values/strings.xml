@@ -39,6 +39,11 @@
     <string name="cuenta_fragment_et_email">Email</string>
     <string name="cuenta_fragment_et_boton_de_editar">Boton editar</string>
     <string name="cuenta_fragment_et_cerrar_sesion">Cerrar sesión</string>
+    <string name="editar_perfil_et_usuario">Usuario</string>
+    <string name="editar_perfil_et_email">Correo</string>
+    <string name="editar_perfil_et_cancelar">Cancelar</string>
+    <string name="editar_perfil_et_guardar">Guardar</string>
+    <string name="editar_perfil_et_editar_perfil">Editar perfil</string>
 
 
 </resources>
