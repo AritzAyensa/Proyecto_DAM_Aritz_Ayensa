@@ -44,6 +44,10 @@
     <string name="editar_perfil_et_cancelar">Cancelar</string>
     <string name="editar_perfil_et_guardar">Guardar</string>
     <string name="editar_perfil_et_editar_perfil">Editar perfil</string>
+    <string name="inicio_tv_mis_listas">Mis listas</string>
+    <string name="item_lista_tv_elementos">1 elemento</string>
+    <string name="item_lista_tv_titulo_lista">Titulo lista</string>
+    <string name="inicio_btn_añadir_lista">Añadir lista</string>
 
 
 </resources>

@@ -1,0 +1,41 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_tareas_campos_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:gravity="start">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Campo de color -->
+        <TextView
+            android:id="@+id/colorLista"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/btn_circular"/>
+
+        <!-- Campo de nombre de la tarea -->
+        <TextView
+            android:id="@+id/nombreTarea"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:layout_weight="1"
+            android:text="@string/item_lista_tv_titulo_lista"
+            android:layout_gravity="center_vertical" />
+
+        <!-- Campo de hora inicio -->
+        <TextView
+            android:id="@+id/horaTareaInicio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/item_lista_tv_elementos"
+            android:textSize="14sp"
+            android:layout_gravity="center_vertical" />
+
+    </LinearLayout>
+</LinearLayout>
