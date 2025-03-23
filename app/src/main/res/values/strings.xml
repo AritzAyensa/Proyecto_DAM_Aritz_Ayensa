@@ -48,6 +48,14 @@
     <string name="item_lista_tv_elementos">1 elemento</string>
     <string name="item_lista_tv_titulo_lista">Titulo lista</string>
     <string name="inicio_btn_añadir_lista">Añadir lista</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_crear_lista">CrearLista</string>
+    <string name="crear_lista_et_titulo">Titulo de la lista</string>
+    <string name="crearTarea_tv_nueva_lista">Nueva lista</string>
+    <string name="crear_lista_et_descripcion">Descripción</string>
+    <string name="crearTarea_btn_crear_lista">Crear lista</string>
+    <string name="crearTarea_btn_cancelar">Cancelar</string>
 
 
 </resources>

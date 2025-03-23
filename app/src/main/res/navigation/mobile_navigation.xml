@@ -3,15 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/navigation_inicio">
 
     <fragment
-        android:id="@+id/navigation_home"
-        android:name="com.example.proyecto_dam_aritz_ayensa.activities.ui.home.HomeFragment"
+        android:id="@+id/navigation_inicio"
+        android:name="com.example.proyecto_dam_aritz_ayensa.activities.ui.inicio.InicioFragment"
 
         android:label="@string/title_inicio"
-        tools:layout="@layout/fragment_home"
-        />
+        tools:layout="@layout/fragment_inicio">
+        <action
+            android:id="@+id/action_inicioFragment_to_crearListaFragment"
+            app:destination="@id/navigation_crear_lista" />
+    </fragment>
     <fragment
         android:id="@+id/navigation_notifications"
         android:name="com.example.proyecto_dam_aritz_ayensa.activities.ui.notifications.NotificationsFragment"
@@ -22,6 +25,20 @@
         android:name="com.example.proyecto_dam_aritz_ayensa.activities.ui.dashboard.CuentaFragment"
         android:label="@string/title_cuenta"
         tools:layout="@layout/fragment_cuenta" />
+
+    <fragment
+        android:id="@+id/navigation_crear_lista"
+        android:name="com.example.proyecto_dam_aritz_ayensa.activities.CrearListaFragment"
+        android:label="@string/title_crear_lista"
+        tools:layout="@layout/fragment_crear_lista"
+        >
+        <action
+            android:id="@+id/action_crearListaFragment_to_inicioFragment"
+            app:destination="@id/navigation_inicio"
+            app:popUpTo="@id/navigation_inicio"
+            app:popUpToInclusive="false" />
+
+    </fragment>
 
 
 </navigation>

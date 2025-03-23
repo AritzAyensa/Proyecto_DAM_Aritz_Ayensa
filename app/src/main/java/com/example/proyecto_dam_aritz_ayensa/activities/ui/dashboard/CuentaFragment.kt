@@ -58,7 +58,7 @@ class CuentaFragment : Fragment() {
                 cerrarSesion()
             }
         }
-        buttonEditar = binding.btnEditar // Si está definido en el XML del binding
+        buttonEditar = binding.btnEditar
         if (buttonEditar != null) {
             buttonEditar.setOnClickListener {
                 goToEditarPerfil()
