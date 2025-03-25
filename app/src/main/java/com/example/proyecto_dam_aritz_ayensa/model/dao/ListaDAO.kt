@@ -2,15 +2,16 @@ package com.example.proyecto_dam_aritz_ayensa.model.dao
 
 
 import android.util.Log
+import com.example.proyecto_dam_aritz_ayensa.model.entity.Lista
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Usuario
 import com.example.proyecto_dam_aritz_ayensa.utils.HashUtil
-import com.google.firebase.firestore.FieldValue
+import com.example.proyecto_dam_aritz_ayensa.utils.SessionManager
 import kotlinx.coroutines.tasks.await
 
 
-class UsuarioDAO {
+class ListaDAO {
 
     // Instancia de Firestore para interactuar con la base de datos
     private val db = FirebaseFirestore.getInstance()
@@ -19,7 +20,7 @@ class UsuarioDAO {
     private val auth = FirebaseAuth.getInstance()
 
     // Referencia a la colección "usuarios" en Firestore
-    private val usuariosCollection = db.collection("usuarios")
+    private val listasCollection = db.collection("listas")
 
 
     /**
@@ -32,42 +33,17 @@ class UsuarioDAO {
      * @param onSuccess Función de callback que se ejecuta si la operación es exitosa.
      * @param onFailure Función de callback que se ejecuta si ocurre un error durante la operación.
      */
-    fun saveUser(usuario: Usuario, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
-        auth.createUserWithEmailAndPassword(usuario.email, usuario.contrasena)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    // Obtener el usuario desde task.result (no de auth.currentUser)
-                    val user = task.result?.user
-                    val userId = user?.uid
-
-                    // Cifrar la contraseña
-                    val hashedPassword = HashUtil.hashPassword(usuario.contrasena)
-
-                    // Crear el mapa de datos
-                    val usuarioData = hashMapOf(
-                        "id" to userId,
-                        "nombre" to usuario.nombre,
-                        "email" to usuario.email,
-                        "contrasena" to hashedPassword
-                    )
-
-                    if (userId != null) {
-                        usuariosCollection.document(userId).set(usuarioData)
-                            .addOnSuccessListener {
-                                Log.d("UsuarioService", "Usuario registrado con éxito")
-                                onSuccess()
-                            }
-                            .addOnFailureListener { e ->
-                                Log.e("UsuarioService", "Error al guardar en Firestore", e)
-                                onFailure(e)
-                            }
-                    } else {
-                        onFailure(NullPointerException("User ID is null"))
-                    }
-                } else {
-                    onFailure(task.exception ?: Exception("Error desconocido"))
-                }
-            }
+    suspend fun saveLista(lista: Lista): String {
+        val docRef = listasCollection.document()
+        lista.id = docRef.id
+        val listaData = hashMapOf(
+            "id" to docRef.id,
+            "titulo" to lista.titulo,
+            "descripcion" to lista.descripcion,
+            "idCreador" to lista.idCreador
+        )
+        docRef.set(listaData).await()
+        return docRef.id
     }
 
     /**
@@ -78,7 +54,7 @@ class UsuarioDAO {
      * @param usuarioID ID del usuario que se desea obtener.
      * @param onSuccess Función de callback que se ejecuta si la operación es exitosa. Recibe un objeto Usuario o null si no se encuentra el usuario.
      * @param onFailure Función de callback que se ejecuta si ocurre un error durante la operación.
-     */
+     *//*
     fun getUser(usuarioID: String, onSuccess: (Usuario?) -> Unit, onFailure: (Exception) -> Unit) {
         // Obtener el documento del usuario en Firestore usando su ID
         usuariosCollection.document(usuarioID).get()
@@ -103,33 +79,14 @@ class UsuarioDAO {
             }
     }
 
-    suspend fun getUserById(usuarioID: String): Result<Usuario?> {
-        return try {
-            // Obtener documento de Firestore
-            val document = usuariosCollection.document(usuarioID).get().await()
-
-            if (document.exists()) {
-                val nombre = document.getString("nombre") ?: ""
-                val email = document.getString("email") ?: ""
-                val contrasena = document.getString("contrasena") ?: ""
-                val usuario = Usuario(usuarioID, nombre, email, contrasena)
-                Result.success(usuario)
-            } else {
-                Result.success(null)
-            }
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    /**
+    *//**
      * Método: getAllUsers
      *
      * Obtiene todos los usuarios almacenados en Firestore.
      *
      * @param onSuccess Función de callback que se ejecuta si la operación es exitosa. Recibe una lista de objetos Usuario.
      * @param onFailure Función de callback que se ejecuta si ocurre un error durante la operación.
-     */
+     *//*
     fun getAllUsers(onSuccess: (List<Usuario>) -> Unit, onFailure: (Exception) -> Unit) {
         // Obtener todos los documentos de la colección "usuarios"
         usuariosCollection.get()
@@ -144,7 +101,7 @@ class UsuarioDAO {
             }
     }
 
-    /**
+    *//**
      * Método: updateUser
      *
      * Actualiza la información de un usuario existente en Firestore.
@@ -152,7 +109,7 @@ class UsuarioDAO {
      * @param usuario Objeto Usuario con la información actualizada.
      * @param onSuccess Función de callback que se ejecuta si la operación es exitosa.
      * @param onFailure Función de callback que se ejecuta si ocurre un error durante la operación.
-     */
+     *//*
     fun updateUser(usuario: Usuario, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
         // Crear un mapa con los datos actualizados del usuario
         val usuarioData = hashMapOf(
@@ -167,23 +124,7 @@ class UsuarioDAO {
             .addOnFailureListener { exception -> onFailure(exception) }
     }
 
-
-    suspend fun añadirLista(idLista: String, usuarioId: String) {
-        usuariosCollection
-            .document(usuarioId)
-            .update("idListas", FieldValue.arrayUnion(idLista))
-            .await() // Espera a que la operación termine
-    }
-
-    // Método para añadir lista compartida (versión mejorada)
-    suspend fun añadirListaCompartida(idListaCompartida: String, usuarioId: String) {
-        usuariosCollection
-            .document(usuarioId)
-            .update("idListasCompartidas", FieldValue.arrayUnion(idListaCompartida))
-            .await()
-    }
-
-    /**
+    *//**
      * Método: deleteUser
      *
      * Elimina un usuario de Firestore utilizando su ID.
@@ -191,7 +132,7 @@ class UsuarioDAO {
      * @param usuarioID ID del usuario que se desea eliminar.
      * @param onSuccess Función de callback que se ejecuta si la operación es exitosa.
      * @param onFailure Función de callback que se ejecuta si ocurre un error durante la operación.
-     */
+     *//*
     fun deleteUser(usuarioID: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
         // Eliminar el documento del usuario en Firestore
         usuariosCollection.document(usuarioID).delete()
@@ -199,7 +140,7 @@ class UsuarioDAO {
             .addOnFailureListener { exception -> onFailure(exception) }
     }
 
-    /**
+    *//**
      * Método: getUserByEmail
      *
      * Obtiene un usuario de Firestore utilizando su dirección de correo electrónico.
@@ -207,7 +148,7 @@ class UsuarioDAO {
      * @param usuarioEmail Dirección de correo electrónico del usuario que se desea obtener.
      * @param onSuccess Función de callback que se ejecuta si la operación es exitosa. Recibe un objeto Usuario o null si no se encuentra el usuario.
      * @param onFailure Función de callback que se ejecuta si ocurre un error durante la operación.
-     */
+     *//*
     fun getUserByEmail(usuarioEmail: String, onSuccess: (Usuario?) -> Unit, onFailure: (Exception) -> Unit) {
         // Buscar el usuario en Firestore por su email
         usuariosCollection.whereEqualTo("email", usuarioEmail).get()
@@ -238,14 +179,14 @@ class UsuarioDAO {
             }
     }
 
-    /**
+    *//**
      * Método: updatePassword
      *
      * Actualiza la contraseña de un usuario en Firestore.
      *
      * @param userId ID del usuario cuya contraseña se desea actualizar.
      * @param password Nueva contraseña que se desea almacenar.
-     */
+     *//*
     fun updatePassword(userId: String, password: String) {
         // Actualizar el campo "contrasena" del usuario en Firestore
         usuariosCollection.document(userId)
@@ -258,5 +199,5 @@ class UsuarioDAO {
                 // Registrar error en la actualización
                 Log.e("Firestore", "Error al actualizar la contraseña", e)
             }
-    }
+    }*/
 }

@@ -48,7 +48,7 @@ android {
 dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-auth")
-
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.0")
     // BoM para Firebase
     //implementation("com.google.firebase:firebase-firestore:25.1.1")
 

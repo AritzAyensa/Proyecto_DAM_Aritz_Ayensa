@@ -1,14 +1,25 @@
 package com.example.proyecto_dam_aritz_ayensa.activities
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.proyecto_dam_aritz_ayensa.R
 import com.example.proyecto_dam_aritz_ayensa.databinding.FragmentCrearListaBinding
+import com.example.proyecto_dam_aritz_ayensa.model.dao.ListaDAO
+import com.example.proyecto_dam_aritz_ayensa.model.dao.UsuarioDAO
+import com.example.proyecto_dam_aritz_ayensa.model.entity.Lista
+import com.example.proyecto_dam_aritz_ayensa.model.service.ListaService
+import com.example.proyecto_dam_aritz_ayensa.model.service.UsuarioService
+import com.example.proyecto_dam_aritz_ayensa.utils.SessionManager
+import com.example.proyecto_dam_aritz_ayensa.utils.Utils
+import kotlinx.coroutines.launch
 
 
 /**
@@ -23,6 +34,13 @@ class CrearListaFragment : Fragment() {
 
     lateinit var buttonAñadirLista : Button
     lateinit var buttonCancelar : Button
+    private lateinit var lisaService: ListaService
+    private lateinit var usuarioService: UsuarioService
+    private lateinit var sessionManager: SessionManager
+
+
+    private lateinit var inputTitulo: EditText
+    private lateinit var inputDescripcion: EditText
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,10 +48,16 @@ class CrearListaFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentCrearListaBinding.inflate(inflater, container, false)
-
+        lisaService = ListaService(ListaDAO())
+        usuarioService = UsuarioService(UsuarioDAO())
+        sessionManager = SessionManager(requireContext())
 
         buttonAñadirLista = binding.crearListaBtnCrearLista
         buttonCancelar = binding.crearListaBtnCancelar
+
+
+        inputTitulo = binding.crearListaEtTitulo
+        inputDescripcion = binding.crearListaEtDescripcion
 
         if (buttonAñadirLista != null) {
             buttonAñadirLista.setOnClickListener {
@@ -48,12 +72,29 @@ class CrearListaFragment : Fragment() {
         return binding.root
     }
     private fun crearLista() {
-        TODO("Not yet implemented")
+        val textTitulo = inputTitulo.text.toString().trim()
+
+        val textDescripcion = inputDescripcion.text.toString().trim()
+
+        if (textTitulo.isNotEmpty() && textDescripcion.isNotEmpty()) {
+            val lista = Lista()
+            lista.titulo = textTitulo
+            lista.descripcion = textDescripcion
+            lista.idCreador = sessionManager.getUserId().toString()
+
+            lifecycleScope.launch {
+                var idLista = lisaService.saveLista(lista)
+                usuarioService.añadirListaAUsuario(idLista.toString(), sessionManager.getUserId().toString())
+            }
+            cancelar()
+
+        } else {
+            Utils.mostrarMensaje(requireContext(),"Ingrese un titulo y una descripción")
+        }
     }
 
     private fun cancelar() {
        parentFragmentManager.popBackStack()
-
     }
 
     override fun onDestroyView() {
