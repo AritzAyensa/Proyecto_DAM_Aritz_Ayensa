@@ -99,6 +99,10 @@ class UsuarioService(private val usuarioDAO: UsuarioDAO) {
         usuarioDAO.añadirListaCompartida(idListaCompartida, idUsuario)
     }
 
+    suspend fun getIdMisListasByIdUsuario(idUsuario: String) : List<String> {
+       return usuarioDAO.getIdMisListasByIdUsuario(idUsuario)
+    }
+
     /**
      * Método: deleteUser
      *

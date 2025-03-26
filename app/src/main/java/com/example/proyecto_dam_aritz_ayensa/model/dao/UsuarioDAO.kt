@@ -2,10 +2,12 @@ package com.example.proyecto_dam_aritz_ayensa.model.dao
 
 
 import android.util.Log
+import com.example.proyecto_dam_aritz_ayensa.model.entity.Lista
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Usuario
 import com.example.proyecto_dam_aritz_ayensa.utils.HashUtil
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import kotlinx.coroutines.tasks.await
 
@@ -71,6 +73,20 @@ class UsuarioDAO {
                     onFailure(task.exception ?: Exception("Error desconocido"))
                 }
             }
+    }
+
+
+    suspend fun getIdMisListasByIdUsuario(idUsuario: String) : List<String>{
+        val document = usuariosCollection
+            .document(idUsuario)
+            .get()
+            .await()
+
+        return if (document.exists()) {
+            document.get("idListas") as? List<String> ?: emptyList()
+        } else {
+            emptyList()
+        }
     }
 
     /**

@@ -8,6 +8,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Usuario
 import com.example.proyecto_dam_aritz_ayensa.utils.HashUtil
 import com.example.proyecto_dam_aritz_ayensa.utils.SessionManager
+import com.google.firebase.firestore.FieldPath
 import kotlinx.coroutines.tasks.await
 
 
@@ -45,6 +46,25 @@ class ListaDAO {
         Log.e("ListaDAO", "Lista creada")
         docRef.set(listaData).await()
         return docRef.id
+    }
+
+    suspend fun getMisListasByUsuarioId(idListas: List<String>): List<Lista> {
+        if (idListas.isEmpty()) return emptyList()
+
+        // Firestore permite máximo 10 elementos en "whereIn". Dividimos en chunks de 10.
+        val chunkedIds = idListas.chunked(6)
+        val listas = mutableListOf<Lista>()
+
+        for (chunk in chunkedIds) {
+            val querySnapshot = listasCollection
+                .whereIn(FieldPath.documentId(), chunk) // Buscar por ID de documento
+                .get()
+                .await()
+
+            listas.addAll(querySnapshot.toObjects(Lista::class.java))
+        }
+
+        return listas
     }
 
     /**

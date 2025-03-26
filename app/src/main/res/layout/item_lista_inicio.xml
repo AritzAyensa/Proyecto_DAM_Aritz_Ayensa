@@ -30,7 +30,7 @@
 
         <!-- Campo de hora inicio -->
         <TextView
-            android:id="@+id/horaTareaInicio"
+            android:id="@+id/numeroItems"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/item_lista_tv_elementos"
