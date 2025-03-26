@@ -89,6 +89,27 @@ class UsuarioDAO {
         }
     }
 
+
+    suspend fun getMisListasSizeByIdUsuario(idUsuario: String): Int {
+        return try {
+            val document = usuariosCollection
+                .document(idUsuario)
+                .get()
+                .await()
+
+            if (document.exists()) {
+                // Obtener la lista y verificar que no sea nula
+                val idListas = document.get("idListas") as? List<String>
+                idListas?.size ?: 0 // Si es nulo, retorna 0
+            } else {
+                0 // Usuario no encontrado
+            }
+        } catch (e: Exception) {
+            Log.e("Firestore", "Error al obtener tamaño de listas", e)
+            -1 // Opcional: Retornar -1 en caso de error
+        }
+    }
+
     /**
      * Método: getUser
      *

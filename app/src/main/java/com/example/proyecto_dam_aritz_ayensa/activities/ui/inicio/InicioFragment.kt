@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -29,6 +30,7 @@ class InicioFragment : Fragment() {
     private var _binding: FragmentInicioBinding? = null
 
     lateinit var buttonAñadirLista : Button
+    lateinit var buttonRecargarMisListas : ImageButton
     private lateinit var recyclerViewMisListas: RecyclerView
     private lateinit var adapter: ListaAdapter
 
@@ -51,6 +53,12 @@ class InicioFragment : Fragment() {
         listaService = ListaService(ListaDAO())
         usuarioService = UsuarioService(UsuarioDAO())
         sessionManager = SessionManager(requireContext())
+        buttonRecargarMisListas = binding.inicioBtnRecargarListas
+        if (buttonRecargarMisListas != null) {
+            buttonRecargarMisListas.setOnClickListener {
+                cargarMisListas()
+            }
+        }
         buttonAñadirLista = binding.btnAnadirLista
         if (buttonAñadirLista != null) {
             buttonAñadirLista.setOnClickListener {
@@ -75,7 +83,9 @@ class InicioFragment : Fragment() {
             val idListas =
                 usuarioService.getIdMisListasByIdUsuario(sessionManager.getUserId().toString())
             val misListas = listaService.getMisListasByUsuarioId(idListas)
+
             Log.i("Inicio", misListas.size.toString())
+            Log.i("Numero listas", usuarioService.getMisListasSizeByIdUsuario(sessionManager.getUserId().toString()).toString())
             adapter = ListaAdapter(misListas) { lista ->
                 // Maneja clics en los elementos
                 Toast.makeText(context, "Clic en: ${lista.titulo}", Toast.LENGTH_SHORT).show()
@@ -91,5 +101,7 @@ class InicioFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+    fun recargarMisListas(view: View) {}
 
 }

@@ -103,6 +103,10 @@ class UsuarioService(private val usuarioDAO: UsuarioDAO) {
        return usuarioDAO.getIdMisListasByIdUsuario(idUsuario)
     }
 
+    suspend fun getMisListasSizeByIdUsuario(idUsuario: String): Int {
+        return usuarioDAO.getMisListasSizeByIdUsuario(idUsuario)
+    }
+
     /**
      * Método: deleteUser
      *

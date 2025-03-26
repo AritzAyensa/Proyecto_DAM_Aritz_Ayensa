@@ -43,7 +43,9 @@ class CrearListaFragment : Fragment() {
     private lateinit var usuarioService: UsuarioService
     private lateinit var sessionManager: SessionManager
 
-    private var colorSeleccionado: String = "#FF0000";
+    private var colorSeleccionado: String = "#FF0000"
+
+    private lateinit var idUsuario: String
 
     private lateinit var inputTitulo: EditText
     private lateinit var inputDescripcion: EditText
@@ -57,6 +59,9 @@ class CrearListaFragment : Fragment() {
         lisaService = ListaService(ListaDAO())
         usuarioService = UsuarioService(UsuarioDAO())
         sessionManager = SessionManager(requireContext())
+        idUsuario = sessionManager.getUserId().toString()
+
+
 
         buttonAñadirLista = binding.crearListaBtnCrearLista
         buttonCancelar = binding.crearListaBtnCancelar
@@ -65,6 +70,8 @@ class CrearListaFragment : Fragment() {
 
         inputTitulo = binding.crearListaEtTitulo
         inputDescripcion = binding.crearListaEtDescripcion
+
+
 
         if (buttonAñadirLista != null) {
             buttonAñadirLista.setOnClickListener {
@@ -101,14 +108,19 @@ class CrearListaFragment : Fragment() {
             lista.titulo = textTitulo
             lista.descripcion = textDescripcion
             lista.color = colorSeleccionado
-            lista.idCreador = sessionManager.getUserId().toString()
+            lista.idCreador = idUsuario
 
             lifecycleScope.launch {
                 try {
-                    val idLista = lisaService.saveLista(lista)
-                    usuarioService.añadirListaAUsuario(idLista, sessionManager.getUserId().toString())
-                    cancelar()
-                    Utils.mostrarMensaje(requireContext(), "Lista creada correctamente")
+                    if (usuarioService.getMisListasSizeByIdUsuario(idUsuario) < 6) {
+                        val idLista = lisaService.saveLista(lista)
+                        usuarioService.añadirListaAUsuario(idLista, idUsuario)
+                        cancelar()
+                        Utils.mostrarMensaje(requireContext(), "Lista creada correctamente")
+                    }else {
+                        Utils.mostrarMensaje(requireContext(), "No puedes crear mas de 6 listas")
+                    }
+
                 } catch (e: Exception) {
                     Log.e("CrearListaFragment", "Error: ${e.message}")
                     Utils.mostrarMensaje(requireContext(), "Error al crear la lista")
