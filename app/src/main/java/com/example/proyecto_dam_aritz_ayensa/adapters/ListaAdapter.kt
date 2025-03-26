@@ -37,7 +37,7 @@ class ListaAdapter(
         val lista = listas[position]
         holder.nombreTarea.text = lista.titulo
         holder.numProductos.text = "1 elemento"
-        holder.colorLista.setBackgroundColor(Color.parseColor("#ff0000"))
+        holder.colorLista.setBackgroundColor(Color.parseColor(lista.color))
     }
 
     override fun getItemCount(): Int = listas.size

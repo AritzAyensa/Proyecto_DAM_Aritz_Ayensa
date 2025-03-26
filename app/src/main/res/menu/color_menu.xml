@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menuColor_it_colorRojo"
+        android:title="@string/menuColor_it_colorRojo" />
+    <item
+        android:id="@+id/menuColor_it_colorAzul"
+        android:title="@string/menuColor_it_colorAzul" />
+    <item
+        android:id="@+id/menuColor_it_colorVerde"
+        android:title="@string/menuColor_it_colorVerde" />
+    <item
+        android:id="@+id/menuColor_it_colorAmarillo"
+        android:title="@string/menuColor_it_colorAmarillo" />
+    <item
+        android:id="@+id/menuColor_it_colorNaranja"
+        android:title="@string/menuColor_it_colorNaranja" />
+</menu>

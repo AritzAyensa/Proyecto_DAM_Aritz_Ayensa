@@ -41,6 +41,7 @@ class ListaDAO {
             "id" to docRef.id,
             "titulo" to lista.titulo,
             "descripcion" to lista.descripcion,
+            "color" to lista.color,
             "idCreador" to lista.idCreador
         )
         Log.e("ListaDAO", "Lista creada")

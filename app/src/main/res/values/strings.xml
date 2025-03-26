@@ -57,6 +57,12 @@
     <string name="crearTarea_btn_crear_lista">Crear lista</string>
     <string name="crearTarea_btn_cancelar">Cancelar</string>
     <string name="login_et_mantener_sesion">Mantener sesión iniciada</string>
+    <string name="inicio_tv_listas_compartidas">Listas compartidas</string>
+    <string name="menuColor_it_colorRojo">Rojo</string>
+    <string name="menuColor_it_colorAzul">Azul</string>
+    <string name="menuColor_it_colorVerde">Verde</string>
+    <string name="menuColor_it_colorAmarillo">Amarillo</string>
+    <string name="menuColor_it_colorNaranja">Naranja</string>
 
 
 </resources>

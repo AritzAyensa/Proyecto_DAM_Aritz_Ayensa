@@ -4,6 +4,7 @@ data class Lista (
     var id: String = "",
     var titulo: String = "",
     var descripcion: String = "",
+    var color: String = "",
     var idCreador: String = "",
     var idsUsuariosCompartidos: Array<String> = emptyArray<String>()
 )

@@ -1,13 +1,16 @@
 package com.example.proyecto_dam_aritz_ayensa.activities
 
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.PopupMenu
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.proyecto_dam_aritz_ayensa.R
@@ -34,10 +37,13 @@ class CrearListaFragment : Fragment() {
 
     lateinit var buttonAñadirLista : Button
     lateinit var buttonCancelar : Button
+    lateinit var buttonColor : Button
+
     private lateinit var lisaService: ListaService
     private lateinit var usuarioService: UsuarioService
     private lateinit var sessionManager: SessionManager
 
+    private var colorSeleccionado: String = "#FF0000";
 
     private lateinit var inputTitulo: EditText
     private lateinit var inputDescripcion: EditText
@@ -54,6 +60,7 @@ class CrearListaFragment : Fragment() {
 
         buttonAñadirLista = binding.crearListaBtnCrearLista
         buttonCancelar = binding.crearListaBtnCancelar
+        buttonColor = binding.crearListaBtnColor
 
 
         inputTitulo = binding.crearListaEtTitulo
@@ -69,6 +76,19 @@ class CrearListaFragment : Fragment() {
                 cancelar()
             }
         }
+
+        buttonColor.setOnClickListener {
+            val popupMenu = PopupMenu(context, buttonColor)
+            popupMenu.menuInflater.inflate(R.menu.color_menu, popupMenu.menu)
+
+            // Establecer el listener para las opciones del menú
+            popupMenu.setOnMenuItemClickListener { menuItem ->
+                colorSeleccionadoTarea(menuItem)
+                true
+            }
+            popupMenu.show()
+        }
+
         return binding.root
     }
     private fun crearLista() {
@@ -80,17 +100,9 @@ class CrearListaFragment : Fragment() {
             val lista = Lista()
             lista.titulo = textTitulo
             lista.descripcion = textDescripcion
+            lista.color = colorSeleccionado
             lista.idCreador = sessionManager.getUserId().toString()
 
-            /*lifecycleScope.launch {
-                val idLista = lisaService.saveLista(lista)
-                val idCreador = lista.idCreador
-                Log.i("Info lista", "$idLista, $idCreador")
-
-                usuarioService.añadirListaAUsuario(idLista, sessionManager.getUserId().toString())
-
-                Log.i("Termino", "$idLista, $idCreador")
-            }*/
             lifecycleScope.launch {
                 try {
                     val idLista = lisaService.saveLista(lista)
@@ -102,9 +114,25 @@ class CrearListaFragment : Fragment() {
                     Utils.mostrarMensaje(requireContext(), "Error al crear la lista")
                 }
             }
+
+
         } else {
             Utils.mostrarMensaje(requireContext(),"Ingrese un titulo y una descripción")
         }
+    }
+
+    private fun colorSeleccionadoTarea(menuItem: MenuItem) {
+        val color = when (menuItem.itemId) {
+            R.id.menuColor_it_colorRojo -> "#FF0000"
+            R.id.menuColor_it_colorAzul -> "#0000FF"
+            R.id.menuColor_it_colorVerde -> "#008000"
+            R.id.menuColor_it_colorAmarillo -> "#FFFF00"
+            R.id.menuColor_it_colorNaranja -> "#FFA500"
+            else -> "#FF0000"
+        }
+
+        colorSeleccionado = color
+        binding.crearListaBtnColor.setBackgroundColor(Color.parseColor(color))
     }
 
     private fun cancelar() {

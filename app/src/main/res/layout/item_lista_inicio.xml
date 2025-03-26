@@ -26,6 +26,7 @@
             android:layout_marginStart="15dp"
             android:layout_weight="1"
             android:text="@string/item_lista_tv_titulo_lista"
+            android:textColor="@color/negro"
             android:layout_gravity="center_vertical" />
 
         <!-- Campo de hora inicio -->
@@ -35,6 +36,8 @@
             android:layout_height="wrap_content"
             android:text="@string/item_lista_tv_elementos"
             android:textSize="14sp"
+
+            android:textColor="@color/negro"
             android:layout_gravity="center_vertical" />
 
     </LinearLayout>
