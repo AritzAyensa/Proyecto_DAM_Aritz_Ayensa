@@ -82,12 +82,26 @@ class CrearListaFragment : Fragment() {
             lista.descripcion = textDescripcion
             lista.idCreador = sessionManager.getUserId().toString()
 
-            lifecycleScope.launch {
-                var idLista = lisaService.saveLista(lista)
-                usuarioService.añadirListaAUsuario(idLista.toString(), sessionManager.getUserId().toString())
-            }
-            cancelar()
+            /*lifecycleScope.launch {
+                val idLista = lisaService.saveLista(lista)
+                val idCreador = lista.idCreador
+                Log.i("Info lista", "$idLista, $idCreador")
 
+                usuarioService.añadirListaAUsuario(idLista, sessionManager.getUserId().toString())
+
+                Log.i("Termino", "$idLista, $idCreador")
+            }*/
+            lifecycleScope.launch {
+                try {
+                    val idLista = lisaService.saveLista(lista)
+                    usuarioService.añadirListaAUsuario(idLista, sessionManager.getUserId().toString())
+                    cancelar()
+                    Utils.mostrarMensaje(requireContext(), "Lista creada correctamente")
+                } catch (e: Exception) {
+                    Log.e("CrearListaFragment", "Error: ${e.message}")
+                    Utils.mostrarMensaje(requireContext(), "Error al crear la lista")
+                }
+            }
         } else {
             Utils.mostrarMensaje(requireContext(),"Ingrese un titulo y una descripción")
         }

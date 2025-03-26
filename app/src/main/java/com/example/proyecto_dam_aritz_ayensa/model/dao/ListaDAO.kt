@@ -35,13 +35,14 @@ class ListaDAO {
      */
     suspend fun saveLista(lista: Lista): String {
         val docRef = listasCollection.document()
-        lista.id = docRef.id
+
         val listaData = hashMapOf(
             "id" to docRef.id,
             "titulo" to lista.titulo,
             "descripcion" to lista.descripcion,
             "idCreador" to lista.idCreador
         )
+        Log.e("ListaDAO", "Lista creada")
         docRef.set(listaData).await()
         return docRef.id
     }

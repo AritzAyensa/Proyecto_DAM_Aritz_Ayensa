@@ -23,8 +23,8 @@ class ListaService(private val listaDAO: ListaDAO) {
      * @param onSuccess Función de callback que se ejecuta si la operación es exitosa.
      * @param onFailure Función de callback que se ejecuta si ocurre un error durante la operación.
      */
-    suspend fun saveLista(lista: Lista) {
-        listaDAO.saveLista(lista)
+    suspend fun saveLista(lista: Lista):String {
+        return listaDAO.saveLista(lista)
     }
 
    /* *//**

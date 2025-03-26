@@ -48,7 +48,9 @@ class UsuarioDAO {
                         "id" to userId,
                         "nombre" to nombre,
                         "email" to email,
-                        "contrasena" to hashedPassword
+                        "idListas" to listOf<String>(),
+                        "idListasCompartidas" to listOf<String>(),
+
                     )
 
                     if (userId != null) {
