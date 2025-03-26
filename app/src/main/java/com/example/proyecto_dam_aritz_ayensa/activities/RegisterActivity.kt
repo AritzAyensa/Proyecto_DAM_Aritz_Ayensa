@@ -72,7 +72,7 @@ class RegisterActivity : AppCompatActivity() {
                 onSuccess()
             },
             onFailure = { exception ->
-                Utils.mostrarMensaje(this, exception.message ?: "Error al guardar el usuario")
+                Utils.mostrarMensaje(this, Utils.obtenerMensajesErrorEspañol(exception) ?: "Error al guardar el usuario")
                 Log.e("UsuarioService", "Error al guardar el usuario", exception)
                 onFailure(exception)
             }

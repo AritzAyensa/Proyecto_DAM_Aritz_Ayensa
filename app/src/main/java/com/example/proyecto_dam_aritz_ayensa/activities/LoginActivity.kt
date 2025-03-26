@@ -23,6 +23,7 @@ import com.example.proyecto_dam_aritz_ayensa.utils.HashUtil
 import com.example.proyecto_dam_aritz_ayensa.utils.SessionManager
 import com.example.proyecto_dam_aritz_ayensa.utils.Utils
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthException
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var usuarioService: UsuarioService
@@ -120,9 +121,11 @@ class LoginActivity : AppCompatActivity() {
                         Utils.mostrarMensaje(this, "Verifica tu correo electrónico")
                     }*/
                 } else {
+
                     val error = task.exception?.message ?: "Error desconocido"
                     Log.e("Auth", "Error en Firebase: $error")
-                    Utils.mostrarMensaje(this, "Error: ${error}")
+                    Utils.mostrarMensaje(this, Utils.obtenerMensajesErrorEspañol(task.exception)?: "Error al guardar el usuario")
+
                 }
             }
     }

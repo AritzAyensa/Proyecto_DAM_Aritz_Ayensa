@@ -2,6 +2,7 @@ package com.example.proyecto_dam_aritz_ayensa.utils
 
 import android.content.Context
 import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuthException
 
 /**
  * Clase Utils
@@ -32,6 +33,43 @@ class Utils {
         fun validarNombreUsuario(username: String): Boolean {
             return username.matches("^[a-zA-Z0-9_-]{3,20}$".toRegex())
         }
+
+        fun obtenerMensajesErrorEspañol(exception: Exception?): String {
+            return when {
+                // 1. Intentar obtener el código de error directamente desde FirebaseAuthException
+                exception is FirebaseAuthException -> {
+                    translateFirebaseCode(exception.errorCode)
+                }
+                // 2. Buscar códigos de error en el mensaje (ej: "[ INVALID_LOGIN_CREDENTIALS ]")
+                else -> {
+                    val errorCode = extractErrorCodeFromMessage(exception?.message)
+                    translateFirebaseCode(errorCode)
+                }
+            }
+        }
+
+        fun translateFirebaseCode(errorCode: String?): String {
+            return when (errorCode?.trim()) {
+                "INVALID_LOGIN_CREDENTIALS" -> "Correo o contraseña incorrectos"
+                "EMAIL_ALREADY_IN_USE" -> "El correo ya está registrado"
+                "INVALID_EMAIL" -> "Correo electrónico inválido"
+                "WEAK_PASSWORD" -> "La contraseña debe tener al menos 6 caracteres"
+                "USER_NOT_FOUND" -> "Usuario no encontrado"
+                "WRONG_PASSWORD" -> "Contraseña incorrecta"
+                "TOO_MANY_REQUESTS" -> "Demasiados intentos. Intenta más tarde"
+                "NETWORK_REQUEST_FAILED" -> "Error de conexión a internet"
+                "USER_DISABLED" -> "Cuenta deshabilitada"
+                else -> "Error desconocido. Por favor, inténtalo de nuevo."
+            }
+        }
+
+        private fun extractErrorCodeFromMessage(message: String?): String? {
+            if (message.isNullOrEmpty()) return null
+            val regex = Regex("\\[\\s*([A-Z_]+)\\s*]")
+            return regex.find(message)?.groupValues?.get(1)
+        }
+
+
     }
 
 }
