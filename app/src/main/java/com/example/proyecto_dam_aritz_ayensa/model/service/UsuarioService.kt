@@ -21,9 +21,9 @@ class UsuarioService(private val usuarioDAO: UsuarioDAO) {
      * @param onSuccess Función de callback que se ejecuta si la operación es exitosa.
      * @param onFailure Función de callback que se ejecuta si ocurre un error durante la operación.
      */
-    fun saveUser(usuario: Usuario, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+    /*fun saveUser(nombre: String,email: String,contraseña: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
         // Verificar si ya existe un usuario con el mismo correo electrónico
-        usuarioDAO.getUserByEmail(usuario.email,
+        usuarioDAO.getUserByEmail(email,
             onSuccess = { usuarioExistente ->
                 if (usuarioExistente != null) {
                     // Si el usuario ya existe, notificar el error
@@ -31,7 +31,7 @@ class UsuarioService(private val usuarioDAO: UsuarioDAO) {
                 } else {
                     // Si el usuario no existe, proceder a guardarlo
                     onSuccess()
-                    usuarioDAO.saveUser(usuario, onSuccess, onFailure)
+                    usuarioDAO.saveUser(nombre, email, contraseña, onSuccess, onFailure)
                 }
             },
             onFailure = { exception ->
@@ -39,6 +39,10 @@ class UsuarioService(private val usuarioDAO: UsuarioDAO) {
                 onFailure(exception)
             }
         )
+    }*/
+    fun saveUser(nombre: String, email: String, contraseña: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        // Elimina la verificación previa de usuarioExistente
+        usuarioDAO.saveUser(nombre, email, contraseña, onSuccess, onFailure)
     }
 
     /**

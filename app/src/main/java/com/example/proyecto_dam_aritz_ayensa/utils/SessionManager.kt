@@ -78,7 +78,6 @@ class SessionManager(context: Context) {
     fun saveCredentials(userEmail: String, userPassword: String) {
         prefs.edit().apply {
             putString("USER_EMAIL", userEmail) // Guardar el email del usuario
-            putString("USER_PASSWORD", userPassword) // Guardar la contraseña del usuario
             putBoolean("REMEMBER_CHECK", true) // Marcar que se deben recordar las credenciales
             apply() // Guardar los cambios de manera asíncrona
         }
@@ -93,7 +92,6 @@ class SessionManager(context: Context) {
     fun clearCredentials() {
         prefs.edit().apply {
             remove("USER_EMAIL") // Eliminar el email del usuario
-            remove("USER_PASSWORD") // Eliminar la contraseña del usuario
             putBoolean("REMEMBER_CHECK", false) // Marcar que no se deben recordar las credenciales
             apply() // Guardar los cambios de manera asíncrona
         }
@@ -130,7 +128,7 @@ class SessionManager(context: Context) {
      *
      * @return Contraseña del usuario o `null` si no está almacenada.
      */
-    fun getUserPassword(): String? {
+    /*fun getUserPassword(): String? {
         return prefs.getString("USER_PASSWORD", null) // Obtener la contraseña del usuario
-    }
+    }*/
 }

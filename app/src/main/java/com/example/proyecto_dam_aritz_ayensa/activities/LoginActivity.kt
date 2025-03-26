@@ -1,5 +1,6 @@
 package com.example.proyecto_dam_aritz_ayensa.activities
 
+import android.app.ProgressDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -55,7 +56,7 @@ class LoginActivity : AppCompatActivity() {
             finish()
         } else if (sessionManager.isChecked()) {
             inputCorreo.setText(sessionManager.getUserEmail())
-            inputContra.setText(sessionManager.getUserPassword())
+            inputContra.setText("")
             rememberCheck.isChecked = true
         }
 
@@ -93,21 +94,37 @@ class LoginActivity : AppCompatActivity() {
 
 
     fun goToMainDesdeLogin(view: View?) {
-        val textCorreoUser = inputCorreo.text.toString()
-        val textContraUser = inputContra.text.toString()
+        val email = inputCorreo.text.toString().trim()
+        val password = inputContra.text.toString().trim()
 
-        if (textCorreoUser.isNotEmpty() && textContraUser.isNotEmpty()) {
-            cargarDatosUsuario(textCorreoUser) { usuarioObtenido ->
-                if (usuarioObtenido != null) {
-                    usuario = usuarioObtenido
-                    verificarCredencialesFirebase(textCorreoUser, textContraUser)
+        if (email.isEmpty() || password.isEmpty()) {
+            Utils.mostrarMensaje(this, "Ingrese correo y contraseña")
+            return
+        }
+
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    /*if (auth.currentUser?.isEmailVerified == true) { // Verificar correo*/
+                        cargarDatosUsuario(email) { usuarioObtenido ->
+                            if (usuarioObtenido != null) {
+                                usuario = usuarioObtenido
+                                sessionManager.saveUserSession(usuario.id)
+                            } else {
+                                Utils.mostrarMensaje(this, "Usuario no encontrado")
+                            }
+                        }
+                        // Opcional: Obtener datos adicionales desde Firestore
+                        iniciarSesion()
+                    /*} else {
+                        Utils.mostrarMensaje(this, "Verifica tu correo electrónico")
+                    }*/
                 } else {
-                    Utils.mostrarMensaje(this, "Usuario no encontrado")
+                    val error = task.exception?.message ?: "Error desconocido"
+                    Log.e("Auth", "Error en Firebase: $error")
+                    Utils.mostrarMensaje(this, "Error: ${error}")
                 }
             }
-        } else {
-            Utils.mostrarMensaje(this, "Ingrese el correo o contraseña")
-        }
     }
 
     private fun cargarDatosUsuario(email: String, callback: (Usuario?) -> Unit) {
@@ -134,7 +151,7 @@ class LoginActivity : AppCompatActivity() {
                     )
 
                     // Verificamos si el usuario cambió su contraseña
-                    comprobarCambioDePassword(email, password)
+                    // comprobarCambioDePassword(email, password)
                 } else {
                     Log.e("Auth", "Error en autenticación Firebase", authTask.exception)
                     Utils.mostrarMensaje(this, "Correo o contraseña incorrectos")
@@ -142,7 +159,7 @@ class LoginActivity : AppCompatActivity() {
             }
     }
 
-    private fun comprobarCambioDePassword(email: String, password: String) {
+    /*private fun comprobarCambioDePassword(email: String, password: String) {
         val hashedPassword = HashUtil.hashPassword(password)
         if (usuario.contrasena == hashedPassword) {
             Log.d("LOGIN", "El usuario no ha cambiado la contraseña")
@@ -151,11 +168,10 @@ class LoginActivity : AppCompatActivity() {
             Log.d("LOGIN", "El usuario ha cambiado la contraseña")
         }
         iniciarSesion()
-    }
+    }*/
 
     private fun iniciarSesion() {
         startActivity(Intent(this, BottomNavigationActivity::class.java))
-        sessionManager.saveUserSession(usuario.id)
         finish()
     }
 

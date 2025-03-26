@@ -63,10 +63,9 @@ class RegisterActivity : AppCompatActivity() {
 
         val emailStrip = email.split("@")
         val nombrePorDefecto = emailStrip[0]
-        val usuario = Usuario(nombre = nombrePorDefecto, email = email, contrasena = password)
 
         usuarioService.saveUser(
-            usuario,
+            nombrePorDefecto, email,password,
             onSuccess = {
                 Log.d("UsuarioService", "Usuario guardado correctamente")
                 Utils.mostrarMensaje(this, "Registro exitoso. Ahora puedes iniciar sesión.")

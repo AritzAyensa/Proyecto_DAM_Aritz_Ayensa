@@ -32,8 +32,8 @@ class UsuarioDAO {
      * @param onSuccess Función de callback que se ejecuta si la operación es exitosa.
      * @param onFailure Función de callback que se ejecuta si ocurre un error durante la operación.
      */
-    fun saveUser(usuario: Usuario, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
-        auth.createUserWithEmailAndPassword(usuario.email, usuario.contrasena)
+    fun saveUser(nombre: String,email: String,contraseña: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        auth.createUserWithEmailAndPassword(email, contraseña)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     // Obtener el usuario desde task.result (no de auth.currentUser)
@@ -41,13 +41,13 @@ class UsuarioDAO {
                     val userId = user?.uid
 
                     // Cifrar la contraseña
-                    val hashedPassword = HashUtil.hashPassword(usuario.contrasena)
+                    val hashedPassword = HashUtil.hashPassword(contraseña)
 
                     // Crear el mapa de datos
                     val usuarioData = hashMapOf(
                         "id" to userId,
-                        "nombre" to usuario.nombre,
-                        "email" to usuario.email,
+                        "nombre" to nombre,
+                        "email" to email,
                         "contrasena" to hashedPassword
                     )
 
@@ -58,7 +58,8 @@ class UsuarioDAO {
                                 onSuccess()
                             }
                             .addOnFailureListener { e ->
-                                Log.e("UsuarioService", "Error al guardar en Firestore", e)
+                                // Rollback: Eliminar usuario de Auth si Firestore falla
+                                user?.delete()
                                 onFailure(e)
                             }
                     } else {
@@ -90,7 +91,7 @@ class UsuarioDAO {
                     val contrasena = document.getString("contrasena") ?: ""
 
                     // Crear un objeto Usuario con los datos obtenidos
-                    val usuario = Usuario(id = usuarioID, nombre = nombre, email = email, contrasena = contrasena)
+                    val usuario = Usuario(id = usuarioID, nombre = nombre, email = email)
                     onSuccess(usuario)
                 } else {
                     // Si el documento no existe, retornar null
@@ -111,8 +112,7 @@ class UsuarioDAO {
             if (document.exists()) {
                 val nombre = document.getString("nombre") ?: ""
                 val email = document.getString("email") ?: ""
-                val contrasena = document.getString("contrasena") ?: ""
-                val usuario = Usuario(usuarioID, nombre, email, contrasena)
+                val usuario = Usuario(usuarioID, nombre, email)
                 Result.success(usuario)
             } else {
                 Result.success(null)
@@ -157,8 +157,7 @@ class UsuarioDAO {
         // Crear un mapa con los datos actualizados del usuario
         val usuarioData = hashMapOf(
             "nombre" to usuario.nombre,
-            "email" to usuario.email,
-            "contrasena" to usuario.contrasena
+            "email" to usuario.email
         )
 
         // Actualizar el documento del usuario en Firestore
@@ -223,8 +222,7 @@ class UsuarioDAO {
                     val usuario = Usuario(
                         id = document.id,
                         nombre = nombre,
-                        email = usuarioEmail,
-                        contrasena = contrasena
+                        email = usuarioEmail
                     )
                     onSuccess(usuario)
                 } else {

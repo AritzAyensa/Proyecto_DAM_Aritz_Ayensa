@@ -87,7 +87,6 @@ class EditarPerfilActivity : AppCompatActivity() {
                     val userId = usuario.id
                     etNombre.setText(usuario.nombre)
                     etCorreo.setText(usuario.email)
-                    contrasena = usuario.contrasena
                 }
             },
             onFailure = { exception ->
@@ -102,7 +101,7 @@ class EditarPerfilActivity : AppCompatActivity() {
                     if (usuarioExistente != null && usuarioExistente.id != userId) {
                         Utils.mostrarMensaje(this, "El correo ya está registrado por otro usuario")
                     } else {
-                        val usuario = Usuario(userId, nombre, email, contrasena)
+                        val usuario = Usuario(userId, nombre, email)
                         usuarioService.updateUser(usuario,
                             onSuccess = {
                                 Utils.mostrarMensaje(this, "Datos Guardados")

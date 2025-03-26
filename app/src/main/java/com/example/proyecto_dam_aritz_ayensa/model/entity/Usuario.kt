@@ -9,7 +9,6 @@ data class Usuario (
     var id: String = "",
     var nombre: String = "",
     var email: String = "",
-    var contrasena: String = "",
     var idListas: List<String> = emptyList(),
     var idListasCompartidas: List<String> = emptyList()
 )
