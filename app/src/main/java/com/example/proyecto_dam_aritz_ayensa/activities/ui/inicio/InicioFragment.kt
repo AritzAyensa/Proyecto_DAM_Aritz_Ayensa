@@ -31,7 +31,9 @@ class InicioFragment : Fragment() {
 
     lateinit var buttonAñadirLista : Button
     lateinit var buttonRecargarMisListas : ImageButton
+    lateinit var buttonRecargarListasCompartidas : ImageButton
     private lateinit var recyclerViewMisListas: RecyclerView
+    private lateinit var recyclerViewListasCompartidas: RecyclerView
     private lateinit var adapter: ListaAdapter
 
 
@@ -53,10 +55,33 @@ class InicioFragment : Fragment() {
         listaService = ListaService(ListaDAO())
         usuarioService = UsuarioService(UsuarioDAO())
         sessionManager = SessionManager(requireContext())
+
+
+
+        recyclerViewMisListas = binding.recyclerMisListas
+        recyclerViewMisListas.layoutManager = LinearLayoutManager(context)
+        recyclerViewListasCompartidas = binding.recyclerListasCompartidas
+        recyclerViewListasCompartidas.layoutManager = LinearLayoutManager(context)
+        cargarMisListas()
+        cargarListasCompartidas()
+        cargarBotones()
+        return binding.root
+    }
+
+    private fun abrirAñadirLista() {
+        findNavController().navigate(R.id.action_inicioFragment_to_crearListaFragment)
+    }
+    private fun cargarBotones() {
         buttonRecargarMisListas = binding.inicioBtnRecargarListas
         if (buttonRecargarMisListas != null) {
             buttonRecargarMisListas.setOnClickListener {
                 cargarMisListas()
+            }
+        }
+        buttonRecargarListasCompartidas = binding.inicioBtnRecargarListasCompartidas
+        if (buttonRecargarListasCompartidas != null) {
+            buttonRecargarListasCompartidas.setOnClickListener {
+                cargarListasCompartidas()
             }
         }
         buttonAñadirLista = binding.btnAnadirLista
@@ -65,16 +90,6 @@ class InicioFragment : Fragment() {
                 abrirAñadirLista()
             }
         }
-
-
-        recyclerViewMisListas = binding.recyclerMisListas
-        recyclerViewMisListas.layoutManager = LinearLayoutManager(context)
-        cargarMisListas()
-        return binding.root
-    }
-
-    private fun abrirAñadirLista() {
-        findNavController().navigate(R.id.action_inicioFragment_to_crearListaFragment)
     }
     private fun cargarMisListas() {
 
@@ -94,7 +109,21 @@ class InicioFragment : Fragment() {
         }
     }
     private fun cargarListasCompartidas() {
+        Log.i("Inicio", "Cargando listas compartidas")
+        lifecycleScope.launch {
+            val idListasCompartidas =
+                usuarioService.getIdListasCompartidasByIdUsuario(sessionManager.getUserId().toString())
+            val listasCompartidas = listaService.getMisListasByUsuarioId(idListasCompartidas)
 
+            Log.i("Inicio", listasCompartidas.size.toString())
+            Log.i("Numero listas", usuarioService.getMisListasSizeByIdUsuario(sessionManager.getUserId().toString()).toString())
+            adapter = ListaAdapter(listasCompartidas) { lista ->
+                // Maneja clics en los elementos
+                Toast.makeText(context, "Clic en: ${lista.titulo}", Toast.LENGTH_SHORT).show()
+            }
+
+            recyclerViewListasCompartidas.adapter = adapter
+        }
     }
 
     override fun onDestroyView() {

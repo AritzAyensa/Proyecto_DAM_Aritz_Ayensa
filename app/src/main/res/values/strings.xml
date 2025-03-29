@@ -63,6 +63,7 @@
     <string name="menuColor_it_colorVerde">Verde</string>
     <string name="menuColor_it_colorAmarillo">Amarillo</string>
     <string name="menuColor_it_colorNaranja">Naranja</string>
+    <string name="item_vacio_tv_texto_ejemplo">Texto ejemplo</string>
 
 
 </resources>

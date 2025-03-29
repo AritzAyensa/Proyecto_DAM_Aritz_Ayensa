@@ -99,6 +99,41 @@ class UsuarioDAO {
 
             if (document.exists()) {
                 // Obtener la lista y verificar que no sea nula
+                val idListas = document.get("idListasCompartidas") as? List<String>
+                idListas?.size ?: 0 // Si es nulo, retorna 0
+            } else {
+                0 // Usuario no encontrado
+            }
+        } catch (e: Exception) {
+            Log.e("Firestore", "Error al obtener tamaño de listas compartidas", e)
+            -1 // Opcional: Retornar -1 en caso de error
+        }
+    }
+
+
+    suspend fun getIdListasCompartidasByIdUsuario(idUsuario: String) : List<String>{
+        val document = usuariosCollection
+            .document(idUsuario)
+            .get()
+            .await()
+
+        return if (document.exists()) {
+            document.get("idListasCompartidas") as? List<String> ?: emptyList()
+        } else {
+            emptyList()
+        }
+    }
+
+
+    suspend fun getListasCompartidasSizeByIdUsuario(idUsuario: String): Int {
+        return try {
+            val document = usuariosCollection
+                .document(idUsuario)
+                .get()
+                .await()
+
+            if (document.exists()) {
+                // Obtener la lista y verificar que no sea nula
                 val idListas = document.get("idListas") as? List<String>
                 idListas?.size ?: 0 // Si es nulo, retorna 0
             } else {

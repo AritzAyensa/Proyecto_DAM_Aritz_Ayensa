@@ -107,6 +107,15 @@ class UsuarioService(private val usuarioDAO: UsuarioDAO) {
         return usuarioDAO.getMisListasSizeByIdUsuario(idUsuario)
     }
 
+
+    suspend fun getIdListasCompartidasByIdUsuario(idUsuario: String) : List<String> {
+        return usuarioDAO.getIdListasCompartidasByIdUsuario(idUsuario)
+    }
+
+    suspend fun getListasCompartidasSizeByIdUsuario(idUsuario: String): Int {
+        return usuarioDAO.getListasCompartidasSizeByIdUsuario(idUsuario)
+    }
+
     /**
      * Método: deleteUser
      *

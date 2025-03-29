@@ -1,0 +1,18 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_tareas_campos_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="10dp"
+    android:paddingStart="10dp"
+    android:paddingEnd="10dp"
+    android:gravity="start">
+        <TextView
+            android:id="@+id/item_vacio_tv_texto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/item_vacio_tv_texto_ejemplo"
+            android:textColor="@color/negro"
+            android:textSize="20sp"
+            android:textAlignment="center"/>
+</LinearLayout>
