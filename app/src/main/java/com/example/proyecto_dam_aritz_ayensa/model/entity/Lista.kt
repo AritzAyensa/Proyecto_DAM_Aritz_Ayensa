@@ -6,5 +6,5 @@ data class Lista (
     var descripcion: String = "",
     var color: String = "",
     var idCreador: String = "",
-    var idsUsuariosCompartidos: Array<String> = emptyArray<String>()
+    var idsUsuariosCompartidos: List<String> = emptyList()
 )

@@ -1,4 +1,4 @@
-package com.example.proyecto_dam_aritz_ayensa.activities.ui.dashboard
+package com.example.proyecto_dam_aritz_ayensa.activities.ui.cuenta
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,10 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import com.example.proyecto_dam_aritz_ayensa.R
 import com.example.proyecto_dam_aritz_ayensa.activities.EditarPerfilActivity
 import com.example.proyecto_dam_aritz_ayensa.activities.LoginActivity
 import com.example.proyecto_dam_aritz_ayensa.databinding.FragmentCuentaBinding

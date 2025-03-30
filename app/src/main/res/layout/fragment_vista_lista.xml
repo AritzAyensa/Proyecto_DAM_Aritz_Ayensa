@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".activities.VistaListaFragment">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/vista_lista_cl"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="100sp"
+        android:paddingEnd="20sp"
+        android:paddingStart="20sp"
+        android:paddingTop="20sp"
+        >
+        <TextView
+            android:id="@+id/vista_lista_tv_titulo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/vista_lista_tv_titulo"
+            android:textAlignment="center"
+            android:textSize="25sp"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+
+            tools:ignore="MissingConstraints" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/vista_lista_cc_botones"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/vista_lista_tv_titulo"
+
+            tools:ignore="MissingConstraints"
+            >
+            <Button
+                android:id="@+id/btnCompartirLista"
+                android:layout_width="50pt"
+                android:layout_height="wrap_content"
+                android:text="@string/vista_lista_btn_compartir_lista"
+                style="@style/ButtonAccept"
+                app:layout_constraintStart_toStartOf="parent"
+                />
+            <Button
+                android:id="@+id/btnAnadirProducto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/vista_lista_btn_añadirProducto"
+                app:layout_constraintEnd_toEndOf="parent"
+                style="@style/ButtonAccept"
+                />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_productos"
+            android:layout_width="match_parent"
+            android:layout_height="250sp"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/edittext_border"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:flow_maxElementsWrap="4"
+            app:layout_constraintTop_toBottomOf="@id/vista_lista_cc_botones"/>
+
+
+        <Button
+            android:id="@+id/btnEliminarLista"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/vista_lista_btn_eliminar_lista"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            style="@style/ButtonAccept"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

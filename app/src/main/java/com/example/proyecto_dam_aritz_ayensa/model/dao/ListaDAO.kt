@@ -68,6 +68,30 @@ class ListaDAO {
         return listas
     }
 
+    suspend fun getListaById(idLista: String): Lista? {
+        if (idLista.isBlank()) return null
+
+        return try {
+            val document = listasCollection.document(idLista).get().await()
+
+            if (document.exists()) {
+                Lista(
+                    id = document.getString("id") ?: "",
+                    titulo = document.getString("titulo") ?: "", // Corregido de "nombre" a "titulo"
+                    descripcion = document.getString("descripcion") ?: "",
+                    color = document.getString("color") ?: "#FFFFFF",
+                    idCreador = document.getString("idCreador") ?: "",
+                    idsUsuariosCompartidos = document.get("idsUsuariosCompartidos") as? List<String> ?: emptyList()
+                )
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            Log.e("Firestore", "Error getting lista", e)
+            null
+        }
+    }
+
     /**
      * Método: getUser
      *

@@ -64,6 +64,11 @@
     <string name="menuColor_it_colorAmarillo">Amarillo</string>
     <string name="menuColor_it_colorNaranja">Naranja</string>
     <string name="item_vacio_tv_texto_ejemplo">Texto ejemplo</string>
+    <string name="title_vista_lista">VistaLista</string>
+    <string name="vista_lista_tv_titulo">Titulo</string>
+    <string name="vista_lista_btn_compartir_lista">Compartir</string>
+    <string name="vista_lista_btn_añadirProducto">Añadir producto</string>
+    <string name="vista_lista_btn_eliminar_lista">Eliminar lista</string>
 
 
 </resources>

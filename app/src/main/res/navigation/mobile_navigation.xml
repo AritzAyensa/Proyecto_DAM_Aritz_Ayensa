@@ -14,6 +14,9 @@
         <action
             android:id="@+id/action_inicioFragment_to_crearListaFragment"
             app:destination="@id/navigation_crear_lista" />
+        <action
+            android:id="@+id/action_inicioFragment_to_vistaListaFragment"
+            app:destination="@id/navigation_vista_lista" />
     </fragment>
     <fragment
         android:id="@+id/navigation_notifications"
@@ -22,7 +25,7 @@
         tools:layout="@layout/fragment_notifications" />
     <fragment
         android:id="@+id/navigation_cuenta"
-        android:name="com.example.proyecto_dam_aritz_ayensa.activities.ui.dashboard.CuentaFragment"
+        android:name="com.example.proyecto_dam_aritz_ayensa.activities.ui.cuenta.CuentaFragment"
         android:label="@string/title_cuenta"
         tools:layout="@layout/fragment_cuenta" />
 
@@ -34,6 +37,20 @@
         >
         <action
             android:id="@+id/action_crearListaFragment_to_inicioFragment"
+            app:destination="@id/navigation_inicio"
+            app:popUpTo="@id/navigation_inicio"
+            app:popUpToInclusive="false" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_vista_lista"
+        android:name="com.example.proyecto_dam_aritz_ayensa.activities.VistaListaFragment"
+        android:label="@string/title_vista_lista"
+        tools:layout="@layout/fragment_vista_lista"
+        >
+        <action
+            android:id="@+id/action_vista_listaFragment_to_inicioFragment"
             app:destination="@id/navigation_inicio"
             app:popUpTo="@id/navigation_inicio"
             app:popUpToInclusive="false" />

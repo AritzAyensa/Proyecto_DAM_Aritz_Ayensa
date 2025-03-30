@@ -27,6 +27,10 @@ class ListaService(private val listaDAO: ListaDAO) {
         return listaDAO.saveLista(lista)
     }
 
+    suspend fun getListaById(idLista: String) : Lista? {
+        return listaDAO.getListaById(idLista)
+    }
+
     suspend fun getMisListasByUsuarioId(idListas: List<String>):List<Lista> {
         return listaDAO.getMisListasByUsuarioId(idListas)
     }

@@ -13,7 +13,7 @@ import com.example.proyecto_dam_aritz_ayensa.model.entity.Lista
 class ListaAdapter(
     private val listas: List<Lista>,
     private val onItemClick: (Lista) -> Unit
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() { // <-- Cambia a ViewHolder genérico
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     // Constantes para tipos de vista
     private companion object {

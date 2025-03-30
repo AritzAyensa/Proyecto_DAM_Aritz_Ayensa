@@ -71,6 +71,13 @@ class InicioFragment : Fragment() {
     private fun abrirAñadirLista() {
         findNavController().navigate(R.id.action_inicioFragment_to_crearListaFragment)
     }
+
+    private fun abrirLista(idLista : String) {
+        val bundle = Bundle().apply {
+            putString("idLista", idLista)
+        }
+        findNavController().navigate(R.id.action_inicioFragment_to_vistaListaFragment, bundle)
+    }
     private fun cargarBotones() {
         buttonRecargarMisListas = binding.inicioBtnRecargarListas
         if (buttonRecargarMisListas != null) {
@@ -102,8 +109,7 @@ class InicioFragment : Fragment() {
             Log.i("Inicio", misListas.size.toString())
             Log.i("Numero listas", usuarioService.getMisListasSizeByIdUsuario(sessionManager.getUserId().toString()).toString())
             adapter = ListaAdapter(misListas) { lista ->
-                // Maneja clics en los elementos
-                Toast.makeText(context, "Clic en: ${lista.titulo}", Toast.LENGTH_SHORT).show()
+                abrirLista(lista.id)
             }
             recyclerViewMisListas.adapter = adapter
         }
@@ -118,8 +124,7 @@ class InicioFragment : Fragment() {
             Log.i("Inicio", listasCompartidas.size.toString())
             Log.i("Numero listas", usuarioService.getMisListasSizeByIdUsuario(sessionManager.getUserId().toString()).toString())
             adapter = ListaAdapter(listasCompartidas) { lista ->
-                // Maneja clics en los elementos
-                Toast.makeText(context, "Clic en: ${lista.titulo}", Toast.LENGTH_SHORT).show()
+                abrirLista(lista.id)
             }
 
             recyclerViewListasCompartidas.adapter = adapter
@@ -131,6 +136,5 @@ class InicioFragment : Fragment() {
         _binding = null
     }
 
-    fun recargarMisListas(view: View) {}
 
 }
