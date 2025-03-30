@@ -186,7 +186,9 @@ class UsuarioDAO {
             if (document.exists()) {
                 val nombre = document.getString("nombre") ?: ""
                 val email = document.getString("email") ?: ""
-                val usuario = Usuario(usuarioID, nombre, email)
+                val idListas = document.get("idListas") as List<String>
+                val idListasCompartidas = document.getString("idListasCompartidas") as List<String>
+                val usuario = Usuario(usuarioID, nombre, email, idListas, idListasCompartidas)
                 Result.success(usuario)
             } else {
                 Result.success(null)
@@ -196,6 +198,20 @@ class UsuarioDAO {
         }
     }
 
+    /*suspend fun getUserIdByEmail(email: String): String? {
+        if (email.isBlank()) return null // Validación inicial
+
+        return try {
+            val query = usuariosCollection
+                .whereEqualTo("email", email)
+
+            val snapshot = query.get().await()
+            snapshot.documents.firstOrNull()?.id // Devuelve null si no hay resultados
+        } catch (e: Exception) {
+            Log.e("Firestore", "Error al buscar usuario", e)
+            null
+        }
+    }*/
     /**
      * Método: getAllUsers
      *

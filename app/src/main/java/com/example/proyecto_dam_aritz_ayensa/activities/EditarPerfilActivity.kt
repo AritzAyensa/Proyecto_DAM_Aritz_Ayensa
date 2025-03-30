@@ -33,7 +33,6 @@ class EditarPerfilActivity : AppCompatActivity() {
     // Datos
     private lateinit var nombre: String
     private lateinit var email: String
-    private lateinit var contrasena: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

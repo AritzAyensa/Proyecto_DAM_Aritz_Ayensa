@@ -36,11 +36,12 @@
             >
             <Button
                 android:id="@+id/btnCompartirLista"
-                android:layout_width="50pt"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/vista_lista_btn_compartir_lista"
                 style="@style/ButtonAccept"
                 app:layout_constraintStart_toStartOf="parent"
+                android:visibility="gone"
                 />
             <Button
                 android:id="@+id/btnAnadirProducto"

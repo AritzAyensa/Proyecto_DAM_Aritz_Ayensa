@@ -28,6 +28,7 @@
             android:exported="false" />
         <activity
             android:name=".activities.BottomNavigationActivity"
+            android:windowSoftInputMode="adjustPan|stateHidden"
             android:exported="false"
             android:label="@string/title_activity_bottom_navigation" />
         <activity

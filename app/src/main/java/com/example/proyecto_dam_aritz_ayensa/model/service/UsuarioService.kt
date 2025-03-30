@@ -60,9 +60,13 @@ class UsuarioService(private val usuarioDAO: UsuarioDAO) {
     }
 
     suspend fun getUserById(usuarioID: String) {
-        // Delegar la operación al DAO
         usuarioDAO.getUserById(usuarioID)
     }
+
+
+    /*suspend fun getUserIdByEmail(email: String): String? {
+        return usuarioDAO.getUserIdByEmail(email)
+    }*/
 
     /**
      * Método: getAllUsers

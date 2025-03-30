@@ -69,6 +69,7 @@
     <string name="vista_lista_btn_compartir_lista">Compartir</string>
     <string name="vista_lista_btn_añadirProducto">Añadir producto</string>
     <string name="vista_lista_btn_eliminar_lista">Eliminar lista</string>
+    <string name="dialog_email_correo_electronico">Correo electrónico</string>
 
 
 </resources>
