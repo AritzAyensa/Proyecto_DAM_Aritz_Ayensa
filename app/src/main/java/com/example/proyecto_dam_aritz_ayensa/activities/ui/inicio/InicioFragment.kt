@@ -23,6 +23,7 @@ import com.example.proyecto_dam_aritz_ayensa.model.dao.UsuarioDAO
 import com.example.proyecto_dam_aritz_ayensa.model.service.ListaService
 import com.example.proyecto_dam_aritz_ayensa.model.service.UsuarioService
 import com.example.proyecto_dam_aritz_ayensa.utils.SessionManager
+import com.example.proyecto_dam_aritz_ayensa.utils.Utils
 import kotlinx.coroutines.launch
 
 class InicioFragment : Fragment() {
@@ -73,10 +74,16 @@ class InicioFragment : Fragment() {
     }
 
     private fun abrirLista(idLista : String) {
-        val bundle = Bundle().apply {
-            putString("idLista", idLista)
+        lifecycleScope.launch {
+            if (listaService.getListaById(idLista) == null){
+                Utils.mostrarMensaje(context, "Lista no encontrada")
+            }else{
+                val bundle = Bundle().apply {
+                    putString("idLista", idLista)
+                }
+                findNavController().navigate(R.id.action_inicioFragment_to_vistaListaFragment, bundle)
+            }
         }
-        findNavController().navigate(R.id.action_inicioFragment_to_vistaListaFragment, bundle)
     }
     private fun cargarBotones() {
         buttonRecargarMisListas = binding.inicioBtnRecargarListas

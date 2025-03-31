@@ -220,18 +220,14 @@ class UsuarioDAO {
      * @param onSuccess Función de callback que se ejecuta si la operación es exitosa. Recibe una lista de objetos Usuario.
      * @param onFailure Función de callback que se ejecuta si ocurre un error durante la operación.
      */
-    fun getAllUsers(onSuccess: (List<Usuario>) -> Unit, onFailure: (Exception) -> Unit) {
-        // Obtener todos los documentos de la colección "usuarios"
-        usuariosCollection.get()
-            .addOnSuccessListener { querySnapshot ->
-                // Convertir los documentos a objetos Usuario
-                val users = querySnapshot.toObjects(Usuario::class.java)
-                onSuccess(users)
-            }
-            .addOnFailureListener { exception ->
-                // Manejar errores y ejecutar el callback onFailure
-                onFailure(exception)
-            }
+    suspend fun getAllUsers(): List<Usuario> {
+        return try {
+            val querySnapshot = usuariosCollection.get().await()
+            val usuarios = querySnapshot.toObjects(Usuario::class.java)
+            usuarios
+        } catch (e: Exception) {
+            emptyList() // Devuelve una lista vacía en caso de error
+        }
     }
 
     /**
@@ -271,6 +267,30 @@ class UsuarioDAO {
             .update("idListasCompartidas", FieldValue.arrayUnion(idListaCompartida))
             .await()
     }
+
+
+    suspend fun eliminarLista(idLista: String, usuarioId: String) {
+        usuariosCollection
+            .document(usuarioId)
+            .update("idListas", FieldValue.arrayRemove(idLista))
+            .await() // Espera a que la operación termine
+    }
+
+    // Método para añadir lista compartida (versión mejorada)
+    suspend fun eliminarListaCompartida(idListaCompartida: String, usuarioId: String) {
+        usuariosCollection
+            .document(usuarioId)
+            .update("idListasCompartidas", FieldValue.arrayRemove(idListaCompartida))
+            .await()
+    }
+
+    suspend fun eliminarListaCompartidaDeUsuarios(idListaCompartida: String) {
+        val usuariosSnapshot = usuariosCollection.get().await()
+        for (document in usuariosSnapshot.documents) {
+            document.reference.update("idListasCompartidas", FieldValue.arrayRemove(idListaCompartida)).await()
+        }
+    }
+
 
     /**
      * Método: deleteUser

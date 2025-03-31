@@ -27,6 +27,10 @@ class ListaService(private val listaDAO: ListaDAO) {
         return listaDAO.saveLista(lista)
     }
 
+    suspend fun eliminarLista(idLista: String) {
+        return listaDAO.eliminarLista(idLista)
+    }
+
     suspend fun getListaById(idLista: String) : Lista? {
         return listaDAO.getListaById(idLista)
     }

@@ -1,6 +1,7 @@
 package com.example.proyecto_dam_aritz_ayensa.activities
 
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
 import android.text.Editable
@@ -103,7 +104,7 @@ class VistaListaFragment : Fragment() {
         buttonEliminarLista = binding.btnEliminarLista
         if (buttonEliminarLista != null) {
             buttonEliminarLista.setOnClickListener {
-                eliminarLista()
+                eliminarLista(requireContext())
             }
         }
     }
@@ -199,8 +200,52 @@ class VistaListaFragment : Fragment() {
         dialog.show()
     }
 
-        private fun eliminarLista() {
+        private fun eliminarLista(context: Context) {
+            val dialog = AlertDialog.Builder(context)
+                .setTitle("Eliminar lista")
+                .setNegativeButton("Cancelar", null)
+                .create()
+            if (lista.idCreador != userId){
+               dialog.setTitle("Eliminar lista de listas compartidas")
+            }
 
+
+            // Configurar manualmente el botón positivo
+            dialog.setButton(AlertDialog.BUTTON_POSITIVE, "Eliminar") { _, _ -> } // Empty listener
+
+            dialog.setOnShowListener {
+                val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                positiveButton.setOnClickListener {
+                    if(lista.idCreador == userId){
+                        lifecycleScope.launch {
+                            usuarioService.eliminarListaAUsuario(idLista, userId)
+                            usuarioService.eliminarListaCompartidaAUsuarios(idLista)
+                            listaService.eliminarLista(idLista)
+
+                            dialog.dismiss()
+                            requireActivity().supportFragmentManager.popBackStack()
+                        }
+                    }else{
+                        lifecycleScope.launch {
+                            usuarioService.eliminarListaCompartidaAUsuario(idLista, userId)
+
+                            dialog.dismiss()
+                            requireActivity().supportFragmentManager.popBackStack()
+
+                        }
+                    }
+                }
+            }
+
+            dialog.window?.apply {
+                setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
+                setLayout(
+                    (resources.displayMetrics.widthPixels * 0.85).toInt(),
+                    WindowManager.LayoutParams.WRAP_CONTENT
+                )
+            }
+
+            dialog.show()
         }
 
         private fun añadirProducto() {

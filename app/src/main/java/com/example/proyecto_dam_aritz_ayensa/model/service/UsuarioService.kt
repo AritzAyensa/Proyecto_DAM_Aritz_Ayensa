@@ -76,9 +76,9 @@ class UsuarioService(private val usuarioDAO: UsuarioDAO) {
      * @param onSuccess Función de callback que se ejecuta si la operación es exitosa. Recibe una lista de objetos Usuario.
      * @param onFailure Función de callback que se ejecuta si ocurre un error durante la operación.
      */
-    fun getAllUsers(onSuccess: (List<Usuario>) -> Unit, onFailure: (Exception) -> Unit) {
+    suspend fun getAllUsers() : List<Usuario> {
         // Delegar la operación al DAO
-        usuarioDAO.getAllUsers(onSuccess, onFailure)
+        return usuarioDAO.getAllUsers()
     }
 
     /**
@@ -101,6 +101,18 @@ class UsuarioService(private val usuarioDAO: UsuarioDAO) {
     suspend fun añadirListaCompartidaAUsuario(idListaCompartida: String, idUsuario: String) {
         // Delegar la operación al DAO
         usuarioDAO.añadirListaCompartida(idListaCompartida, idUsuario)
+    }
+
+
+    suspend fun eliminarListaAUsuario(idLista: String, idUsuario: String) {
+        usuarioDAO.eliminarLista(idLista, idUsuario)
+    }
+    suspend fun eliminarListaCompartidaAUsuario(idListaCompartida: String, idUsuario: String) {
+        usuarioDAO.eliminarListaCompartida(idListaCompartida, idUsuario)
+    }
+
+    suspend fun eliminarListaCompartidaAUsuarios(idListaCompartida: String) {
+        usuarioDAO.eliminarListaCompartidaDeUsuarios(idListaCompartida)
     }
 
     suspend fun getIdMisListasByIdUsuario(idUsuario: String) : List<String> {

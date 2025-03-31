@@ -9,6 +9,7 @@ import com.example.proyecto_dam_aritz_ayensa.model.entity.Usuario
 import com.example.proyecto_dam_aritz_ayensa.utils.HashUtil
 import com.example.proyecto_dam_aritz_ayensa.utils.SessionManager
 import com.google.firebase.firestore.FieldPath
+import com.google.firebase.firestore.FieldValue
 import kotlinx.coroutines.tasks.await
 
 
@@ -48,6 +49,15 @@ class ListaDAO {
         docRef.set(listaData).await()
         return docRef.id
     }
+
+    suspend fun eliminarLista(idLista: String) {
+        if (idLista.isNotBlank()) {
+            listasCollection.document(idLista).delete().await()
+        } else {
+            throw IllegalArgumentException("El ID de la lista no puede estar vacío")
+        }
+    }
+
 
     suspend fun getMisListasByUsuarioId(idListas: List<String>): List<Lista> {
         if (idListas.isEmpty()) return emptyList()
@@ -91,6 +101,8 @@ class ListaDAO {
             null
         }
     }
+
+
 
     /**
      * Método: getUser
