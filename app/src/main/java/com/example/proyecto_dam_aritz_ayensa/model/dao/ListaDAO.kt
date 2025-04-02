@@ -87,11 +87,12 @@ class ListaDAO {
             if (document.exists()) {
                 Lista(
                     id = document.getString("id") ?: "",
-                    titulo = document.getString("titulo") ?: "", // Corregido de "nombre" a "titulo"
+                    titulo = document.getString("titulo") ?: "",
                     descripcion = document.getString("descripcion") ?: "",
                     color = document.getString("color") ?: "#FFFFFF",
                     idCreador = document.getString("idCreador") ?: "",
-                    idsUsuariosCompartidos = document.get("idsUsuariosCompartidos") as? List<String> ?: emptyList()
+                    idsUsuariosCompartidos = document.get("idsUsuariosCompartidos") as? List<String> ?: emptyList(),
+                    idsProductos = document.get("idsProductos") as? List<String> ?: emptyList()
                 )
             } else {
                 null

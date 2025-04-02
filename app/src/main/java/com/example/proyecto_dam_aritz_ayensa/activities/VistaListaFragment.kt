@@ -19,9 +19,8 @@ import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.example.proyecto_dam_aritz_ayensa.R
-import com.example.proyecto_dam_aritz_ayensa.databinding.DialogEmailInputBinding
-import com.example.proyecto_dam_aritz_ayensa.databinding.FragmentCrearListaBinding
 import com.example.proyecto_dam_aritz_ayensa.databinding.FragmentVistaListaBinding
 import com.example.proyecto_dam_aritz_ayensa.model.dao.ListaDAO
 import com.example.proyecto_dam_aritz_ayensa.model.dao.UsuarioDAO
@@ -249,6 +248,10 @@ class VistaListaFragment : Fragment() {
         }
 
         private fun añadirProducto() {
+            val bundle = Bundle().apply {
+                putString("idLista", idLista)
+            }
+            findNavController().navigate(R.id.action_vista_listaFragment_to_añadir_productoFragment, bundle)
 
         }
 

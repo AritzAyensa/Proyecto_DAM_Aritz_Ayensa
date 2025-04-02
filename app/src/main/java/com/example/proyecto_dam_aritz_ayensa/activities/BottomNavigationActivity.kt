@@ -10,6 +10,9 @@ import androidx.navigation.ui.NavigationUI.setupWithNavController
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.proyecto_dam_aritz_ayensa.R
+import com.example.proyecto_dam_aritz_ayensa.activities.ui.cuenta.CuentaFragment
+import com.example.proyecto_dam_aritz_ayensa.activities.ui.inicio.InicioFragment
+import com.example.proyecto_dam_aritz_ayensa.activities.ui.notifications.NotificationsFragment
 import com.example.proyecto_dam_aritz_ayensa.databinding.ActivityBottomNavigationBinding
 
 class BottomNavigationActivity : AppCompatActivity() {
@@ -42,7 +45,6 @@ class BottomNavigationActivity : AppCompatActivity() {
         binding.navView.setupWithNavController(navController)
 
     }
-
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp() || super.onSupportNavigateUp()
     }

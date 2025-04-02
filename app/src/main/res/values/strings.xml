@@ -70,6 +70,15 @@
     <string name="vista_lista_btn_añadirProducto">Añadir producto</string>
     <string name="vista_lista_btn_eliminar_lista">Eliminar lista</string>
     <string name="dialog_email_correo_electronico">Correo electrónico</string>
+    <string name="title_añadir_producto">AñadirProducto\n</string>
+    <string name="title_crear_producto">CrearProducto</string>
+    <string name="anadir_producto_tv_titulo">Productos</string>
+    <string name="anadir_producto_btn_compartir_lista">Crear producto</string>
+    <string name="anadir_producto_btn_añadirProducto">Añadir</string>
+    <string name="crearTarea_btn_crear_producto">Guardar</string>
+    <string name="crear_producto_et_descripcion">Descripción</string>
+    <string name="crear_producto_et_titulo">Nombre</string>
+    <string name="crearTarea_tv_nuevo_producto">Nuevo producto</string>
 
 
 </resources>

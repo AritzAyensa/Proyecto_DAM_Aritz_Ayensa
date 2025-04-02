@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
 import com.example.proyecto_dam_aritz_ayensa.R
+import com.example.proyecto_dam_aritz_ayensa.activities.BottomNavigationActivity
 import com.example.proyecto_dam_aritz_ayensa.activities.CrearListaFragment
 import com.example.proyecto_dam_aritz_ayensa.adapters.ListaAdapter
 import com.example.proyecto_dam_aritz_ayensa.databinding.FragmentInicioBinding
@@ -68,6 +69,7 @@ class InicioFragment : Fragment() {
         cargarBotones()
         return binding.root
     }
+
 
     private fun abrirAñadirLista() {
         findNavController().navigate(R.id.action_inicioFragment_to_crearListaFragment)
