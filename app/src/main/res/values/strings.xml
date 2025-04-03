@@ -79,6 +79,7 @@
     <string name="crear_producto_et_descripcion">Descripción</string>
     <string name="crear_producto_et_titulo">Nombre</string>
     <string name="crearTarea_tv_nuevo_producto">Nuevo producto</string>
+    <string name="crear_producto_et_precio">Precio</string>
 
 
 </resources>

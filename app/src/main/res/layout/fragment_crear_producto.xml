@@ -49,7 +49,7 @@
 
                 <!-- Editar Texto de Título -->
                 <EditText
-                    android:id="@+id/crear_producto_et_titulo"
+                    android:id="@+id/crear_producto_et_nombre"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
@@ -66,36 +66,44 @@
                     android:maxLength="60"
                     android:textColor="@color/negro"/>
 
-                <!--<Button
-                    android:id="@+id/crear_producto_btn_color"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />-->
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/crearTarea_ly_elementosPrecioYcategoria"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="20sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/crearTarea_ly_elementosTitulo">
+
+                <!-- Editar Texto de Título -->
+                <EditText
+                    android:id="@+id/crear_producto_et_precio"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/edittext_border"
+                    android:layout_weight="1"
+                    android:hint="@string/crear_producto_et_precio"
+                    android:textColorHint="@color/negro"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textSize="18sp"
+                    android:autofillHints=""
+                    android:inputType="numberDecimal"
+                    android:maxLength="60"
+                    android:textColor="@color/negro"/>
+                <Spinner
+                    android:id="@+id/spinnerCategorias"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edittext_border"
+                    android:entries="@array/categorias_productos" />
 
             </LinearLayout>
-            <EditText
-                android:id="@+id/crear_producto_et_descripcion"
-                android:layout_width="match_parent"
-                android:layout_height="100sp"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
-                android:background="@drawable/edittext_border"
-                android:layout_weight="1"
-                android:hint="@string/crear_producto_et_descripcion"
-                android:textColorHint="@color/negro"
-                android:gravity="top|start"
-                android:inputType="textMultiLine"
-                android:minLines="1"
-                android:maxLines="6"
-                android:singleLine="true"
-                android:textSize="18sp"
-                android:textColor="@color/negro"
-                android:autofillHints=""
-                android:layout_marginTop="20sp"
-                app:layout_constraintTop_toBottomOf="@id/crearTarea_ly_elementosTitulo"
-                tools:ignore="MissingConstraints" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <Button

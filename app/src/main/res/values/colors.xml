@@ -8,4 +8,5 @@
     <color name="gris">#ffffff</color>
 
     <color name="gris_oscuro">#525050</color>
+    <color name="spinner_text">#FF000000</color>
 </resources>

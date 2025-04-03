@@ -3,6 +3,7 @@ package com.example.proyecto_dam_aritz_ayensa.model.dao
 
 import android.util.Log
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Lista
+import com.example.proyecto_dam_aritz_ayensa.model.entity.Producto
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Usuario
@@ -13,7 +14,7 @@ import com.google.firebase.firestore.FieldValue
 import kotlinx.coroutines.tasks.await
 
 
-class ListaDAO {
+class ProductoDAO {
 
     // Instancia de Firestore para interactuar con la base de datos
     private val db = FirebaseFirestore.getInstance()
@@ -22,7 +23,7 @@ class ListaDAO {
     private val auth = FirebaseAuth.getInstance()
 
     // Referencia a la colección "usuarios" en Firestore
-    private val listasCollection = db.collection("listas")
+    private val productosCollection = db.collection("productos")
 
 
     /**
@@ -35,22 +36,22 @@ class ListaDAO {
      * @param onSuccess Función de callback que se ejecuta si la operación es exitosa.
      * @param onFailure Función de callback que se ejecuta si ocurre un error durante la operación.
      */
-    suspend fun saveLista(lista: Lista): String {
-        val docRef = listasCollection.document()
+    suspend fun saveProducto(producto: Producto): String {
+        val docRef = productosCollection.document()
 
-        val listaData = hashMapOf(
+        val productoData = hashMapOf(
             "id" to docRef.id,
-            "titulo" to lista.titulo,
-            "descripcion" to lista.descripcion,
-            "color" to lista.color,
-            "idCreador" to lista.idCreador
+            "nombre" to producto.nombre,
+            "precioAproximado" to producto.precioAproximado,
+            "categoria" to producto.categoria,
+            "idCreador" to producto.idCreador
         )
-        Log.e("ListaDAO", "Lista creada")
-        docRef.set(listaData).await()
+        Log.e("ProductoDAO", "Producto creado")
+        docRef.set(productoData).await()
         return docRef.id
     }
 
-    suspend fun eliminarLista(idLista: String) {
+    /*suspend fun eliminarLista(idLista: String) {
         if (idLista.isNotBlank()) {
             listasCollection.document(idLista).delete().await()
         } else {
@@ -101,13 +102,8 @@ class ListaDAO {
             Log.e("Firestore", "Error getting lista", e)
             null
         }
-    }
-    suspend fun añadirProducto(idProducto: String, idLista: String) {
-        listasCollection
-            .document(idLista)
-            .update("idProductos", FieldValue.arrayUnion(idProducto))
-            .await()
-    }
+    }*/
+
 
 
     /**
