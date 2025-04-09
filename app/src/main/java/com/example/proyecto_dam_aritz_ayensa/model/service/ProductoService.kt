@@ -15,6 +15,11 @@ class ProductoService(private val productoDAO: ProductoDAO) {
 
     }
 
+    suspend fun getProductosByIds(ids: List<String>): List<Producto> {
+        return productoDAO.getProductosByIds(ids)
+
+    }
+
     /*suspend fun eliminarLista(idLista: String) {
         return listaDAO.eliminarLista(idLista)
     }

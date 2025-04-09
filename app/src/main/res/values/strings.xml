@@ -80,6 +80,10 @@
     <string name="crear_producto_et_titulo">Nombre</string>
     <string name="crearTarea_tv_nuevo_producto">Nuevo producto</string>
     <string name="crear_producto_et_precio">Precio</string>
+    <string name="crear_producto_et_prioridad">Prioridad</string>
+    <string name="crearTarea_btn_escanear_codigo">Escanear codigo</string>
+    <string name="item_producto_tv_nombre_producto">Nombre producto</string>
+    <string name="item_producto_tv_precio">0€</string>
 
 
 </resources>

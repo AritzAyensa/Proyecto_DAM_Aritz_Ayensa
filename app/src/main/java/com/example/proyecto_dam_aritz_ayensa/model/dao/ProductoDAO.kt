@@ -44,13 +44,30 @@ class ProductoDAO {
             "nombre" to producto.nombre,
             "precioAproximado" to producto.precioAproximado,
             "categoria" to producto.categoria,
+            "prioridad" to producto.prioridad,
             "idCreador" to producto.idCreador
         )
         Log.e("ProductoDAO", "Producto creado")
         docRef.set(productoData).await()
         return docRef.id
     }
+    suspend fun getProductosByIds(idProductos: List<String>): List<Producto> {
+        if (idProductos.isEmpty()) return emptyList()
 
+        val productos = mutableListOf<Producto>()
+        val chunks = idProductos.chunked(10)
+
+        for (chunk in chunks) {
+            val querySnapshot = productosCollection
+                .whereIn(FieldPath.documentId(), chunk)
+                .get()
+                .await()
+
+            productos.addAll(querySnapshot.toObjects(Producto::class.java))
+        }
+
+        return productos
+    }
     /*suspend fun eliminarLista(idLista: String) {
         if (idLista.isNotBlank()) {
             listasCollection.document(idLista).delete().await()

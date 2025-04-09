@@ -14,30 +14,30 @@
         android:layout_height="wrap_content">
 
         <!-- Campo de color -->
-        <TextView
-            android:id="@+id/colorLista"
+        <!--<TextView
+            android:id="@+id/colorProducto"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:background="@drawable/btn_circular"/>
+            android:background="@drawable/btn_circular"/>-->
 
         <!-- Campo de nombre de la tarea -->
         <TextView
-            android:id="@+id/nombreLista"
+            android:id="@+id/nombreProducto"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
             android:layout_weight="1"
-            android:text="@string/item_lista_tv_titulo_lista"
+            android:text="@string/item_producto_tv_nombre_producto"
             android:textColor="@color/negro"
             android:layout_gravity="center_vertical" />
 
         <!-- Campo de hora inicio -->
         <TextView
-            android:id="@+id/numeroItems"
+            android:id="@+id/precioProducto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/item_lista_tv_elementos"
-            android:textSize="14sp"
+            android:text="@string/item_producto_tv_precio"
+            android:textSize="20sp"
 
             android:textColor="@color/negro"
             android:layout_gravity="center_vertical" />

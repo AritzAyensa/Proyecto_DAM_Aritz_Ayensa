@@ -1,10 +1,8 @@
 package com.example.proyecto_dam_aritz_ayensa.activities
 
 import android.annotation.SuppressLint
-import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
-import android.text.Editable
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -14,25 +12,28 @@ import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.proyecto_dam_aritz_ayensa.R
+import com.example.proyecto_dam_aritz_ayensa.adapters.ProductoAdapter
 import com.example.proyecto_dam_aritz_ayensa.databinding.FragmentVistaListaBinding
 import com.example.proyecto_dam_aritz_ayensa.model.dao.ListaDAO
+import com.example.proyecto_dam_aritz_ayensa.model.dao.ProductoDAO
 import com.example.proyecto_dam_aritz_ayensa.model.dao.UsuarioDAO
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Lista
-import com.example.proyecto_dam_aritz_ayensa.model.entity.Usuario
+import com.example.proyecto_dam_aritz_ayensa.model.entity.Producto
 import com.example.proyecto_dam_aritz_ayensa.model.service.ListaService
+import com.example.proyecto_dam_aritz_ayensa.model.service.ProductoService
 import com.example.proyecto_dam_aritz_ayensa.model.service.UsuarioService
 import com.example.proyecto_dam_aritz_ayensa.utils.SessionManager
 import com.example.proyecto_dam_aritz_ayensa.utils.Utils
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class VistaListaFragment : Fragment() {
@@ -45,15 +46,21 @@ class VistaListaFragment : Fragment() {
     lateinit var buttonCompartirLista : Button
     lateinit var buttonEliminarLista : Button
 
+    private lateinit var recyclerViewProductos: RecyclerView
+    private lateinit var adapter: ProductoAdapter
+
 
     private lateinit var tvTituloLista: TextView
     private lateinit var lista: Lista
+    private lateinit var producto: Producto
 
     private lateinit var idLista: String
     private lateinit var userId : String
 
 
     private lateinit var listaService: ListaService
+    private lateinit var productoService: ProductoService
+    private var listaProductos: List<Producto> = emptyList()
     private lateinit var usuarioService: UsuarioService
     private lateinit var sessionManager: SessionManager
     override fun onCreateView(
@@ -64,6 +71,7 @@ class VistaListaFragment : Fragment() {
         _binding = FragmentVistaListaBinding.inflate(inflater, container, false)
 
         listaService = ListaService(ListaDAO())
+        productoService = ProductoService(ProductoDAO())
         usuarioService = UsuarioService(UsuarioDAO())
         sessionManager = SessionManager(requireContext())
         userId = sessionManager.getUserId().toString()
@@ -73,6 +81,7 @@ class VistaListaFragment : Fragment() {
             idLista = it.getString("idLista").toString()
         }
 
+        recyclerViewProductos = binding.recyclerProductos
         tvTituloLista = binding.vistaListaTvTitulo
 
         cargarLista()
@@ -255,18 +264,80 @@ class VistaListaFragment : Fragment() {
 
         }
 
-        private fun cargarLista() {
+        /*private fun cargarLista() {
             lifecycleScope.launch {
                 lista = listaService.getListaById(idLista)!!
                 if (lista.idCreador == userId){
                     buttonCompartirLista.visibility = View.VISIBLE
                 }
                 actualizarVista()
+                listaProductos = productoService.getProductosByIds(lista.idProductos)
+            }
+            adapter = ProductoAdapter(listaProductos) { producto ->
+                abrirProducto(producto.id)
+            }
+
+        }*/
+        private fun cargarLista() {
+            lifecycleScope.launch {
+                try {
+                    // 1. Evitar !! (operador no-nulo inseguro)
+                    val listaObtenida = listaService.getListaById(idLista) ?: run {
+                        Utils.mostrarMensaje(context, "Lista no encontrada")
+                        return@launch
+                    }
+
+                    lista = listaObtenida
+
+                    // 2. Actualizar UI en el hilo principal
+                    withContext(Dispatchers.Main) {
+                        buttonCompartirLista.visibility = if (lista.idCreador == userId) View.VISIBLE else View.GONE
+                        actualizarVista()
+                    }
+
+                    // 3. Obtener productos de forma asíncrona
+                    val productos = productoService.getProductosByIds(lista.idProductos).sorted()
+
+                    // 4. Actualizar adapter en el hilo principal
+                    withContext(Dispatchers.Main) {
+                        if (::adapter.isInitialized) { // Si ya existe
+                            adapter.actualizarProductos(productos)
+                        } else {
+                            adapter = ProductoAdapter(productos) { producto ->
+                                abrirProducto(producto.id)
+                            }
+                            recyclerViewProductos.apply {
+                                layoutManager = LinearLayoutManager(context)
+                                adapter = this@VistaListaFragment.adapter
+                            }
+                        }
+                    }
+
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        Utils.mostrarMensaje(context, "Error: ${e.message}")
+                    }
+                }
             }
         }
+    private fun abrirProducto(idProducto : String) {
+        /*lifecycleScope.launch {
+            if (listaService.getListaById(idLista) == null){
+                Utils.mostrarMensaje(context, "Lista no encontrada")
+            }else{
+                val bundle = Bundle().apply {
+                    putString("idLista", idLista)
+                }
+                findNavController().navigate(R.id.action_inicioFragment_to_vistaListaFragment, bundle)
+            }
+        }*/
+    }
 
         private fun actualizarVista() {
             tvTituloLista.text = lista.titulo
+        }
+
+        private fun actualizarLista() {
         }
 
         override fun onDestroyView() {

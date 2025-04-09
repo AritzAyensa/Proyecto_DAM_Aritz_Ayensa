@@ -9,12 +9,13 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="100sp"
-        android:paddingEnd="20sp"
         android:paddingStart="20sp"
         android:paddingTop="20sp"
+        android:paddingEnd="20sp"
+        android:paddingBottom="100sp"
 
         >
+
         <TextView
             android:id="@+id/crear_producto_tv_mis_productos"
             android:layout_width="wrap_content"
@@ -25,16 +26,16 @@
 
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <!-- Contenedor de Titulo -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/crearTarea_cl_campos"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="25dp"
             app:layout_constraintTop_toBottomOf="@id/crear_producto_tv_mis_productos">
 
             <!-- Contenedor para los elementos de Título -->
@@ -54,26 +55,27 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
-                    android:background="@drawable/edittext_border"
                     android:layout_weight="1"
-                    android:hint="@string/crear_producto_et_titulo"
-                    android:textColorHint="@color/negro"
-                    android:maxLines="1"
-                    android:singleLine="true"
-                    android:textSize="18sp"
                     android:autofillHints=""
+                    android:background="@drawable/edittext_border"
+                    android:hint="@string/crear_producto_et_titulo"
                     android:inputType="text"
                     android:maxLength="60"
-                    android:textColor="@color/negro"/>
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textColor="@color/negro"
+                    android:textColorHint="@color/negro"
+                    android:textSize="18sp" />
 
             </LinearLayout>
+
             <LinearLayout
-                android:id="@+id/crearTarea_ly_elementosPrecioYcategoria"
+                android:id="@+id/crearTarea_ll_elementosPrecioYcategoria"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="20sp"
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginTop="20sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/crearTarea_ly_elementosTitulo">
 
@@ -84,52 +86,101 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
-                    android:background="@drawable/edittext_border"
                     android:layout_weight="1"
-                    android:hint="@string/crear_producto_et_precio"
-                    android:textColorHint="@color/negro"
-                    android:maxLines="1"
-                    android:singleLine="true"
-                    android:textSize="18sp"
                     android:autofillHints=""
+                    android:background="@drawable/edittext_border"
+                    android:hint="@string/crear_producto_et_precio"
                     android:inputType="numberDecimal"
                     android:maxLength="60"
-                    android:textColor="@color/negro"/>
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textColor="@color/negro"
+                    android:textColorHint="@color/negro"
+                    android:textSize="18sp" />
+
                 <Spinner
                     android:id="@+id/spinnerCategorias"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginRight="10sp"
+                    android:background="@color/blanco"
+                    android:entries="@array/categorias_productos"
+                    android:textColor="@color/negro" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/crearTarea_ll_prioridad"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20sp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/crearTarea_ll_elementosPrecioYcategoria">
+
+                <!-- Editar Texto de Título -->
+                <EditText
+                    android:id="@+id/crear_producto_et_prioridad"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_weight="1"
+                    android:autofillHints=""
                     android:background="@drawable/edittext_border"
-                    android:entries="@array/categorias_productos" />
+                    android:hint="@string/crear_producto_et_prioridad"
+                    android:inputType="numberDecimal"
+                    android:maxLength="60"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textColor="@color/negro"
+                    android:textColorHint="@color/negro"
+                    android:textSize="18sp" />
 
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <Button
+            android:id="@+id/btn_escanear_codigo"
             style="@style/ButtonAccept"
-            android:id="@+id/btn_crear_producto"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
+            android:layout_marginBottom="50dp"
+            android:onClick="crearProducto"
+            android:text="@string/crearTarea_btn_escanear_codigo"
+            app:layout_constraintBottom_toTopOf="@id/crear_producto_btn_cancelar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/crear_producto_btn_cancelar"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/btn_crear_producto"
+            style="@style/ButtonAccept"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
-            android:layout_marginEnd="40dp"
+            android:width="150dp"
             android:onClick="crearProducto"
             android:text="@string/crearTarea_btn_crear_producto"
-            app:layout_constraintBottom_toTopOf="@id/crear_producto_btn_cancelar"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/crear_producto_btn_cancelar" />
 
         <!-- Bóton de Cancelar que te lleva a la ventana Login-->
         <Button
-            style="@style/ButtonCancel"
             android:id="@+id/crear_producto_btn_cancelar"
-            android:layout_width="match_parent"
+            style="@style/ButtonCancel"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
             android:layout_marginTop="5dp"
-            android:layout_marginEnd="40dp"
-            android:text="@string/crearTarea_btn_cancelar"
+            android:width="150dp"
             android:onClick="goToCancelar"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            android:text="@string/crearTarea_btn_cancelar"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_crear_producto"
+            app:layout_constraintStart_toStartOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

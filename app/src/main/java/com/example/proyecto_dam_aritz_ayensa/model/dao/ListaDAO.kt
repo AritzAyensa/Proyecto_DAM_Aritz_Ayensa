@@ -5,9 +5,6 @@ import android.util.Log
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Lista
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.example.proyecto_dam_aritz_ayensa.model.entity.Usuario
-import com.example.proyecto_dam_aritz_ayensa.utils.HashUtil
-import com.example.proyecto_dam_aritz_ayensa.utils.SessionManager
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import kotlinx.coroutines.tasks.await
@@ -92,7 +89,7 @@ class ListaDAO {
                     color = document.getString("color") ?: "#FFFFFF",
                     idCreador = document.getString("idCreador") ?: "",
                     idsUsuariosCompartidos = document.get("idsUsuariosCompartidos") as? List<String> ?: emptyList(),
-                    idsProductos = document.get("idsProductos") as? List<String> ?: emptyList()
+                    idProductos = document.get("idProductos") as? List<String> ?: emptyList()
                 )
             } else {
                 null

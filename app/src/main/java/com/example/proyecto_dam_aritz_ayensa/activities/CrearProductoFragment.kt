@@ -40,6 +40,7 @@ class CrearProductoFragment : Fragment() {
     private lateinit var spinner: Spinner
     private lateinit var inputNombre: EditText
     private lateinit var inputPrecio: EditText
+    private lateinit var inputPrioridad: EditText
 
     private lateinit var listaService: ListaService
     private lateinit var usuarioService: UsuarioService
@@ -62,9 +63,11 @@ class CrearProductoFragment : Fragment() {
         sessionManager = SessionManager(requireContext())
         userId = sessionManager.getUserId().toString()
 
+
         spinner = binding.spinnerCategorias
         inputNombre = binding.crearProductoEtNombre
         inputPrecio = binding.crearProductoEtPrecio
+        inputPrioridad = binding.crearProductoEtPrioridad
 
         //Obtener el id de la lista
         arguments?.let {
@@ -90,11 +93,13 @@ class CrearProductoFragment : Fragment() {
             val textNombre = inputNombre.text.toString().trim()
 
             val precio: Double = inputPrecio.text.toString().toDouble()
+            val prioridad: Double = inputPrioridad.text.toString().toDouble()
 
-            if (textNombre.isNotEmpty() && precio > 0) {
+            if (textNombre.isNotEmpty() && precio > 0  && prioridad > 0) {
                 val producto = Producto()
                 producto.nombre = textNombre
                 producto.precioAproximado = precio
+                producto.prioridad = prioridad
                 producto.categoria = spinner.selectedItem.toString()
                 producto.idCreador = userId
 
