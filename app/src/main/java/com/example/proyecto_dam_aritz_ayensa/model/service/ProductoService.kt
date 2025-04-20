@@ -20,6 +20,15 @@ class ProductoService(private val productoDAO: ProductoDAO) {
 
     }
 
+    suspend fun getAllCodigosBarras(): List<String> {
+        return productoDAO.getAllCodigosBarras()
+
+    }
+    suspend fun getProductoPorCodigoBarras(codigoBarras: String): Producto? {
+        return productoDAO.getProductoPorCodigoBarras(codigoBarras)
+
+    }
+
     /*suspend fun eliminarLista(idLista: String) {
         return listaDAO.eliminarLista(idLista)
     }

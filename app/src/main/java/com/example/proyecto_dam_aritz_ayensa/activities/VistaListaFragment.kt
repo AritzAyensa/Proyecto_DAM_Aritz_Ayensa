@@ -31,6 +31,9 @@ import com.example.proyecto_dam_aritz_ayensa.model.service.ProductoService
 import com.example.proyecto_dam_aritz_ayensa.model.service.UsuarioService
 import com.example.proyecto_dam_aritz_ayensa.utils.SessionManager
 import com.example.proyecto_dam_aritz_ayensa.utils.Utils
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanIntentResult
+import com.journeyapps.barcodescanner.ScanOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -256,13 +259,70 @@ class VistaListaFragment : Fragment() {
             dialog.show()
         }
 
+
         private fun añadirProducto() {
+            val dialog = AlertDialog.Builder(requireContext() , R.style.MyDialogTheme)
+                .setTitle("Seleccionar acción")
+                .setPositiveButton("Escanear código") { dialog, _ ->
+                    escanearProducto()
+                    dialog.dismiss()
+                }
+                .setNeutralButton("Buscar producto") { dialog, _ ->
+                    abrirAñadirProducto()
+                    dialog.dismiss()
+                }
+                .create()
+
+            dialog.show()
+        }
+        private fun abrirAñadirProducto() {
             val bundle = Bundle().apply {
                 putString("idLista", idLista)
             }
             findNavController().navigate(R.id.action_vista_listaFragment_to_añadir_productoFragment, bundle)
 
         }
+
+    private fun escanearProducto() {
+        try{
+            val options = ScanOptions()
+            options.setPrompt("Escanea un codigo de barras")
+            options.setOrientationLocked(false)
+            barcodeLauncher.launch(options)
+        }catch (e : Error){
+            Utils.mostrarMensaje(requireContext(), e.message.toString())
+        }
+    }
+    private val barcodeLauncher = registerForActivityResult<ScanOptions, ScanIntentResult>(
+        ScanContract()
+    ) { result: ScanIntentResult ->
+        if (result.contents == null) {
+            Utils.mostrarMensaje(requireContext(), "Cancelado")
+        } else {
+            lifecycleScope.launch {
+                val codigoEscaneado = result.contents.toString()
+                if (!codigoEscaneado.matches(Regex("\\d+"))) {
+                    Utils.mostrarMensaje(requireContext(), "Código no válido")
+                }else{
+                    val producto = productoService.getProductoPorCodigoBarras(codigoEscaneado)
+                    val lista = listaService.getListaById(idLista)
+                    if(producto != null){
+                        if (lista != null) {
+                            if(lista.idProductos.contains(producto.id)) {
+                                Utils.mostrarMensaje(requireContext(), "La lista ya contiene " + producto.nombre)
+                            }else{
+                                listaService.añadirProductoALista(producto.id, idLista)
+                                Utils.mostrarMensaje(requireContext(), "Producto añadido: " + producto.nombre)
+                            }
+                        }
+                    }else{
+                        Utils.mostrarMensaje(requireContext(), "Producto no encontrado: " + codigoEscaneado)
+                    }
+                }
+            }
+
+        }
+    }
 
         /*private fun cargarLista() {
             lifecycleScope.launch {

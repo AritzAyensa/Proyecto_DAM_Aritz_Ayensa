@@ -17,4 +17,10 @@
         <item name="android:textColor">@color/blanco</item>
     </style>
 
+    <style name="MyDialogTheme" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="buttonBarPositiveButtonStyle">@style/ButtonAccept</item>
+        <item name="buttonBarNeutralButtonStyle">@style/ButtonAccept</item>
+        <item name="buttonBarNegativeButtonStyle">@style/ButtonCancel</item>
+    </style>
+
 </resources>

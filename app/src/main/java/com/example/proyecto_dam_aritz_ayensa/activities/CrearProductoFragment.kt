@@ -2,18 +2,14 @@ package com.example.proyecto_dam_aritz_ayensa.activities
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
-import com.example.proyecto_dam_aritz_ayensa.R
-import com.example.proyecto_dam_aritz_ayensa.databinding.FragmentAnadirProductoBinding
-import com.example.proyecto_dam_aritz_ayensa.databinding.FragmentCrearListaBinding
 import com.example.proyecto_dam_aritz_ayensa.databinding.FragmentCrearProductoBinding
 import com.example.proyecto_dam_aritz_ayensa.model.dao.ListaDAO
 import com.example.proyecto_dam_aritz_ayensa.model.dao.ProductoDAO
@@ -25,8 +21,10 @@ import com.example.proyecto_dam_aritz_ayensa.model.service.ProductoService
 import com.example.proyecto_dam_aritz_ayensa.model.service.UsuarioService
 import com.example.proyecto_dam_aritz_ayensa.utils.SessionManager
 import com.example.proyecto_dam_aritz_ayensa.utils.Utils
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanIntentResult
+import com.journeyapps.barcodescanner.ScanOptions
 import kotlinx.coroutines.launch
-import java.text.DecimalFormat
 
 
 class CrearProductoFragment : Fragment() {
@@ -36,6 +34,7 @@ class CrearProductoFragment : Fragment() {
 
     private lateinit var idLista: String
     private lateinit var userId : String
+    private var codigoBarras : String = ""
 
     private lateinit var spinner: Spinner
     private lateinit var inputNombre: EditText
@@ -49,6 +48,8 @@ class CrearProductoFragment : Fragment() {
 
 
     private lateinit var buttonCrearProducto : Button
+    private lateinit var buttonEscanearProducto : Button
+    private lateinit var buttonCancelar : Button
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -86,6 +87,18 @@ class CrearProductoFragment : Fragment() {
                 crearProducto()
             }
         }
+        buttonEscanearProducto = binding.btnEscanearCodigo
+        if (buttonEscanearProducto != null) {
+            buttonEscanearProducto.setOnClickListener {
+                escanearProducto()
+            }
+        }
+        buttonCancelar = binding.crearProductoBtnCancelar
+        if (buttonCancelar != null) {
+            buttonCancelar.setOnClickListener {
+                cancelar()
+            }
+        }
     }
 
     private fun crearProducto() {
@@ -102,10 +115,11 @@ class CrearProductoFragment : Fragment() {
                 producto.prioridad = prioridad
                 producto.categoria = spinner.selectedItem.toString()
                 producto.idCreador = userId
+                producto.codigoBarras = codigoBarras
 
                 lifecycleScope.launch {
                     try {
-                        var idProducto: String = productoService.saveProducto(producto).toString()
+                        var idProducto: String = productoService.saveProducto(producto)
                         listaService.añadirProductoALista(idProducto, idLista)
                         cancelar()
                         Utils.mostrarMensaje(requireContext(), "Producto creado correctamente")
@@ -119,6 +133,40 @@ class CrearProductoFragment : Fragment() {
             }
         }catch (e : Error){
             Utils.mostrarMensaje(requireContext(), e.message.toString())
+        }
+    }
+
+    private fun escanearProducto() {
+        try{
+            val options = ScanOptions()
+            options.setPrompt("Escanea un codigo de barras")
+            options.setOrientationLocked(false)
+            barcodeLauncher.launch(options)
+        }catch (e : Error){
+            Utils.mostrarMensaje(requireContext(), e.message.toString())
+        }
+    }
+    private val barcodeLauncher = registerForActivityResult<ScanOptions, ScanIntentResult>(
+        ScanContract()
+    ) { result: ScanIntentResult ->
+        if (result.contents == null) {
+            Utils.mostrarMensaje(requireContext(), "Cancelado")
+        } else {
+            lifecycleScope.launch {
+                val codigosBarras = productoService.getAllCodigosBarras()
+                val codigoEscaneado = result.contents.toString()
+                if (!codigoEscaneado.matches(Regex("\\d+"))) {
+                    Utils.mostrarMensaje(requireContext(), "Código no válido")
+                }else{
+                    if(! codigosBarras.contains(codigoEscaneado)){
+                        codigoBarras = codigoEscaneado
+                        Utils.mostrarMensaje(requireContext(), "Codigo escaneado: " + codigoEscaneado)
+                    }else{
+                        Utils.mostrarMensaje(requireContext(), "Otro producto tiene este codigo: " + codigoEscaneado)
+                    }
+                }
+            }
+
         }
     }
 

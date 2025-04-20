@@ -44,6 +44,7 @@ class ProductoDAO {
             "nombre" to producto.nombre,
             "precioAproximado" to producto.precioAproximado,
             "categoria" to producto.categoria,
+            "codigoBarras" to producto.codigoBarras,
             "prioridad" to producto.prioridad,
             "idCreador" to producto.idCreador
         )
@@ -67,6 +68,38 @@ class ProductoDAO {
         }
 
         return productos
+    }
+    suspend fun getProductoPorCodigoBarras(codigoBarras: String): Producto? {
+        return try {
+            val querySnapshot = productosCollection
+                .whereEqualTo("codigoBarras", codigoBarras)
+                .limit(1)  // Optimización ya que los códigos deberían ser únicos
+                .get()
+                .await()
+
+            if (!querySnapshot.isEmpty) {
+                querySnapshot.documents.first().toObject(Producto::class.java)
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            Log.e("Firestore", "Error al buscar producto por código", e)
+            null
+        }
+    }
+
+    suspend fun getAllCodigosBarras(): List<String> {
+        try {
+            // Obtener todos los documentos de la colección "productos"
+            val querySnapshot = productosCollection.get().await()
+
+            // Mapear cada documento a su código de barras y filtrar nulos (si aplica)
+            return querySnapshot.toObjects(Producto::class.java).mapNotNull { it.codigoBarras }
+
+        } catch (e: Exception) {
+            Log.e("ProductoDAO", "Error al obtener códigos de barras", e)
+            return emptyList()
+        }
     }
     /*suspend fun eliminarLista(idLista: String) {
         if (idLista.isNotBlank()) {
