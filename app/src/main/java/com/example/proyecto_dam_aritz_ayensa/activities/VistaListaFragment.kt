@@ -162,7 +162,6 @@ class VistaListaFragment : Fragment() {
                                 lifecycleScope.launch {
                                     if (usuario != null) {
                                         if(usuario.idListasCompartidas.contains(idLista)){
-                                            Log.i("USUARIO", "ASDASDASD")
                                             textoError.visibility = View.VISIBLE
                                             textoError.text = "Ya has compartido la lista con este usuario anteriormente"
                                             inputEmail.requestFocus()

@@ -69,6 +69,20 @@ class ProductoDAO {
 
         return productos
     }
+
+    suspend fun getProductos(): List<Producto> {
+        return try {
+            val querySnapshot = productosCollection
+                .get()
+                .await()
+
+            querySnapshot.toObjects(Producto::class.java)
+
+        } catch (e: Exception) {
+            Log.e("Firestore", "Error al obtener productos", e)
+            emptyList()
+        }
+    }
     suspend fun getProductoPorCodigoBarras(codigoBarras: String): Producto? {
         return try {
             val querySnapshot = productosCollection
