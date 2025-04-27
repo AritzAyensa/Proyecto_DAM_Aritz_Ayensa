@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Button
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -28,6 +29,9 @@ import com.example.proyecto_dam_aritz_ayensa.utils.Utils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import androidx.core.widget.addTextChangedListener
+
+
 
 class AnadirProductoFragment : Fragment() {
     private var _binding: FragmentAnadirProductoBinding? = null
@@ -37,11 +41,14 @@ class AnadirProductoFragment : Fragment() {
     private lateinit var idLista: String
     private lateinit var userId : String
 
-
+    private val categorias = listOf("Fruta", "Verdura", "Carne", "Pescado","Limpieza","Higiene", "Otros")
     private lateinit var listaService: ListaService
     private lateinit var usuarioService: UsuarioService
     private lateinit var productoService: ProductoService
     private lateinit var sessionManager: SessionManager
+    private var productos: List<Producto> = emptyList()
+    private var texto: String = ""
+    private var categoriaSeleccionada: String = ""
 
     private lateinit var recyclerViewProductos: RecyclerView
 
@@ -66,7 +73,8 @@ class AnadirProductoFragment : Fragment() {
         arguments?.let {
             idLista = it.getString("idLista").toString()
         }
-
+        configurarDropdownMenu()
+        configurarBuscador()
         cargarBotones()
         cargarProductos()
         return binding.root
@@ -77,7 +85,7 @@ class AnadirProductoFragment : Fragment() {
             try {
                 // Cargar lista actual
                 lista = listaService.getListaById(idLista)!!
-                val productos = productoService.getProductos().sorted()
+                productos = productoService.getProductos().sorted()
 
                 withContext(Dispatchers.Main) {
                     if (::adapter.isInitialized) {
@@ -136,12 +144,45 @@ class AnadirProductoFragment : Fragment() {
             }
         }
 
-        buttonAñadirProducto = binding.btnAnadirProducto
+        /*buttonAñadirProducto = binding.btnAnadirProducto
         if (buttonAñadirProducto != null) {
             buttonAñadirProducto.setOnClickListener {
             }
+        }*/
+    }
+    private fun configurarDropdownMenu() {
+
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, categorias)
+        val autoCompleteTextView = binding.autoCompleteTextView
+        autoCompleteTextView.setAdapter(adapter)
+
+        autoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
+
+            categoriaSeleccionada = parent.getItemAtPosition(position) as String
+            buscarProductos()
         }
     }
+
+    private fun configurarBuscador() {
+        val etBuscar = binding.etBuscarProducto
+        etBuscar.addTextChangedListener { editable ->
+            texto = editable.toString()
+            buscarProductos( )
+        }
+    }
+
+
+    private fun buscarProductos() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            productos = productoService.getProductosByNombreYCategoria(texto, categoriaSeleccionada).sorted()
+            withContext(Dispatchers.Main) {
+                adapter.actualizarProductos(productos)
+            }
+        }
+    }
+
+
+
 
     private fun goToCrearProducto() {
         val bundle = Bundle().apply {

@@ -28,6 +28,38 @@
 
             tools:ignore="MissingConstraints" />
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/filtros_ll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/anadir_producto_tv_titulo"
+            tools:ignore="MissingConstraints"
+            >
+            <EditText
+                android:id="@+id/etBuscarProducto"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:hint="Buscar producto"
+                android:maxLength="100"
+                />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/categorias"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="150dp"
+                android:textSize="15sp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent">
+                <AutoCompleteTextView
+                    android:id="@+id/autoCompleteTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="10sp"
+                    android:hint="Categoría" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_productos"
             android:layout_width="match_parent"
@@ -36,7 +68,7 @@
             android:background="@drawable/edittext_border"
             app:layout_constraintEnd_toEndOf="parent"
             app:flow_maxElementsWrap="4"
-            app:layout_constraintTop_toBottomOf="@id/anadir_producto_tv_titulo"/>
+            app:layout_constraintTop_toBottomOf="@id/filtros_ll"/>
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -55,14 +87,14 @@
                 style="@style/ButtonAccept"
                 app:layout_constraintStart_toStartOf="parent"
                 />
-            <Button
+            <!--<Button
                 android:id="@+id/btnAnadirProducto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/anadir_producto_btn_añadirProducto"
                 app:layout_constraintEnd_toEndOf="parent"
                 style="@style/ButtonAccept"
-                />
+                />-->
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

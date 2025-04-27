@@ -23,6 +23,11 @@ class ProductoService(private val productoDAO: ProductoDAO) {
 
     }
 
+    suspend fun getProductosByNombreYCategoria(nombre : String, categoria : String): List<Producto> {
+        return productoDAO.getProductosByNombreYCategoria(nombre, categoria)
+
+    }
+
     suspend fun getAllCodigosBarras(): List<String> {
         return productoDAO.getAllCodigosBarras()
 

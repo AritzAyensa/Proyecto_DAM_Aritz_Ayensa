@@ -70,6 +70,33 @@ class ProductoDAO {
         return productos
     }
 
+    suspend fun getProductosByNombreYCategoria(nombre: String, categoria: String): List<Producto> {
+        return try {
+            val query = if (categoria.isNotBlank()) {
+                productosCollection.whereEqualTo("categoria", categoria)
+            } else {
+                productosCollection
+            }
+
+            val querySnapshot = query.get().await()
+            val productos = querySnapshot.toObjects(Producto::class.java)
+
+            if (nombre.isNotBlank()) {
+                productos.filter {
+                    it.nombre.contains(nombre, ignoreCase = true)
+                }
+            } else {
+                productos
+            }
+        } catch (e: Exception) {
+            Log.e("Firestore", "Error al obtener productos por nombre y categoría", e)
+            emptyList()
+        }
+    }
+
+
+
+
     suspend fun getProductos(): List<Producto> {
         return try {
             val querySnapshot = productosCollection
