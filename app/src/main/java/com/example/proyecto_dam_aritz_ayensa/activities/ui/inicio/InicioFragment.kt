@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -42,6 +43,8 @@ class InicioFragment : Fragment() {
     private lateinit var listaService: ListaService
     private lateinit var usuarioService: UsuarioService
     private lateinit var sessionManager: SessionManager
+    private lateinit var progressBar : ProgressBar
+    private lateinit var progressBar2 : ProgressBar
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -64,6 +67,8 @@ class InicioFragment : Fragment() {
         recyclerViewMisListas.layoutManager = LinearLayoutManager(context)
         recyclerViewListasCompartidas = binding.recyclerListasCompartidas
         recyclerViewListasCompartidas.layoutManager = LinearLayoutManager(context)
+        progressBar = binding.loadingSpinner
+        progressBar2 = binding.loadingSpinner2
         cargarMisListas()
         cargarListasCompartidas()
         cargarBotones()
@@ -111,6 +116,7 @@ class InicioFragment : Fragment() {
 
         Log.i("Inicio", "Cargando listas")
         lifecycleScope.launch {
+            progressBar.visibility = View.VISIBLE
             val idListas =
                 usuarioService.getIdMisListasByIdUsuario(sessionManager.getUserId().toString())
             val misListas = listaService.getMisListasByUsuarioId(idListas)
@@ -121,11 +127,13 @@ class InicioFragment : Fragment() {
                 abrirLista(lista.id)
             }
             recyclerViewMisListas.adapter = adapter
+            progressBar.visibility = View.GONE
         }
     }
     private fun cargarListasCompartidas() {
         Log.i("Inicio", "Cargando listas compartidas")
         lifecycleScope.launch {
+            progressBar2.visibility = View.VISIBLE
             val idListasCompartidas =
                 usuarioService.getIdListasCompartidasByIdUsuario(sessionManager.getUserId().toString())
             val listasCompartidas = listaService.getMisListasByUsuarioId(idListasCompartidas)
@@ -137,6 +145,7 @@ class InicioFragment : Fragment() {
             }
 
             recyclerViewListasCompartidas.adapter = adapter
+            progressBar2.visibility = View.GONE
         }
     }
 

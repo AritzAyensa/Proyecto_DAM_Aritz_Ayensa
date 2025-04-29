@@ -3,6 +3,8 @@ package com.example.proyecto_dam_aritz_ayensa.activities
 import android.app.ProgressDialog
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -50,7 +52,7 @@ class LoginActivity : AppCompatActivity() {
         sessionManager = SessionManager(this)
         println("Estado de REMEMBER_CHECK en inicio: ${sessionManager.isChecked()}")
 
-        if (sessionManager.isLoggedIn()) {
+        if (sessionManager.isLoggedIn() && hayConexionInternet()) {
             val usuarioID: String? = sessionManager.getUserId()
             println("ID usuario = $usuarioID")
             startActivity(Intent(this@LoginActivity, BottomNavigationActivity::class.java))
@@ -95,6 +97,12 @@ class LoginActivity : AppCompatActivity() {
 
 
     fun goToMainDesdeLogin(view: View?) {
+
+        if (!hayConexionInternet()) {
+            Utils.mostrarMensaje(this, "No tienes conexión a Internet")
+            return
+        }
+
         val email = inputCorreo.text.toString().trim()
         val password = inputContra.text.toString().trim()
 
@@ -198,6 +206,14 @@ class LoginActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun hayConexionInternet(): Boolean {
+        val connectivityManager = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+
 
     /**
      * PERMISO NOTIFICACIONES

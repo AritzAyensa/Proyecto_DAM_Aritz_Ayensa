@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.ProgressBar
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -38,7 +39,7 @@ class AnadirProductoFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var lista: Lista
 
-    private lateinit var idLista: String
+    private var idLista: String = ""
     private lateinit var userId : String
 
     private val categorias = listOf("Fruta", "Verdura", "Carne", "Pescado","Limpieza","Higiene", "Otros")
@@ -53,6 +54,7 @@ class AnadirProductoFragment : Fragment() {
     private lateinit var recyclerViewProductos: RecyclerView
 
     private lateinit var buttonAñadirProducto : Button
+    private lateinit var progressBar : ProgressBar
     private lateinit var buttonCrearProducto : Button
     private lateinit var adapter: ProductoParaAnadirAdapter
     override fun onCreateView(
@@ -67,11 +69,14 @@ class AnadirProductoFragment : Fragment() {
         productoService = ProductoService(ProductoDAO())
         sessionManager = SessionManager(requireContext())
         userId = sessionManager.getUserId().toString()
-
+        progressBar = binding.loadingSpinner
         recyclerViewProductos = binding.recyclerProductos
         //Obtener el id de la lista
         arguments?.let {
-            idLista = it.getString("idLista").toString()
+            if(idLista.isNullOrBlank()){
+                idLista = it.getString("idLista").toString()
+            }
+
         }
         configurarDropdownMenu()
         configurarBuscador()
@@ -82,6 +87,7 @@ class AnadirProductoFragment : Fragment() {
 
     private fun cargarProductos() {
         lifecycleScope.launch {
+            progressBar.visibility = View.VISIBLE
             try {
                 // Cargar lista actual
                 lista = listaService.getListaById(idLista)!!
@@ -133,6 +139,7 @@ class AnadirProductoFragment : Fragment() {
                     Utils.mostrarMensaje(context, "Error: ${e.message}")
                 }
             }
+            progressBar.visibility = View.GONE
         }
     }
 
@@ -174,10 +181,12 @@ class AnadirProductoFragment : Fragment() {
 
     private fun buscarProductos() {
         lifecycleScope.launch(Dispatchers.IO) {
+            progressBar.visibility = View.VISIBLE
             productos = productoService.getProductosByNombreYCategoria(texto, categoriaSeleccionada).sorted()
             withContext(Dispatchers.Main) {
                 adapter.actualizarProductos(productos)
             }
+            progressBar.visibility = View.GONE
         }
     }
 

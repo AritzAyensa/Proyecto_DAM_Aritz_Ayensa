@@ -48,15 +48,16 @@
                 android:id="@+id/categorias"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="150dp"
-                android:textSize="15sp"
                 android:layout_height="wrap_content"
+                android:textSize="15sp"
                 app:layout_constraintEnd_toEndOf="parent">
+
                 <AutoCompleteTextView
                     android:id="@+id/autoCompleteTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="10sp"
-                    android:hint="Categoría" />
+                    android:hint="Categoría"
+                    android:padding="10sp" />
             </com.google.android.material.textfield.TextInputLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -69,7 +70,17 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:flow_maxElementsWrap="4"
             app:layout_constraintTop_toBottomOf="@id/filtros_ll"/>
-
+        <ProgressBar
+            android:id="@+id/loading_spinner"
+            style="?android:progressBarStyleLarge"
+            android:layout_width="60sp"
+            android:layout_height="60sp"
+            android:layout_gravity="center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/filtros_ll"
+            android:layout_marginTop="50sp"
+            tools:ignore="MissingConstraints"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/anadir_producto_cc_botones"

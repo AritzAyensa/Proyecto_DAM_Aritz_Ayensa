@@ -12,6 +12,7 @@ import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
@@ -66,6 +67,7 @@ class VistaListaFragment : Fragment() {
     private var listaProductos: List<Producto> = emptyList()
     private lateinit var usuarioService: UsuarioService
     private lateinit var sessionManager: SessionManager
+    private lateinit var progressBar : ProgressBar
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -78,6 +80,7 @@ class VistaListaFragment : Fragment() {
         usuarioService = UsuarioService(UsuarioDAO())
         sessionManager = SessionManager(requireContext())
         userId = sessionManager.getUserId().toString()
+        progressBar = binding.loadingSpinner
 
         //Obtener el id de la lista
         arguments?.let {
@@ -87,12 +90,17 @@ class VistaListaFragment : Fragment() {
         recyclerViewProductos = binding.recyclerProductos
         tvTituloLista = binding.vistaListaTvTitulo
 
-        cargarLista()
         cargarBotones()
 
 
         return binding.root
     }
+
+    override fun onResume() {
+        super.onResume()
+        cargarLista()
+    }
+
 
     private fun cargarBotones() {
         buttonCompartirLista = binding.btnCompartirLista
@@ -339,6 +347,7 @@ class VistaListaFragment : Fragment() {
         }*/
         private fun cargarLista() {
             lifecycleScope.launch {
+                progressBar.visibility = View.VISIBLE
                 try {
                     // 1. Evitar !! (operador no-nulo inseguro)
                     val listaObtenida = listaService.getListaById(idLista) ?: run {
@@ -355,21 +364,17 @@ class VistaListaFragment : Fragment() {
                     }
 
                     // 3. Obtener productos de forma asíncrona
-                    val productos = productoService.getProductosByIds(lista.idProductos).sorted()
+                    listaProductos = productoService.getProductosByIds(lista.idProductos).sorted()
 
                     // 4. Actualizar adapter en el hilo principal
                     withContext(Dispatchers.Main) {
-                        if (::adapter.isInitialized) { // Si ya existe
-                            adapter.actualizarProductos(productos)
-                        } else {
-                            adapter = ProductoAdapter(productos) { producto ->
+                            adapter = ProductoAdapter(listaProductos) { producto ->
                                 abrirProducto(producto.id)
                             }
                             recyclerViewProductos.apply {
                                 layoutManager = LinearLayoutManager(context)
                                 adapter = this@VistaListaFragment.adapter
                             }
-                        }
                     }
 
                 } catch (e: Exception) {
@@ -377,6 +382,8 @@ class VistaListaFragment : Fragment() {
                         Utils.mostrarMensaje(context, "Error: ${e.message}")
                     }
                 }
+
+                progressBar.visibility = View.GONE
             }
         }
     private fun abrirProducto(idProducto : String) {
@@ -396,12 +403,11 @@ class VistaListaFragment : Fragment() {
             tvTituloLista.text = lista.titulo
         }
 
-        private fun actualizarLista() {
-        }
 
-        override fun onDestroyView() {
-            super.onDestroyView()
-            _binding = null
-        }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
 
 }

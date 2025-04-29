@@ -62,6 +62,18 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/vista_lista_cc_botones"/>
 
+        <ProgressBar
+            android:id="@+id/loading_spinner"
+            style="?android:progressBarStyleLarge"
+            android:layout_width="60sp"
+            android:layout_height="60sp"
+            android:layout_gravity="center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/vista_lista_cc_botones"
+            android:layout_marginTop="50sp"
+            tools:ignore="MissingConstraints"/>
+
 
         <Button
             android:id="@+id/btnEliminarLista"

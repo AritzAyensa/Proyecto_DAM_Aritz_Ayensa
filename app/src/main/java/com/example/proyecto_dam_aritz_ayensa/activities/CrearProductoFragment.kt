@@ -1,10 +1,12 @@
 package com.example.proyecto_dam_aritz_ayensa.activities
 
+import android.R
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
@@ -51,6 +53,9 @@ class CrearProductoFragment : Fragment() {
     private lateinit var buttonEscanearProducto : Button
     private lateinit var buttonCancelar : Button
 
+    private val categorias = listOf("Fruta", "Verdura", "Carne", "Pescado","Limpieza","Higiene", "Otros")
+    private var categoriaSeleccionada: String = ""
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -65,7 +70,6 @@ class CrearProductoFragment : Fragment() {
         userId = sessionManager.getUserId().toString()
 
 
-        spinner = binding.spinnerCategorias
         inputNombre = binding.crearProductoEtNombre
         inputPrecio = binding.crearProductoEtPrecio
         inputPrioridad = binding.crearProductoEtPrioridad
@@ -76,6 +80,7 @@ class CrearProductoFragment : Fragment() {
         }
 
         cargarBotones()
+        configurarDropdownMenu()
 
         return binding.root
     }
@@ -108,8 +113,8 @@ class CrearProductoFragment : Fragment() {
             val precio: Double = inputPrecio.text.toString().toDouble()
             val prioridad: Double = inputPrioridad.text.toString().toDouble()
 
-            if (textNombre.isNotEmpty() && precio > 0  && prioridad > 0) {
-                val producto = Producto()
+            if (textNombre.isNotEmpty() && precio > 0  && prioridad > 0 && categoriaSeleccionada.isNotEmpty()) {
+                val producto = Producto() 
                 producto.nombre = textNombre
                 producto.precioAproximado = precio
                 producto.prioridad = prioridad
@@ -133,6 +138,16 @@ class CrearProductoFragment : Fragment() {
             }
         }catch (e : Error){
             Utils.mostrarMensaje(requireContext(), e.message.toString())
+        }
+    }
+    private fun configurarDropdownMenu() {
+
+        val adapter = ArrayAdapter(requireContext(), R.layout.simple_list_item_1, categorias)
+        val autoCompleteTextView = binding.autoCompleteTextView
+        autoCompleteTextView.setAdapter(adapter)
+
+        autoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
+            categoriaSeleccionada = parent.getItemAtPosition(position) as String
         }
     }
 
