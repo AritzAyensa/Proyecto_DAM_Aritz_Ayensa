@@ -53,7 +53,6 @@ class AnadirProductoFragment : Fragment() {
 
     private lateinit var recyclerViewProductos: RecyclerView
 
-    private lateinit var buttonAñadirProducto : Button
     private lateinit var progressBar : ProgressBar
     private lateinit var buttonCrearProducto : Button
     private lateinit var adapter: ProductoParaAnadirAdapter
@@ -181,14 +180,19 @@ class AnadirProductoFragment : Fragment() {
 
     private fun buscarProductos() {
         lifecycleScope.launch(Dispatchers.IO) {
-            progressBar.visibility = View.VISIBLE
+            withContext(Dispatchers.Main) {
+                progressBar.visibility = View.VISIBLE
+            }
+
             productos = productoService.getProductosByNombreYCategoria(texto, categoriaSeleccionada).sorted()
+
             withContext(Dispatchers.Main) {
                 adapter.actualizarProductos(productos)
+                progressBar.visibility = View.GONE
             }
-            progressBar.visibility = View.GONE
         }
     }
+
 
 
 

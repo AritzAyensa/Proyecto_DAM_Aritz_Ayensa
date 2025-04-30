@@ -34,15 +34,15 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/anadir_producto_tv_titulo"
             tools:ignore="MissingConstraints"
+
             >
             <EditText
                 android:id="@+id/etBuscarProducto"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
-                android:hint="Buscar producto"
-                android:maxLength="100"
-                />
+                android:hint="@string/buscar_producto"
+                android:maxLength="100" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/categorias"
@@ -56,7 +56,7 @@
                     android:id="@+id/autoCompleteTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Categoría"
+                    android:hint="@string/categor_a"
                     android:padding="10sp" />
             </com.google.android.material.textfield.TextInputLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -64,7 +64,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_productos"
             android:layout_width="match_parent"
-            android:layout_height="250sp"
+            android:layout_height="420sp"
             android:layout_marginTop="15dp"
             android:background="@drawable/edittext_border"
             app:layout_constraintEnd_toEndOf="parent"

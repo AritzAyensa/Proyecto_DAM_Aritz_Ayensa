@@ -6,17 +6,54 @@
     android:layout_height="match_parent"
     tools:context=".activities.ui.notifications.NotificationsFragment">
 
-    <TextView
-        android:id="@+id/text_notifications"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/anadir_producto_cl"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="100sp"
+            android:paddingEnd="20sp"
+            android:paddingStart="20sp"
+            android:paddingTop="20sp"
+            >
+            <TextView
+                android:id="@+id/anadir_producto_tv_titulo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/title_notificaciones"
+                android:textAlignment="center"
+                android:textSize="25sp"
+
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+
+                tools:ignore="MissingConstraints" />
+
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_notificaciones"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="60dp"
+                android:background="@drawable/edittext_border"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:flow_maxElementsWrap="4"
+                app:layout_constraintTop_toBottomOf="@id/anadir_producto_tv_titulo"/>
+            <ProgressBar
+                android:id="@+id/loading_spinner"
+                style="?android:progressBarStyleLarge"
+                android:layout_width="60sp"
+                android:layout_height="60sp"
+                android:layout_gravity="center"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/anadir_producto_tv_titulo"
+                android:layout_marginTop="50sp"
+                tools:ignore="MissingConstraints"/>
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

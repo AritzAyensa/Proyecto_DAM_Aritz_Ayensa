@@ -23,13 +23,17 @@ import com.example.proyecto_dam_aritz_ayensa.R
 import com.example.proyecto_dam_aritz_ayensa.adapters.ProductoAdapter
 import com.example.proyecto_dam_aritz_ayensa.databinding.FragmentVistaListaBinding
 import com.example.proyecto_dam_aritz_ayensa.model.dao.ListaDAO
+import com.example.proyecto_dam_aritz_ayensa.model.dao.NotificacionDAO
 import com.example.proyecto_dam_aritz_ayensa.model.dao.ProductoDAO
 import com.example.proyecto_dam_aritz_ayensa.model.dao.UsuarioDAO
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Lista
+import com.example.proyecto_dam_aritz_ayensa.model.entity.Notificacion
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Producto
 import com.example.proyecto_dam_aritz_ayensa.model.service.ListaService
+import com.example.proyecto_dam_aritz_ayensa.model.service.NotificacionService
 import com.example.proyecto_dam_aritz_ayensa.model.service.ProductoService
 import com.example.proyecto_dam_aritz_ayensa.model.service.UsuarioService
+import com.example.proyecto_dam_aritz_ayensa.utils.GenericConstants
 import com.example.proyecto_dam_aritz_ayensa.utils.SessionManager
 import com.example.proyecto_dam_aritz_ayensa.utils.Utils
 import com.journeyapps.barcodescanner.ScanContract
@@ -64,6 +68,7 @@ class VistaListaFragment : Fragment() {
 
     private lateinit var listaService: ListaService
     private lateinit var productoService: ProductoService
+    private lateinit var notificacionesService: NotificacionService
     private var listaProductos: List<Producto> = emptyList()
     private lateinit var usuarioService: UsuarioService
     private lateinit var sessionManager: SessionManager
@@ -78,6 +83,7 @@ class VistaListaFragment : Fragment() {
         listaService = ListaService(ListaDAO())
         productoService = ProductoService(ProductoDAO())
         usuarioService = UsuarioService(UsuarioDAO())
+        notificacionesService = NotificacionService(NotificacionDAO())
         sessionManager = SessionManager(requireContext())
         userId = sessionManager.getUserId().toString()
         progressBar = binding.loadingSpinner
@@ -180,6 +186,13 @@ class VistaListaFragment : Fragment() {
                                                 idLista,
                                                 usuario.id
                                             )
+                                            var notificacion = Notificacion()
+                                            notificacion.tipo = GenericConstants.TIPO_LISTA_COMPRATIDA
+                                            notificacion.descripcion = usuario.nombre + " ha compartido la lista " + lista.titulo + " con " + usuario.nombre
+                                            notificacion.idsUsuarios += usuario.id
+                                            notificacion.idsUsuarios += userId
+
+                                            notificacionesService.saveNotificacion(notificacion)
                                             dialog.dismiss()
                                         }
                                     }else{

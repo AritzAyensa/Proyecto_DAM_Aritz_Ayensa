@@ -84,6 +84,9 @@
     <string name="crearTarea_btn_escanear_codigo">Escanear codigo</string>
     <string name="item_producto_tv_nombre_producto">Nombre producto</string>
     <string name="item_producto_tv_precio">0€</string>
+    <string name="buscar_producto">Buscar producto</string>
+    <string name="categor_a">Categoría</string>
+    <string name="notificacion">Notificación</string>
 
 
 </resources>
