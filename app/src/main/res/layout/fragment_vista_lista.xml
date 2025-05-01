@@ -34,22 +34,20 @@
 
             tools:ignore="MissingConstraints"
             >
-            <Button
-                android:id="@+id/btnCompartirLista"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/vista_lista_btn_compartir_lista"
-                style="@style/ButtonAccept"
-                app:layout_constraintStart_toStartOf="parent"
-                android:visibility="gone"
-                />
-            <Button
-                android:id="@+id/btnAnadirProducto"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/vista_lista_btn_añadirProducto"
+            <ImageButton
+                android:id="@+id/btnEscanear"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_marginEnd="25dp"
+                android:layout_marginTop="50dp"
+                android:layout_marginBottom="20sp"
+                android:scaleType="centerInside"
+                android:adjustViewBounds="true"
+                android:src="@drawable/baseline_barcode_reader_24"
+                android:background="@drawable/btn_circular"
+                android:elevation="6dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                style="@style/ButtonAccept"
+                android:contentDescription="@string/cuenta_fragment_et_boton_de_editar"
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -76,10 +74,10 @@
 
 
         <Button
-            android:id="@+id/btnEliminarLista"
+            android:id="@+id/btnOpciones"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/vista_lista_btn_eliminar_lista"
+            android:text="@string/vista_lista_btn_opciones"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

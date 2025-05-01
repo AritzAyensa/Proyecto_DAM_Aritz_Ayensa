@@ -88,6 +88,7 @@
     <string name="categor_a">Categoría</string>
     <string name="notificacion">Notificación</string>
     <string name="eliminar_notificacion">Eliminar</string>
+    <string name="vista_lista_btn_opciones">Opciones</string>
 
 
 </resources>

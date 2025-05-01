@@ -1,6 +1,7 @@
 package com.example.proyecto_dam_aritz_ayensa.activities
 
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -12,6 +13,7 @@ import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -52,9 +54,11 @@ class VistaListaFragment : Fragment() {
     private val binding get() = _binding!!
 
 
-    lateinit var buttonAñadirProducto : Button
+    /*lateinit var buttonAñadirProducto : Button
     lateinit var buttonCompartirLista : Button
-    lateinit var buttonEliminarLista : Button
+    lateinit var buttonEliminarLista : Button*/
+    lateinit var buttonOpciones : Button
+    lateinit var buttonEscanear : ImageButton
 
     private lateinit var recyclerViewProductos: RecyclerView
     private lateinit var adapter: ProductoAdapter
@@ -112,15 +116,23 @@ class VistaListaFragment : Fragment() {
 
 
     private fun cargarBotones() {
-        buttonCompartirLista = binding.btnCompartirLista
+        buttonOpciones = binding.btnOpciones
 
-        if (buttonCompartirLista != null) {
-            buttonCompartirLista.setOnClickListener {
-                compartirLista(requireContext())
+        if (buttonOpciones != null) {
+            buttonOpciones.setOnClickListener {
+                opciones()
             }
         }
 
-        buttonAñadirProducto = binding.btnAnadirProducto
+        buttonEscanear = binding.btnEscanear
+
+        if (buttonEscanear != null) {
+            buttonEscanear.setOnClickListener {
+                escanearProducto()
+            }
+        }
+
+        /*buttonAñadirProducto = binding.btnAnadirProducto
         if (buttonAñadirProducto != null) {
             buttonAñadirProducto.setOnClickListener {
                 añadirProducto()
@@ -134,7 +146,41 @@ class VistaListaFragment : Fragment() {
             buttonEliminarLista.setOnClickListener {
                 eliminarLista(requireContext())
             }
+        }*/
+    }
+
+    private fun opciones() {
+        var dialog : Dialog = Dialog(requireContext())
+        val view = LayoutInflater.from(requireContext())
+            .inflate(R.layout.dialog_opciones_lista, null)
+        // Obtén referencias a los botones:
+        val btnAñadir = view.findViewById<Button>(R.id.btnAñadirCrear)
+        val btnCompartir = view.findViewById<Button>(R.id.btnCompartir)
+        val btnEliminar = view.findViewById<Button>(R.id.btnEliminar)
+
+        // Activa o desactiva compartir según condición:
+        btnCompartir.visibility =
+            if (lista.idCreador == userId) View.VISIBLE else View.GONE
+
+        // Define listeners:
+        btnAñadir.setOnClickListener {
+            abrirAñadirProducto()
+            dialog.dismiss()
         }
+        btnCompartir.setOnClickListener {
+            compartirLista(requireContext())
+            dialog.dismiss()
+        }
+        btnEliminar.setOnClickListener {
+            eliminarLista(requireContext())
+            dialog.dismiss()
+        }
+
+        // Construye el AlertDialog usando el view personalizado
+        dialog = AlertDialog.Builder(requireContext(), R.style.MyDialogTheme)
+            .setView(view)
+            .create()
+        dialog.show()
     }
 
     @SuppressLint("SetTextI18n")
@@ -384,10 +430,10 @@ class VistaListaFragment : Fragment() {
                     lista = listaObtenida
 
                     // 2. Actualizar UI en el hilo principal
-                    withContext(Dispatchers.Main) {
+                    /*withContext(Dispatchers.Main) {
                         buttonCompartirLista.visibility = if (lista.idCreador == userId) View.VISIBLE else View.GONE
                         actualizarVista()
-                    }
+                    }*/
                     // 3. Obtener productos de forma asíncrona
                     listaProductos = ordenarProductos(productoService.getProductosByIds(lista.idProductos).toMutableList())
 
