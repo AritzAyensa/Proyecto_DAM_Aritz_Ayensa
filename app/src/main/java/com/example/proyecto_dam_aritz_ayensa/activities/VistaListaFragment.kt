@@ -20,6 +20,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.proyecto_dam_aritz_ayensa.R
+import com.example.proyecto_dam_aritz_ayensa.adapters.NotificacionAdapter
 import com.example.proyecto_dam_aritz_ayensa.adapters.ProductoAdapter
 import com.example.proyecto_dam_aritz_ayensa.databinding.FragmentVistaListaBinding
 import com.example.proyecto_dam_aritz_ayensa.model.dao.ListaDAO
@@ -70,7 +71,8 @@ class VistaListaFragment : Fragment() {
     private lateinit var listaService: ListaService
     private lateinit var productoService: ProductoService
     private lateinit var notificacionesService: NotificacionService
-    private var listaProductos: List<Producto> = emptyList()
+    private var listaProductos: MutableList<Producto> = mutableListOf()
+    private val productosSeleccionadas = mutableListOf<String>()
     private lateinit var usuarioService: UsuarioService
     private lateinit var sessionManager: SessionManager
     private lateinit var progressBar : ProgressBar
@@ -362,6 +364,13 @@ class VistaListaFragment : Fragment() {
             }
 
         }*/
+
+        private fun ordenarProductos(lista: MutableList<Producto>): MutableList<Producto> {
+            return lista
+                .sortedWith(compareBy<Producto> { productosSeleccionadas.contains(it.id) }
+                    .thenBy { it.prioridad }).toMutableList()
+        }
+        @SuppressLint("NotifyDataSetChanged")
         private fun cargarLista() {
             lifecycleScope.launch {
                 progressBar.visibility = View.VISIBLE
@@ -379,15 +388,25 @@ class VistaListaFragment : Fragment() {
                         buttonCompartirLista.visibility = if (lista.idCreador == userId) View.VISIBLE else View.GONE
                         actualizarVista()
                     }
-
                     // 3. Obtener productos de forma asíncrona
-                    listaProductos = productoService.getProductosByIds(lista.idProductos).sorted()
+                    listaProductos = ordenarProductos(productoService.getProductosByIds(lista.idProductos).toMutableList())
 
                     // 4. Actualizar adapter en el hilo principal
                     withContext(Dispatchers.Main) {
-                            adapter = ProductoAdapter(listaProductos) { producto ->
+                            /*adapter = ProductoAdapter(listaProductos,) { producto ->
                                 abrirProducto(producto.id)
-                            }
+                            }*/
+                            adapter = ProductoAdapter(
+                                listaProductos,
+                                onItemClick = { Utils.mostrarMensaje(requireContext(), "click") },
+                                onCheckClick = { producto, isSelected ->
+                                    if (isSelected) productosSeleccionadas.add(producto.id)
+                                    else            productosSeleccionadas.remove(producto.id)
+                                    listaProductos = ordenarProductos(listaProductos)
+                                    /*adapter.actualizarProductos(listaProductos)*/
+                                    adapter.actualizarProductos(listaProductos)
+                                }
+                            )
                             recyclerViewProductos.apply {
                                 layoutManager = LinearLayoutManager(context)
                                 adapter = this@VistaListaFragment.adapter

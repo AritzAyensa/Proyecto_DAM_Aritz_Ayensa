@@ -5,6 +5,8 @@ import android.view.View
 import android.widget.Button
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
@@ -80,7 +82,7 @@ class BottomNavigationActivity : AppCompatActivity() {
         // Obtén la referencia a tu BottomNavigationView
         val bottomNav = findViewById<BottomNavigationView>(R.id.nav_view)
 
-        // Identificador del item de notificaciones en tu menú
+        /*// Identificador del item de notificaciones en tu menú
         val itemIdNotifs = R.id.navigation_notifications
 
         lifecycleScope.launch() {
@@ -91,7 +93,9 @@ class BottomNavigationActivity : AppCompatActivity() {
                     number = notificaciones.size
                 }
             }
-        }
+        }*/
+
+        observeNotificationCount(userId)
 
         navController.addOnDestinationChangedListener { _, dest, _ ->
             when (dest.id) {
@@ -110,9 +114,29 @@ class BottomNavigationActivity : AppCompatActivity() {
                 }
             }
         }
+    }
 
+    private fun observeNotificationCount(userId: String) {
+        val bottomNav = binding.navView
+        val notifItemId = R.id.navigation_notifications
 
-
+        lifecycleScope.launch {
+            notificacionService.getNotificacionesCountFlow(userId)
+                .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+                .collect { count ->
+                    /*bottomNav.removeBadge(notifItemId)*/
+                    if (count > 0) {
+                        bottomNav.getOrCreateBadge(notifItemId).apply {
+                            isVisible = true
+                            number = count
+                        }
+                    }else{
+                        bottomNav.getOrCreateBadge(notifItemId).apply {
+                            isVisible = false
+                        }
+                    }
+                }
+        }
     }
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp() || super.onSupportNavigateUp()

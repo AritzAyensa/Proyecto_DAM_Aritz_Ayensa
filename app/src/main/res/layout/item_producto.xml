@@ -21,6 +21,16 @@
             android:background="@drawable/btn_circular"/>-->
 
         <!-- Campo de nombre de la tarea -->
+
+        <ImageButton
+            android:id="@+id/btnChech"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/outline_check_box_outline_blank_24"
+            android:background="@android:color/transparent"
+            android:layout_gravity="center_vertical"
+            />
+
         <TextView
             android:id="@+id/nombreProducto"
             android:layout_width="0dp"

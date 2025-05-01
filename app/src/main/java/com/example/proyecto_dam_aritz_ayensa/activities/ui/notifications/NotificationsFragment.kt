@@ -118,16 +118,6 @@ class NotificationsFragment : Fragment() {
                 notificacionService.eliminarNotificaciones(notificacionesSeleccionadas, userId)
                 cargarNotificaciones()
 
-                requireActivity().findViewById<BottomNavigationView>(R.id.nav_view)
-                    .getOrCreateBadge(R.id.navigation_notifications)
-                    .apply {
-                        if (notificaciones.isNotEmpty()) {
-                            isVisible = true
-                            number = notificaciones.size
-                        } else {
-                            isVisible = false
-                        }
-                    }
             }
         }
     }

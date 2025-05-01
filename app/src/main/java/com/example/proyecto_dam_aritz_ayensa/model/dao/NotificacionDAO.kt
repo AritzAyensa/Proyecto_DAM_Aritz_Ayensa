@@ -8,6 +8,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
 
@@ -78,6 +81,29 @@ class NotificacionDAO {
             throw e
         }
     }
+
+    fun notificacionesCountFlow(userId: String): Flow<Int> = callbackFlow {
+        val query = notificacionesCollection
+            .whereArrayContains("idsUsuarios", userId)
+
+        val registration = query.addSnapshotListener { snapshots, error ->
+            if (error != null) {
+                close(error)
+            } else {
+                try {
+                    trySend(snapshots?.size() ?: 0).isSuccess
+                } catch (e: Exception) {
+                    close(e)
+                }
+            }
+        }
+
+        awaitClose {
+            registration.remove()
+        }
+    }
+
+
 
 
 }
