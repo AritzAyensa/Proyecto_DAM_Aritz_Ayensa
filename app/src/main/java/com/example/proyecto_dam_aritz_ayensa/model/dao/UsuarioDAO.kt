@@ -178,25 +178,34 @@ class UsuarioDAO {
             }
     }
 
-    suspend fun getUserById(usuarioID: String): Result<Usuario?> {
+    suspend fun getUserById(usuarioID: String): Usuario? {
         return try {
-            // Obtener documento de Firestore
             val document = usuariosCollection.document(usuarioID).get().await()
-
             if (document.exists()) {
                 val nombre = document.getString("nombre") ?: ""
                 val email = document.getString("email") ?: ""
-                val idListas = document.get("idListas") as List<String>
-                val idListasCompartidas = document.getString("idListasCompartidas") as List<String>
-                val usuario = Usuario(usuarioID, nombre, email, idListas, idListasCompartidas)
-                Result.success(usuario)
+                val idListas = document.get("idListas") as? List<String> ?: emptyList()
+                val idListasCompartidas = document.get("idListasCompartidas") as? List<String> ?: emptyList()
+                Usuario(usuarioID, nombre, email, idListas, idListasCompartidas)
             } else {
-                Result.success(null)
+                null
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            Log.e("UsuarioDAO", "Error al obtener usuario $usuarioID", e)
+            null
         }
     }
+
+    suspend fun getUserNameById(usuarioID: String): String? {
+        return try {
+            val document = usuariosCollection.document(usuarioID).get().await()
+            document.getString("nombre")
+        } catch (e: Exception) {
+            Log.e("UsuarioDAO", "Error al obtener nombre de usuario $usuarioID", e)
+            null
+        }
+    }
+
 
     /*suspend fun getUserIdByEmail(email: String): String? {
         if (email.isBlank()) return null // Validación inicial

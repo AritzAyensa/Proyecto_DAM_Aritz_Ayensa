@@ -29,6 +29,7 @@ import com.example.proyecto_dam_aritz_ayensa.model.dao.UsuarioDAO
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Lista
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Notificacion
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Producto
+import com.example.proyecto_dam_aritz_ayensa.model.entity.Usuario
 import com.example.proyecto_dam_aritz_ayensa.model.service.ListaService
 import com.example.proyecto_dam_aritz_ayensa.model.service.NotificacionService
 import com.example.proyecto_dam_aritz_ayensa.model.service.ProductoService
@@ -186,13 +187,16 @@ class VistaListaFragment : Fragment() {
                                                 idLista,
                                                 usuario.id
                                             )
+                                            var nombreUsuario = usuarioService.getUserNameById(userId)
                                             var notificacion = Notificacion()
                                             notificacion.tipo = GenericConstants.TIPO_LISTA_COMPRATIDA
-                                            notificacion.descripcion = usuario.nombre + " ha compartido la lista " + lista.titulo + " con " + usuario.nombre
+
+                                            notificacion.descripcion = nombreUsuario + " ha compartido la lista " + lista.titulo + " con " + usuario.nombre
                                             notificacion.idsUsuarios += usuario.id
                                             notificacion.idsUsuarios += userId
 
                                             notificacionesService.saveNotificacion(notificacion)
+                                            Utils.mostrarMensaje(requireContext(), "Lista "+ lista.titulo + " compartida con " + usuario.nombre)
                                             dialog.dismiss()
                                         }
                                     }else{

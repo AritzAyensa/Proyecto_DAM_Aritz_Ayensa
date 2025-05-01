@@ -36,8 +36,7 @@ class NotificacionAdapter(
                 else R.drawable.outline_check_box_outline_blank_24
             )
 
-            // Click en todo el item
-            itemView.setOnClickListener { onItemClick(n) }
+            descripcion.setOnClickListener { onItemClick(n) }
 
             // Click en el check: alterna estado, cambia icono y notifica al fragment
             btnCheck.setOnClickListener {

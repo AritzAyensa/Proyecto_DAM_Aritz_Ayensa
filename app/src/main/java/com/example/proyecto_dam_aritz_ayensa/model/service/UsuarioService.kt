@@ -59,8 +59,13 @@ class UsuarioService(private val usuarioDAO: UsuarioDAO) {
         usuarioDAO.getUser(usuarioID, onSuccess, onFailure)
     }
 
-    suspend fun getUserById(usuarioID: String) {
-        usuarioDAO.getUserById(usuarioID)
+    suspend fun getUserById(usuarioID: String) : Usuario? {
+        return usuarioDAO.getUserById(usuarioID)
+    }
+
+
+    suspend fun getUserNameById(usuarioID: String) : String? {
+        return usuarioDAO.getUserNameById(usuarioID)
     }
 
 

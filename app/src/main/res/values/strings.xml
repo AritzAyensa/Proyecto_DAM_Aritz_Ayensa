@@ -87,6 +87,7 @@
     <string name="buscar_producto">Buscar producto</string>
     <string name="categor_a">Categoría</string>
     <string name="notificacion">Notificación</string>
+    <string name="eliminar_notificacion">Eliminar</string>
 
 
 </resources>

@@ -18,7 +18,7 @@ class NotificacionService(private val notificacionDAO: NotificacionDAO) {
     }
 
 
-    suspend fun eliminarNotificacion(idNotificacion: String, idUsuario: String){
-        notificacionDAO.eliminarNotificacion(idNotificacion, idUsuario)
+    suspend fun eliminarNotificaciones(notificaciones: List<String>, idUsuario: String){
+        notificacionDAO.eliminarNotificaciones(notificaciones, idUsuario)
     }
 }

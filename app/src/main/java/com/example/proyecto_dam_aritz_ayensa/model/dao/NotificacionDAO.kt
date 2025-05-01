@@ -54,18 +54,30 @@ class NotificacionDAO {
     }
 
 
-    suspend fun eliminarNotificacion(idNotificacion: String, idUsuario: String) {
+    suspend fun eliminarNotificaciones(
+        notificaciones: List<String>,
+        idUsuario: String
+    ) {
         try {
-            // Utilizamos arrayRemove para sacar el idUsuario del array
-            notificacionesCollection
-                .document(idNotificacion)
-                .update("idsUsuarios", FieldValue.arrayRemove(idUsuario))
-                .await()
-            Log.i("NotificacionDAO", "Usuario $idUsuario eliminado de notificación $idNotificacion")
+            for (notificacion in notificaciones) {
+                notificacionesCollection
+                    .document(notificacion)
+                    .update("idsUsuarios", FieldValue.arrayRemove(idUsuario))
+                    .await()
+                Log.i(
+                    "NotificacionDAO",
+                    "Usuario $idUsuario eliminado de notificación ${notificacion}"
+                )
+            }
         } catch (e: Exception) {
-            Log.e("NotificacionDAO", "Error al eliminar usuario $idUsuario de notificación $idNotificacion", e)
+            Log.e(
+                "NotificacionDAO",
+                "Error al eliminar usuario $idUsuario de notificaciones",
+                e
+            )
             throw e
         }
     }
+
 
 }

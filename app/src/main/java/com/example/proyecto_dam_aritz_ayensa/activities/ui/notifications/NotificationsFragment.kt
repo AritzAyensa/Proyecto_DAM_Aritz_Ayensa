@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.proyecto_dam_aritz_ayensa.R
 import com.example.proyecto_dam_aritz_ayensa.adapters.NotificacionAdapter
 import com.example.proyecto_dam_aritz_ayensa.adapters.ProductoParaAnadirAdapter
 import com.example.proyecto_dam_aritz_ayensa.databinding.FragmentNotificationsBinding
@@ -27,6 +28,7 @@ import com.example.proyecto_dam_aritz_ayensa.model.service.ProductoService
 import com.example.proyecto_dam_aritz_ayensa.model.service.UsuarioService
 import com.example.proyecto_dam_aritz_ayensa.utils.SessionManager
 import com.example.proyecto_dam_aritz_ayensa.utils.Utils
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -40,6 +42,9 @@ class NotificationsFragment : Fragment() {
     private lateinit var productoService: ProductoService
     private lateinit var notificacionService: NotificacionService
     private lateinit var recyclerViewNotificaciones: RecyclerView
+
+
+    private lateinit var btnEliminarNotificacion: Button
 
     private var notificaciones: List<Notificacion> = emptyList()
     private val notificacionesSeleccionadas = mutableListOf<String>()
@@ -63,7 +68,10 @@ class NotificationsFragment : Fragment() {
         sessionManager = SessionManager(requireContext())
         userId = sessionManager.getUserId().toString()
         progressBar = binding.loadingSpinner
-
+        btnEliminarNotificacion = binding.btnEliminarNotificaciones
+        btnEliminarNotificacion.setOnClickListener{
+            eliminarNotificacion()
+        }
         recyclerViewNotificaciones = binding.recyclerNotificaciones
 
 
@@ -98,6 +106,28 @@ class NotificationsFragment : Fragment() {
                     progressBar.visibility = View.GONE
                     Utils.mostrarMensaje(requireContext(), "Error: ${e.message}")
                 }
+            }
+        }
+    }
+
+    private fun eliminarNotificacion() {
+        if (notificacionesSeleccionadas.isEmpty()){
+            Utils.mostrarMensaje(requireContext(), "Seleccione al menos una lista")
+        }else{
+            lifecycleScope.launch {
+                notificacionService.eliminarNotificaciones(notificacionesSeleccionadas, userId)
+                cargarNotificaciones()
+
+                requireActivity().findViewById<BottomNavigationView>(R.id.nav_view)
+                    .getOrCreateBadge(R.id.navigation_notifications)
+                    .apply {
+                        if (notificaciones.isNotEmpty()) {
+                            isVisible = true
+                            number = notificaciones.size
+                        } else {
+                            isVisible = false
+                        }
+                    }
             }
         }
     }
