@@ -12,5 +12,7 @@ data class Producto(
     override fun compareTo(other: Producto): Int {
         return this.prioridad.compareTo(other.prioridad)
     }
+    override fun toString(): String = nombre
+
 
 }

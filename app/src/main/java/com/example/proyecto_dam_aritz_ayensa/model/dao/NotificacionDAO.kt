@@ -33,8 +33,9 @@ class NotificacionDAO {
             "id" to docRef.id,
             "tipo" to notificacion.tipo,
             "descripcion" to notificacion.descripcion,
-            "idsUsuarios" to notificacion.idsUsuarios,
+            /*"idsUsuarios" to notificacion.idsUsuarios,*/
             "idProductos" to notificacion.idProductos,
+            "fecha" to notificacion.fecha,
             "precio" to notificacion.precio,
         )
         Log.e("NotificacionDAO", "Notificacion creada")
@@ -102,8 +103,4 @@ class NotificacionDAO {
             registration.remove()
         }
     }
-
-
-
-
 }

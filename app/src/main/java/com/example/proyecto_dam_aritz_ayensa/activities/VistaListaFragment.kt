@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
@@ -46,6 +47,8 @@ import com.journeyapps.barcodescanner.ScanOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 
 class VistaListaFragment : Fragment() {
@@ -58,6 +61,7 @@ class VistaListaFragment : Fragment() {
     lateinit var buttonCompartirLista : Button
     lateinit var buttonEliminarLista : Button*/
     lateinit var buttonOpciones : Button
+    lateinit var buttonCompletarCompra : Button
     lateinit var buttonEscanear : ImageButton
 
     private lateinit var recyclerViewProductos: RecyclerView
@@ -66,7 +70,7 @@ class VistaListaFragment : Fragment() {
 
     private lateinit var tvTituloLista: TextView
     private lateinit var lista: Lista
-    private lateinit var producto: Producto
+    private lateinit var productoParaAñadir: Producto
 
     private lateinit var idLista: String
     private lateinit var userId : String
@@ -77,6 +81,7 @@ class VistaListaFragment : Fragment() {
     private lateinit var notificacionesService: NotificacionService
     private var listaProductos: MutableList<Producto> = mutableListOf()
     private val productosSeleccionadas = mutableListOf<String>()
+    private var todosLosProductos = mutableListOf<Producto>()
     private lateinit var usuarioService: UsuarioService
     private lateinit var sessionManager: SessionManager
     private lateinit var progressBar : ProgressBar
@@ -104,7 +109,7 @@ class VistaListaFragment : Fragment() {
         tvTituloLista = binding.vistaListaTvTitulo
 
         cargarBotones()
-
+        configurarDropdownMenu()
 
         return binding.root
     }
@@ -132,21 +137,64 @@ class VistaListaFragment : Fragment() {
             }
         }
 
-        /*buttonAñadirProducto = binding.btnAnadirProducto
-        if (buttonAñadirProducto != null) {
-            buttonAñadirProducto.setOnClickListener {
-                añadirProducto()
+        buttonCompletarCompra = binding.btnCompletarCompra
+
+        if (buttonCompletarCompra != null) {
+            buttonCompletarCompra.setOnClickListener {
+                completarCompra()
+            }
+        }
+    }
+
+    private fun configurarDropdownMenu() {
+        lifecycleScope.launch {
+            todosLosProductos = productoService.getProductos().toMutableList()
+
+            val adapterDropdown = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, todosLosProductos)
+            val autoCompleteTextView = binding.autoCompleteTextView
+            autoCompleteTextView.setAdapter(adapterDropdown)
+
+            autoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
+
+                productoParaAñadir = parent.getItemAtPosition(position) as Producto
+                lifecycleScope.launch(Dispatchers.IO) {
+                    try {
+                        if (lista.idProductos.contains(productoParaAñadir.id)) {
+                            withContext(Dispatchers.Main) {
+                                Utils.mostrarMensaje(
+                                    requireContext(),
+                                    "El producto ya está en la lista"
+                                )
+                            }
+                        } else {
+                            listaService.añadirProductoALista(productoParaAñadir.id, idLista)
+                            // Actualizar lista local
+                            lista = listaService.getListaById(idLista)!!
+                            listaProductos = productoService.getProductosByIds(lista.idProductos).toMutableList()
+                            activity?.runOnUiThread {
+                                adapter.actualizarProductos(listaProductos)
+                            }
+
+
+                            withContext(Dispatchers.Main) {
+                                Utils.mostrarMensaje(
+                                    requireContext(),
+                                    "Producto añadido"
+                                )
+                            }
+                        }
+                    } catch (e: Exception) {
+                        withContext(Dispatchers.Main) {
+                            Utils.mostrarMensaje(
+                                requireContext(),
+                                "Error: ${e.message}"
+                            )
+                        }
+                    }
+                }
             }
         }
 
-
-
-        buttonEliminarLista = binding.btnEliminarLista
-        if (buttonEliminarLista != null) {
-            buttonEliminarLista.setOnClickListener {
-                eliminarLista(requireContext())
-            }
-        }*/
     }
 
     private fun opciones() {
@@ -181,6 +229,41 @@ class VistaListaFragment : Fragment() {
             .setView(view)
             .create()
         dialog.show()
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun completarCompra() {
+        try{
+            lifecycleScope.launch(Dispatchers.IO) {
+                listaService.eliminarProductosDeLista(idLista, productosSeleccionadas.toList())
+                lista = listaService.getListaById(idLista)!!
+                listaProductos = productoService.getProductosByIds(lista.idProductos).toMutableList()
+                activity?.runOnUiThread {
+                    adapter.actualizarProductos(listaProductos)
+                }
+
+
+                var nombreUsuario = usuarioService.getUserNameById(userId)
+                var notificacion = Notificacion()
+                notificacion.tipo = GenericConstants.TIPO_COMPRA
+
+                notificacion.descripcion = nombreUsuario + " ha completado la compra " + lista.titulo
+                notificacion.idsUsuarios += lista.idsUsuariosCompartidos
+                notificacion.idsUsuarios += userId
+                notificacion.idProductos += lista.idProductos
+
+                val fechaActual = LocalDate.now()
+                val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+                notificacion.fecha = fechaActual.format(formatter)
+
+                notificacionesService.saveNotificacion(notificacion)
+                withContext(Dispatchers.Main) {
+                    Utils.mostrarMensaje(requireContext(), "Compra completada")
+                }
+            }
+        }catch (e : Error){
+            Utils.mostrarMensaje(requireContext(), e.message.toString())
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -242,6 +325,11 @@ class VistaListaFragment : Fragment() {
                                             notificacion.descripcion = nombreUsuario + " ha compartido la lista " + lista.titulo + " con " + usuario.nombre
                                             notificacion.idsUsuarios += usuario.id
                                             notificacion.idsUsuarios += userId
+
+                                            val fechaActual = LocalDate.now()
+                                            val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+                                            notificacion.fecha = fechaActual.format(formatter)
+
 
                                             notificacionesService.saveNotificacion(notificacion)
                                             Utils.mostrarMensaje(requireContext(), "Lista "+ lista.titulo + " compartida con " + usuario.nombre)

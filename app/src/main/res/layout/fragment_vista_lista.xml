@@ -34,19 +34,35 @@
 
             tools:ignore="MissingConstraints"
             >
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/categorias"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="match_parent"
+                android:layout_marginEnd="80sp"
+                android:layout_height="wrap_content"
+                android:textSize="15sp">
+
+                <AutoCompleteTextView
+                    android:id="@+id/autoCompleteTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/title_añadir_producto"
+                    android:padding="10sp" />
+            </com.google.android.material.textfield.TextInputLayout>
             <ImageButton
                 android:id="@+id/btnEscanear"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
-                android:layout_marginEnd="25dp"
-                android:layout_marginTop="50dp"
-                android:layout_marginBottom="20sp"
                 android:scaleType="centerInside"
+                android:layout_marginEnd="5sp"
                 android:adjustViewBounds="true"
                 android:src="@drawable/baseline_barcode_reader_24"
                 android:background="@drawable/btn_circular"
                 android:elevation="6dp"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 android:contentDescription="@string/cuenta_fragment_et_boton_de_editar"
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -54,7 +70,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_productos"
             android:layout_width="match_parent"
-            android:layout_height="400sp"
+            android:layout_height="450sp"
             android:layout_marginTop="15dp"
             android:background="@drawable/edittext_border"
             app:layout_constraintEnd_toEndOf="parent"
@@ -80,6 +96,16 @@
             android:text="@string/vista_lista_btn_opciones"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnCompletarCompra"
+            style="@style/ButtonAccept"
+            />
+        <Button
+            android:id="@+id/btnCompletarCompra"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/vista_lista_btn_completar_compra"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btnOpciones"
             app:layout_constraintEnd_toEndOf="parent"
             style="@style/ButtonAccept"
             />

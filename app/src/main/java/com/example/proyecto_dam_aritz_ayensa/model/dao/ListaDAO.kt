@@ -55,6 +55,22 @@ class ListaDAO {
         }
     }
 
+    suspend fun eliminarProductosDeLista(idLista: String, idsAEliminar: List<String>) {
+        if (idLista.isBlank()) {
+            throw IllegalArgumentException("El ID de la lista no puede estar vacío")
+        }
+        if (idsAEliminar.isEmpty()) throw IllegalArgumentException("La lista esta vacía")
+
+        try {
+            listasCollection.document(idLista)
+                .update("idProductos", FieldValue.arrayRemove(*idsAEliminar.toTypedArray()))
+                .await()
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Error al completar compra")
+        }
+    }
+
+
 
     suspend fun getMisListasByUsuarioId(idListas: List<String>): List<Lista> {
         if (idListas.isEmpty()) return emptyList()

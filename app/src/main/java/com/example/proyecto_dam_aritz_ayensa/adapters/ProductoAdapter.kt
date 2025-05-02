@@ -72,6 +72,7 @@ class ProductoAdapter(
         productos.addAll(nuevosProductos)
         notifyDataSetChanged()
     }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == VIEW_ITEM_PRODUCTO) {
             val view = LayoutInflater.from(parent.context)
