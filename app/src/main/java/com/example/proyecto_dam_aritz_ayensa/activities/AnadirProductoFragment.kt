@@ -31,7 +31,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import androidx.core.widget.addTextChangedListener
-
+import com.example.proyecto_dam_aritz_ayensa.model.service.NotificacionService
 
 
 class AnadirProductoFragment : Fragment() {
@@ -45,6 +45,7 @@ class AnadirProductoFragment : Fragment() {
     private val categorias = listOf("Fruta", "Verdura", "Carne", "Pescado","Limpieza","Higiene", "Otros")
     private lateinit var listaService: ListaService
     private lateinit var usuarioService: UsuarioService
+    private lateinit var notificacionService: NotificacionService
     private lateinit var productoService: ProductoService
     private lateinit var sessionManager: SessionManager
     private var productos: List<Producto> = emptyList()
@@ -64,7 +65,7 @@ class AnadirProductoFragment : Fragment() {
         _binding = FragmentAnadirProductoBinding.inflate(inflater, container, false)
 
         listaService = ListaService(ListaDAO())
-        usuarioService = UsuarioService(UsuarioDAO())
+        usuarioService = UsuarioService(UsuarioDAO(),notificacionService)
         productoService = ProductoService(ProductoDAO())
         sessionManager = SessionManager(requireContext())
         userId = sessionManager.getUserId().toString()

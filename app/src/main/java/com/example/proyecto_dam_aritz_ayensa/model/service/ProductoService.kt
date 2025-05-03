@@ -8,7 +8,6 @@ import com.example.proyecto_dam_aritz_ayensa.model.entity.Producto
 
 
 class ProductoService(private val productoDAO: ProductoDAO) {
-    private var usuarioService = UsuarioService(UsuarioDAO())
 
     suspend fun saveProducto(producto: Producto) : String {
         return productoDAO.saveProducto(producto)

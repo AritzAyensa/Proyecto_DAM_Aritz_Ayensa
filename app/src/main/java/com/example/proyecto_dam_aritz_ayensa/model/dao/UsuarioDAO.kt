@@ -3,12 +3,20 @@ package com.example.proyecto_dam_aritz_ayensa.model.dao
 
 import android.util.Log
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Lista
+import com.example.proyecto_dam_aritz_ayensa.model.entity.Notificacion
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Usuario
+import com.example.proyecto_dam_aritz_ayensa.model.service.NotificacionService
 import com.example.proyecto_dam_aritz_ayensa.utils.HashUtil
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 
@@ -52,6 +60,7 @@ class UsuarioDAO {
                         "email" to email,
                         "idListas" to listOf<String>(),
                         "idListasCompartidas" to listOf<String>(),
+                        "idsNotificaciones" to mapOf<String, Boolean>(),
 
                     )
 
@@ -144,6 +153,98 @@ class UsuarioDAO {
             -1 // Opcional: Retornar -1 en caso de error
         }
     }
+
+    suspend fun añadirNotificacionAUsuarios(
+        idsUsuarios: List<String>,
+        idNotificacion: String
+    ) {
+        val db = FirebaseFirestore.getInstance()
+        val usuariosCollection = db.collection("usuarios")
+
+        for (idUsuario in idsUsuarios) {
+            val usuarioRef = usuariosCollection.document(idUsuario)
+
+            // Añadir el ID de notificación al map con valor false (no leída)
+            usuarioRef.update("idsNotificaciones.$idNotificacion", false).await()
+        }
+    }
+
+    suspend fun eliminarNotificacionesDeUsuarios(idUsuario : String, idsNotificaciones: List<String>) {
+        val usuarioRef = usuariosCollection.document(idUsuario)
+
+        // Para cada ID de notificación, elimina el campo correspondiente del mapa
+        for (idNotificacion in idsNotificaciones) {
+            usuarioRef.update("idsNotificaciones.$idNotificacion", FieldValue.delete()).await()
+        }
+
+    }
+
+    suspend fun marcarNotificacionComoLeida(idUsuario: String, idNotificacion: String) {
+        val db = FirebaseFirestore.getInstance()
+        val usuarioRef = db.collection("usuarios").document(idUsuario)
+
+        usuarioRef.update("idsNotificaciones.$idNotificacion", true).await()
+    }
+
+    suspend fun marcarNotificacionesComoLeidas(idUsuario: String, idsNotificaciones: List<String>) {
+        val db = FirebaseFirestore.getInstance()
+        val usuarioRef = db.collection("usuarios").document(idUsuario)
+
+        val updates = idsNotificaciones.associate { "idsNotificaciones.$it" to true }
+        usuarioRef.update(updates).await()
+    }
+
+
+    fun notificacionesSinLeerCountFlow(userId: String): Flow<Int> = callbackFlow {
+        val docRef = usuariosCollection.document(userId)
+
+        val registration = docRef.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                close(error)
+            } else if (snapshot != null && snapshot.exists()) {
+                val notificacionesMap = snapshot.get("idsNotificaciones") as? Map<*, *>
+                val noLeidas = notificacionesMap?.values?.count { it == false } ?: 0
+                trySend(noLeidas).isSuccess
+            }
+        }
+
+        awaitClose { registration.remove() }
+    }
+
+    fun notificacionesUsuarioFlow(
+        userId: String,
+        notificacionService: NotificacionService
+    ): Flow<List<Notificacion>> = callbackFlow {
+        val docRef = usuariosCollection.document(userId)
+
+        val listener = docRef.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                close(error)
+                return@addSnapshotListener
+            }
+
+            if (snapshot != null && snapshot.exists()) {
+                val map = snapshot.get("idsNotificaciones") as? Map<*, *>
+                val ids = map?.keys?.filterIsInstance<String>() ?: emptyList()
+
+                // Llama al servicio para obtener las notificaciones
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        val notificaciones = notificacionService.getNotificacionesByIds(ids)
+                        trySend(notificaciones).isSuccess
+                    } catch (e: Exception) {
+                        close(e)
+                    }
+                }
+            }
+        }
+
+        awaitClose { listener.remove() }
+    }
+
+
+
+
 
     /**
      * Método: getUser

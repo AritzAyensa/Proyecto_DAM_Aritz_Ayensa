@@ -4,11 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -45,6 +49,7 @@ class NotificationsFragment : Fragment() {
 
 
     private lateinit var btnEliminarNotificacion: Button
+    private lateinit var btnLeerNotificacion: Button
 
     private var notificaciones: List<Notificacion> = emptyList()
     private val notificacionesSeleccionadas = mutableListOf<String>()
@@ -62,15 +67,22 @@ class NotificationsFragment : Fragment() {
         _binding = FragmentNotificationsBinding.inflate(inflater, container, false)
 
         listaService = ListaService(ListaDAO())
-        usuarioService = UsuarioService(UsuarioDAO())
-        productoService = ProductoService(ProductoDAO())
         notificacionService = NotificacionService(NotificacionDAO())
+        usuarioService = UsuarioService(UsuarioDAO(), notificacionService)
+        productoService = ProductoService(ProductoDAO())
         sessionManager = SessionManager(requireContext())
         userId = sessionManager.getUserId().toString()
         progressBar = binding.loadingSpinner
+
         btnEliminarNotificacion = binding.btnEliminarNotificaciones
         btnEliminarNotificacion.setOnClickListener{
             eliminarNotificacion()
+        }
+
+
+        btnLeerNotificacion = binding.btnLeerNotificaciones
+        btnLeerNotificacion.setOnClickListener{
+            leerNotificacion()
         }
         recyclerViewNotificaciones = binding.recyclerNotificaciones
 
@@ -81,11 +93,14 @@ class NotificationsFragment : Fragment() {
     }
 
     private fun cargarNotificaciones() {
-        lifecycleScope.launch() {
-                progressBar.visibility = View.VISIBLE
-            try {
-                notificaciones = notificacionService.getNotificacionesPorUsuario(userId)
-                withContext(Dispatchers.Main) {
+        progressBar.visibility = View.VISIBLE
+
+        lifecycleScope.launch {
+            usuarioService.notificacionesUsuarioFlow(userId)
+                .flowWithLifecycle(lifecycle)
+                .collect { notificaciones ->
+                    progressBar.visibility = View.GONE
+
                     adapter = NotificacionAdapter(
                         notificaciones,
                         onItemClick = { Utils.mostrarMensaje(requireContext(), "click") },
@@ -97,30 +112,57 @@ class NotificationsFragment : Fragment() {
 
                     recyclerViewNotificaciones.apply {
                         layoutManager = LinearLayoutManager(requireContext())
-                        this.adapter = this@NotificationsFragment.adapter
+                        adapter = this@NotificationsFragment.adapter
                     }
-                    progressBar.visibility = View.GONE
                 }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    progressBar.visibility = View.GONE
-                    Utils.mostrarMensaje(requireContext(), "Error: ${e.message}")
-                }
-            }
         }
     }
+
 
     private fun eliminarNotificacion() {
+        if (notificacionesSeleccionadas.isEmpty()) {
+            Utils.mostrarMensaje(requireContext(), "Seleccione al menos una notificación")
+            return
+        }
+
+        val dialog = AlertDialog.Builder(requireContext())
+            .setTitle("Eliminar notificaciones seleccionadas")
+            .setNegativeButton("Cancelar", null)
+            .create()
+
+        dialog.setButton(AlertDialog.BUTTON_POSITIVE, "Eliminar") { _, _ -> }
+
+        dialog.setOnShowListener {
+            val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            positiveButton.setOnClickListener {
+                lifecycleScope.launch {
+                    usuarioService.eliminarNotificacionesDeUsuarios(userId, notificacionesSeleccionadas)
+                    dialog.dismiss()
+                }
+            }
+        }
+
+        dialog.window?.apply {
+            setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
+            setLayout(
+                (resources.displayMetrics.widthPixels * 0.85).toInt(),
+                WindowManager.LayoutParams.WRAP_CONTENT
+            )
+        }
+
+        dialog.show()
+    }
+
+    private fun leerNotificacion() {
         if (notificacionesSeleccionadas.isEmpty()){
-            Utils.mostrarMensaje(requireContext(), "Seleccione al menos una lista")
+            Utils.mostrarMensaje(requireContext(), "Seleccione al menos una notificacion")
         }else{
             lifecycleScope.launch {
-                notificacionService.eliminarNotificaciones(notificacionesSeleccionadas, userId)
-                cargarNotificaciones()
-
+                usuarioService.marcarNotificacionesComoLeidas(userId, notificacionesSeleccionadas)
             }
         }
     }
+
 
 
     override fun onDestroyView() {

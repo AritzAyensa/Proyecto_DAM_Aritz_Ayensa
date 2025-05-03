@@ -12,13 +12,16 @@ import kotlinx.coroutines.flow.flowOn
 
 
 class NotificacionService(private val notificacionDAO: NotificacionDAO) {
-    private var usuarioService = UsuarioService(UsuarioDAO())
     suspend fun saveNotificacion(notificacion: Notificacion):String {
         return notificacionDAO.saveNotificacion(notificacion)
     }
 
     suspend fun getNotificacionesPorUsuario(idUsuario: String) : List<Notificacion>{
         return notificacionDAO.getNotificacionesPorUsuario(idUsuario)
+    }
+
+    suspend fun getNotificacionesByIds(idNotificaciones: List<String>) : List<Notificacion>{
+        return notificacionDAO.getNotificacionesByIds(idNotificaciones)
     }
 
 

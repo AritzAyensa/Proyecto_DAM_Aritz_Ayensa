@@ -14,11 +14,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.example.proyecto_dam_aritz_ayensa.databinding.FragmentCrearProductoBinding
 import com.example.proyecto_dam_aritz_ayensa.model.dao.ListaDAO
+import com.example.proyecto_dam_aritz_ayensa.model.dao.NotificacionDAO
 import com.example.proyecto_dam_aritz_ayensa.model.dao.ProductoDAO
 import com.example.proyecto_dam_aritz_ayensa.model.dao.UsuarioDAO
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Lista
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Producto
 import com.example.proyecto_dam_aritz_ayensa.model.service.ListaService
+import com.example.proyecto_dam_aritz_ayensa.model.service.NotificacionService
 import com.example.proyecto_dam_aritz_ayensa.model.service.ProductoService
 import com.example.proyecto_dam_aritz_ayensa.model.service.UsuarioService
 import com.example.proyecto_dam_aritz_ayensa.utils.SessionManager
@@ -45,6 +47,7 @@ class CrearProductoFragment : Fragment() {
 
     private lateinit var listaService: ListaService
     private lateinit var usuarioService: UsuarioService
+    private lateinit var notificacionService: NotificacionService
     private lateinit var productoService: ProductoService
     private lateinit var sessionManager: SessionManager
 
@@ -64,7 +67,9 @@ class CrearProductoFragment : Fragment() {
         _binding = FragmentCrearProductoBinding.inflate(inflater, container, false)
 
         listaService = ListaService(ListaDAO())
-        usuarioService = UsuarioService(UsuarioDAO())
+
+        notificacionService = NotificacionService(NotificacionDAO())
+        usuarioService = UsuarioService(UsuarioDAO(), notificacionService)
         productoService = ProductoService(ProductoDAO())
         sessionManager = SessionManager(requireContext())
         userId = sessionManager.getUserId().toString()

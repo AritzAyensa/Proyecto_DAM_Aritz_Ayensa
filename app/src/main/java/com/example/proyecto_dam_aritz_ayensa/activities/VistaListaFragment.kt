@@ -94,8 +94,8 @@ class VistaListaFragment : Fragment() {
 
         listaService = ListaService(ListaDAO())
         productoService = ProductoService(ProductoDAO())
-        usuarioService = UsuarioService(UsuarioDAO())
         notificacionesService = NotificacionService(NotificacionDAO())
+        usuarioService = UsuarioService(UsuarioDAO(), notificacionesService)
         sessionManager = SessionManager(requireContext())
         userId = sessionManager.getUserId().toString()
         progressBar = binding.loadingSpinner
@@ -248,15 +248,20 @@ class VistaListaFragment : Fragment() {
                 notificacion.tipo = GenericConstants.TIPO_COMPRA
 
                 notificacion.descripcion = nombreUsuario + " ha completado la compra " + lista.titulo
-                notificacion.idsUsuarios += lista.idsUsuariosCompartidos
-                notificacion.idsUsuarios += userId
+
+                var idsUsuarios : List<String> = lista.idsUsuariosCompartidos
+                idsUsuarios += userId
                 notificacion.idProductos += lista.idProductos
+
+
 
                 val fechaActual = LocalDate.now()
                 val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
                 notificacion.fecha = fechaActual.format(formatter)
 
-                notificacionesService.saveNotificacion(notificacion)
+                val idNotificacion = notificacionesService.saveNotificacion(notificacion)
+                usuarioService.añadirNotificacionAUsuarios(idsUsuarios, idNotificacion)
+
                 withContext(Dispatchers.Main) {
                     Utils.mostrarMensaje(requireContext(), "Compra completada")
                 }
@@ -323,15 +328,20 @@ class VistaListaFragment : Fragment() {
                                             notificacion.tipo = GenericConstants.TIPO_LISTA_COMPRATIDA
 
                                             notificacion.descripcion = nombreUsuario + " ha compartido la lista " + lista.titulo + " con " + usuario.nombre
-                                            notificacion.idsUsuarios += usuario.id
-                                            notificacion.idsUsuarios += userId
+
+                                            var idsUsuarios : List<String> = lista.idsUsuariosCompartidos
+                                            idsUsuarios += userId
+                                            notificacion.idProductos += lista.idProductos
+
+
 
                                             val fechaActual = LocalDate.now()
                                             val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
                                             notificacion.fecha = fechaActual.format(formatter)
 
+                                            val idNotificacion = notificacionesService.saveNotificacion(notificacion)
+                                            usuarioService.añadirNotificacionAUsuarios(idsUsuarios, idNotificacion)
 
-                                            notificacionesService.saveNotificacion(notificacion)
                                             Utils.mostrarMensaje(requireContext(), "Lista "+ lista.titulo + " compartida con " + usuario.nombre)
                                             dialog.dismiss()
                                         }

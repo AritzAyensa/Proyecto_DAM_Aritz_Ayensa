@@ -18,8 +18,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.proyecto_dam_aritz_ayensa.R
+import com.example.proyecto_dam_aritz_ayensa.model.dao.NotificacionDAO
 import com.example.proyecto_dam_aritz_ayensa.model.dao.UsuarioDAO
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Usuario
+import com.example.proyecto_dam_aritz_ayensa.model.service.NotificacionService
 import com.example.proyecto_dam_aritz_ayensa.model.service.UsuarioService
 import com.example.proyecto_dam_aritz_ayensa.utils.HashUtil
 import com.example.proyecto_dam_aritz_ayensa.utils.SessionManager
@@ -29,6 +31,7 @@ import com.google.firebase.auth.FirebaseAuthException
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var usuarioService: UsuarioService
+    private lateinit var notificacionService: NotificacionService
     private lateinit var sessionManager: SessionManager
     private lateinit var rememberCheck: CheckBox
     private lateinit var inputCorreo: EditText
@@ -40,7 +43,9 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-        usuarioService = UsuarioService(UsuarioDAO())
+
+        notificacionService = NotificacionService(NotificacionDAO())
+        usuarioService = UsuarioService(UsuarioDAO(), notificacionService)
 
         // Verificar y solicitar permisos de notificación
         verificarYSolicitarPermisos()
@@ -48,7 +53,6 @@ class LoginActivity : AppCompatActivity() {
         rememberCheck = findViewById(R.id.check_Remember)
         inputCorreo = findViewById(R.id.login_et_usuario)
         inputContra = findViewById(R.id.login_et_contraUser)
-        usuarioService = UsuarioService(UsuarioDAO())
         sessionManager = SessionManager(this)
         println("Estado de REMEMBER_CHECK en inicio: ${sessionManager.isChecked()}")
 

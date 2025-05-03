@@ -21,8 +21,10 @@ import com.example.proyecto_dam_aritz_ayensa.activities.CrearListaFragment
 import com.example.proyecto_dam_aritz_ayensa.adapters.ListaAdapter
 import com.example.proyecto_dam_aritz_ayensa.databinding.FragmentInicioBinding
 import com.example.proyecto_dam_aritz_ayensa.model.dao.ListaDAO
+import com.example.proyecto_dam_aritz_ayensa.model.dao.NotificacionDAO
 import com.example.proyecto_dam_aritz_ayensa.model.dao.UsuarioDAO
 import com.example.proyecto_dam_aritz_ayensa.model.service.ListaService
+import com.example.proyecto_dam_aritz_ayensa.model.service.NotificacionService
 import com.example.proyecto_dam_aritz_ayensa.model.service.UsuarioService
 import com.example.proyecto_dam_aritz_ayensa.utils.SessionManager
 import com.example.proyecto_dam_aritz_ayensa.utils.Utils
@@ -42,6 +44,7 @@ class InicioFragment : Fragment() {
 
     private lateinit var listaService: ListaService
     private lateinit var usuarioService: UsuarioService
+    private lateinit var notificacionesService: NotificacionService
     private lateinit var sessionManager: SessionManager
     private lateinit var progressBar : ProgressBar
     private lateinit var progressBar2 : ProgressBar
@@ -58,7 +61,8 @@ class InicioFragment : Fragment() {
         _binding = FragmentInicioBinding.inflate(inflater, container, false)
 
         listaService = ListaService(ListaDAO())
-        usuarioService = UsuarioService(UsuarioDAO())
+        notificacionesService = NotificacionService(NotificacionDAO())
+        usuarioService = UsuarioService(UsuarioDAO(), notificacionesService)
         sessionManager = SessionManager(requireContext())
 
 

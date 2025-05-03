@@ -8,14 +8,17 @@ import android.widget.EditText
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.example.proyecto_dam_aritz_ayensa.R
+import com.example.proyecto_dam_aritz_ayensa.model.dao.NotificacionDAO
 import com.example.proyecto_dam_aritz_ayensa.model.service.UsuarioService
 import com.example.proyecto_dam_aritz_ayensa.model.dao.UsuarioDAO
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Usuario
+import com.example.proyecto_dam_aritz_ayensa.model.service.NotificacionService
 import com.example.proyecto_dam_aritz_ayensa.utils.Utils
 
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var usuarioService: UsuarioService
+    private lateinit var notificacionService: NotificacionService
     private lateinit var inputCorreo: EditText
     private lateinit var inputContraseña: EditText
 
@@ -23,7 +26,8 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
-        usuarioService = UsuarioService(UsuarioDAO())
+        notificacionService = NotificacionService(NotificacionDAO())
+        usuarioService = UsuarioService(UsuarioDAO(), notificacionService)
         inputCorreo = findViewById(R.id.register_et_usuario)
         inputContraseña = findViewById(R.id.register_et_contraUser)
 

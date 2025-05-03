@@ -13,7 +13,9 @@ import androidx.fragment.app.Fragment
 import com.example.proyecto_dam_aritz_ayensa.activities.EditarPerfilActivity
 import com.example.proyecto_dam_aritz_ayensa.activities.LoginActivity
 import com.example.proyecto_dam_aritz_ayensa.databinding.FragmentCuentaBinding
+import com.example.proyecto_dam_aritz_ayensa.model.dao.NotificacionDAO
 import com.example.proyecto_dam_aritz_ayensa.model.dao.UsuarioDAO
+import com.example.proyecto_dam_aritz_ayensa.model.service.NotificacionService
 import com.example.proyecto_dam_aritz_ayensa.model.service.UsuarioService
 import com.example.proyecto_dam_aritz_ayensa.utils.SessionManager
 
@@ -28,6 +30,7 @@ class CuentaFragment : Fragment() {
 
     lateinit var buttonEditar : ImageButton
     private lateinit var usuarioService: UsuarioService
+    private lateinit var notificacionesService: NotificacionService
     private lateinit var sessionManager: SessionManager
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -41,7 +44,8 @@ class CuentaFragment : Fragment() {
 
         _binding = FragmentCuentaBinding.inflate(inflater, container, false)
 
-        usuarioService = UsuarioService(UsuarioDAO())
+        notificacionesService = NotificacionService(NotificacionDAO())
+        usuarioService = UsuarioService(UsuarioDAO(), notificacionesService)
         sessionManager = SessionManager(requireContext())
         userId = sessionManager.getUserId().toString()
 

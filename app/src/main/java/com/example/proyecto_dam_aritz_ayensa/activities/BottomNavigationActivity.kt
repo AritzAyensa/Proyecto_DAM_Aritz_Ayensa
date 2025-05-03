@@ -50,7 +50,7 @@ class BottomNavigationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityBottomNavigationBinding.inflate(layoutInflater)
         notificacionService = NotificacionService(NotificacionDAO())
-        usuarioService = UsuarioService(UsuarioDAO())
+        usuarioService = UsuarioService(UsuarioDAO(), notificacionService)
 
         sessionManager = SessionManager(this)
         userId = sessionManager.getUserId().toString()
@@ -82,19 +82,6 @@ class BottomNavigationActivity : AppCompatActivity() {
         // Obtén la referencia a tu BottomNavigationView
         val bottomNav = findViewById<BottomNavigationView>(R.id.nav_view)
 
-        /*// Identificador del item de notificaciones en tu menú
-        val itemIdNotifs = R.id.navigation_notifications
-
-        lifecycleScope.launch() {
-            notificaciones = notificacionService.getNotificacionesPorUsuario(userId)
-            if(notificaciones.isNotEmpty()){
-                val badge = bottomNav.getOrCreateBadge(itemIdNotifs).apply {
-                    isVisible = true
-                    number = notificaciones.size
-                }
-            }
-        }*/
-
         observeNotificationCount(userId)
 
         navController.addOnDestinationChangedListener { _, dest, _ ->
@@ -121,7 +108,7 @@ class BottomNavigationActivity : AppCompatActivity() {
         val notifItemId = R.id.navigation_notifications
 
         lifecycleScope.launch {
-            notificacionService.getNotificacionesCountFlow(userId)
+            usuarioService.notificacionesSinLeerCountFlow(userId)
                 .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
                 .collect { count ->
                     /*bottomNav.removeBadge(notifItemId)*/

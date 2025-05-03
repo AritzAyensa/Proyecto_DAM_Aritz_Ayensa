@@ -4,6 +4,7 @@ package com.example.proyecto_dam_aritz_ayensa.model.dao
 import android.util.Log
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Lista
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Notificacion
+import com.example.proyecto_dam_aritz_ayensa.model.entity.Producto
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FieldPath
@@ -55,6 +56,24 @@ class NotificacionDAO {
             Log.e("NotificacionDAO", "Error al obtener notificaciones para el usuario $idUsuario", e)
             emptyList()
         }
+    }
+
+    suspend fun getNotificacionesByIds(idNotificaciones: List<String>): List<Notificacion> {
+        if (idNotificaciones.isEmpty()) return emptyList()
+
+        val notificaciones = mutableListOf<Notificacion>()
+        val chunks = idNotificaciones.chunked(10)
+
+        for (chunk in chunks) {
+            val querySnapshot = notificacionesCollection
+                .whereIn(FieldPath.documentId(), chunk)
+                .get()
+                .await()
+
+            notificaciones.addAll(querySnapshot.toObjects(Notificacion::class.java))
+        }
+
+        return notificaciones
     }
 
 

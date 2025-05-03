@@ -1,6 +1,12 @@
 package com.example.proyecto_dam_aritz_ayensa.model.service
+import com.example.proyecto_dam_aritz_ayensa.model.dao.NotificacionDAO
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Usuario
 import com.example.proyecto_dam_aritz_ayensa.model.dao.UsuarioDAO
+import com.example.proyecto_dam_aritz_ayensa.model.entity.Notificacion
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOn
 
 /**
  * Clase UsuarioService
@@ -10,36 +16,8 @@ import com.example.proyecto_dam_aritz_ayensa.model.dao.UsuarioDAO
  *
  * @property usuarioDAO Instancia de UsuarioDAO para realizar operaciones de base de datos.
  */
-class UsuarioService(private val usuarioDAO: UsuarioDAO) {
-
-    /**
-     * Método: saveUser
-     *
-     * Guarda un nuevo usuario en la base de datos después de verificar si ya existe un usuario con el mismo correo electrónico.
-     *
-     * @param usuario Objeto Usuario que contiene la información del usuario a guardar.
-     * @param onSuccess Función de callback que se ejecuta si la operación es exitosa.
-     * @param onFailure Función de callback que se ejecuta si ocurre un error durante la operación.
-     */
-    /*fun saveUser(nombre: String,email: String,contraseña: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
-        // Verificar si ya existe un usuario con el mismo correo electrónico
-        usuarioDAO.getUserByEmail(email,
-            onSuccess = { usuarioExistente ->
-                if (usuarioExistente != null) {
-                    // Si el usuario ya existe, notificar el error
-                    onFailure(Exception("El usuario ya está registrado con este correo electrónico."))
-                } else {
-                    // Si el usuario no existe, proceder a guardarlo
-                    onSuccess()
-                    usuarioDAO.saveUser(nombre, email, contraseña, onSuccess, onFailure)
-                }
-            },
-            onFailure = { exception ->
-                // Manejar errores durante la verificación
-                onFailure(exception)
-            }
-        )
-    }*/
+class UsuarioService(private val usuarioDAO: UsuarioDAO,
+                     private val notificacionService: NotificacionService) {
     fun saveUser(nombre: String, email: String, contraseña: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
         // Elimina la verificación previa de usuarioExistente
         usuarioDAO.saveUser(nombre, email, contraseña, onSuccess, onFailure)
@@ -64,14 +42,34 @@ class UsuarioService(private val usuarioDAO: UsuarioDAO) {
     }
 
 
+    suspend fun añadirNotificacionAUsuarios(idsUsuarios: List<String>, idNotificacion: String) {
+        usuarioDAO.añadirNotificacionAUsuarios(idsUsuarios, idNotificacion)
+    }
+
+    suspend fun eliminarNotificacionesDeUsuarios(idUsuario : String, idsNotificaciones: List<String>) {
+        usuarioDAO.eliminarNotificacionesDeUsuarios(idUsuario, idsNotificaciones)
+    }
+    suspend fun marcarNotificacionComoLeida(idUsuario: String, idNotificacion: String) {
+        usuarioDAO.marcarNotificacionComoLeida(idUsuario, idNotificacion)
+    }
+    suspend fun marcarNotificacionesComoLeidas(idUsuario: String, idsNotificaciones: List<String>) {
+        usuarioDAO.marcarNotificacionesComoLeidas(idUsuario, idsNotificaciones)
+    }
+
     suspend fun getUserNameById(usuarioID: String) : String? {
         return usuarioDAO.getUserNameById(usuarioID)
     }
+    fun notificacionesSinLeerCountFlow(userId: String): Flow<Int> {
+        return usuarioDAO.notificacionesSinLeerCountFlow(userId)
+            .distinctUntilChanged()
+            .flowOn(Dispatchers.IO)
+    }
+    fun notificacionesUsuarioFlow(userId: String): Flow<List<Notificacion>> {
+        return usuarioDAO.notificacionesUsuarioFlow(userId, notificacionService)
+            .distinctUntilChanged()
+            .flowOn(Dispatchers.IO)
+    }
 
-
-    /*suspend fun getUserIdByEmail(email: String): String? {
-        return usuarioDAO.getUserIdByEmail(email)
-    }*/
 
     /**
      * Método: getAllUsers

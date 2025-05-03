@@ -16,9 +16,11 @@ import androidx.navigation.fragment.findNavController
 import com.example.proyecto_dam_aritz_ayensa.R
 import com.example.proyecto_dam_aritz_ayensa.databinding.FragmentCrearListaBinding
 import com.example.proyecto_dam_aritz_ayensa.model.dao.ListaDAO
+import com.example.proyecto_dam_aritz_ayensa.model.dao.NotificacionDAO
 import com.example.proyecto_dam_aritz_ayensa.model.dao.UsuarioDAO
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Lista
 import com.example.proyecto_dam_aritz_ayensa.model.service.ListaService
+import com.example.proyecto_dam_aritz_ayensa.model.service.NotificacionService
 import com.example.proyecto_dam_aritz_ayensa.model.service.UsuarioService
 import com.example.proyecto_dam_aritz_ayensa.utils.SessionManager
 import com.example.proyecto_dam_aritz_ayensa.utils.Utils
@@ -41,6 +43,7 @@ class CrearListaFragment : Fragment() {
 
     private lateinit var lisaService: ListaService
     private lateinit var usuarioService: UsuarioService
+    private lateinit var notificacionService: NotificacionService
     private lateinit var sessionManager: SessionManager
 
     private var colorSeleccionado: String = "#FF0000"
@@ -57,7 +60,9 @@ class CrearListaFragment : Fragment() {
     ): View? {
         _binding = FragmentCrearListaBinding.inflate(inflater, container, false)
         lisaService = ListaService(ListaDAO())
-        usuarioService = UsuarioService(UsuarioDAO())
+
+        notificacionService = NotificacionService(NotificacionDAO())
+        usuarioService = UsuarioService(UsuarioDAO(), notificacionService)
         sessionManager = SessionManager(requireContext())
         idUsuario = sessionManager.getUserId().toString()
 

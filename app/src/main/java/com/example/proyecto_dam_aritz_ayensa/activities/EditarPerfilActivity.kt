@@ -10,8 +10,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.proyecto_dam_aritz_ayensa.R
+import com.example.proyecto_dam_aritz_ayensa.model.dao.NotificacionDAO
 import com.example.proyecto_dam_aritz_ayensa.model.dao.UsuarioDAO
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Usuario
+import com.example.proyecto_dam_aritz_ayensa.model.service.NotificacionService
 import com.example.proyecto_dam_aritz_ayensa.model.service.UsuarioService
 import com.example.proyecto_dam_aritz_ayensa.utils.SessionManager
 import com.example.proyecto_dam_aritz_ayensa.utils.Utils
@@ -19,6 +21,7 @@ import com.example.proyecto_dam_aritz_ayensa.utils.Utils
 class EditarPerfilActivity : AppCompatActivity() {
     private lateinit var sessionManager: SessionManager
     private lateinit var usuarioService: UsuarioService
+    private lateinit var notificacionService: NotificacionService
 
     // Datos del usuario
     private lateinit var etNombre: EditText
@@ -37,7 +40,8 @@ class EditarPerfilActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_editar_perfil)
-        usuarioService = UsuarioService(UsuarioDAO())
+        notificacionService = NotificacionService(NotificacionDAO())
+        usuarioService = UsuarioService(UsuarioDAO(), notificacionService)
         sessionManager = SessionManager(this)
         userId = sessionManager.getUserId().toString()
 

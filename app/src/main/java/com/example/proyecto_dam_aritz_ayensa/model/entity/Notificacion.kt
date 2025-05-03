@@ -6,7 +6,7 @@ data class Notificacion (
     var id: String = "",
     var tipo: Int = 0,
     var descripcion: String = "",
-    var idsUsuarios: List<String> = emptyList(),
+    /*var idsUsuarios: List<String> = emptyList(),*/
     var idProductos: List<String> = emptyList(),
     var precio: Double = 0.0,
     var fecha: String = "",

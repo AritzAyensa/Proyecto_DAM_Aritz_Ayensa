@@ -13,7 +13,6 @@ import com.example.proyecto_dam_aritz_ayensa.model.entity.Lista
  * @property usuarioDAO Instancia de UsuarioDAO para realizar operaciones de base de datos.
  */
 class ListaService(private val listaDAO: ListaDAO) {
-    private var usuarioService = UsuarioService(UsuarioDAO())
     /**
      * Método: saveUser
      *
