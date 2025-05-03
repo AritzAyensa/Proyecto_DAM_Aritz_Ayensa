@@ -57,7 +57,7 @@ class VistaListaFragment : Fragment() {
 
     private var _binding: FragmentVistaListaBinding? = null
     private val binding get() = _binding!!
-    
+
     lateinit var buttonOpciones : Button
     lateinit var buttonCompletarCompra : Button
     lateinit var buttonEscanear : ImageButton

@@ -62,16 +62,6 @@
                 android:text="@string/eliminar_notificacion"
                 style="@style/ButtonAccept"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/btnLeerNotificaciones"
-                app:layout_constraintBottom_toBottomOf="parent"
-                tools:ignore="MissingConstraints" />
-            <Button
-                android:id="@+id/btnLeerNotificaciones"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/marcar_como_le_do"
-                style="@style/ButtonAccept"
-                app:layout_constraintStart_toEndOf="@id/btnEliminarNotificaciones"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 tools:ignore="MissingConstraints" />

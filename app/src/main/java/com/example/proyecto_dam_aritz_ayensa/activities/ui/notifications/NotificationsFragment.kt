@@ -80,10 +80,10 @@ class NotificationsFragment : Fragment() {
         }
 
 
-        btnLeerNotificacion = binding.btnLeerNotificaciones
+        /*btnLeerNotificacion = binding.btnLeerNotificaciones
         btnLeerNotificacion.setOnClickListener{
             leerNotificacion()
-        }
+        }*/
         recyclerViewNotificaciones = binding.recyclerNotificaciones
 
 
@@ -100,7 +100,6 @@ class NotificationsFragment : Fragment() {
                 .flowWithLifecycle(lifecycle)
                 .collect { notificaciones ->
                     progressBar.visibility = View.GONE
-
                     adapter = NotificacionAdapter(
                         notificaciones,
                         onItemClick = { Utils.mostrarMensaje(requireContext(), "click") },
@@ -109,7 +108,9 @@ class NotificationsFragment : Fragment() {
                             else            notificacionesSeleccionadas.remove(notif.id)
                         }
                     )
-
+                    lifecycleScope.launch {
+                        usuarioService.marcarNotificacionesComoLeidas(userId, notificaciones.map { it.id })
+                    }
                     recyclerViewNotificaciones.apply {
                         layoutManager = LinearLayoutManager(requireContext())
                         adapter = this@NotificationsFragment.adapter
@@ -153,15 +154,11 @@ class NotificationsFragment : Fragment() {
         dialog.show()
     }
 
-    private fun leerNotificacion() {
-        if (notificacionesSeleccionadas.isEmpty()){
-            Utils.mostrarMensaje(requireContext(), "Seleccione al menos una notificacion")
-        }else{
-            lifecycleScope.launch {
-                usuarioService.marcarNotificacionesComoLeidas(userId, notificacionesSeleccionadas)
-            }
+    /*private fun leerNotificacion() {
+        lifecycleScope.launch {
+            usuarioService.marcarNotificacionesComoLeidas(userId, notificaciones.map { it.id })
         }
-    }
+    }*/
 
 
 
