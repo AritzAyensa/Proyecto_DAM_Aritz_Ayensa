@@ -4,7 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".activities.CrearProductoFragment">
+    tools:context=".activities.CrearProductoFragment"
+    android:paddingTop="80dp"
+    >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -126,28 +128,7 @@
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/crearTarea_ll_elementosPrecioYcategoria">
-
-                <!-- Editar Texto de Título -->
-                <EditText
-                    android:id="@+id/crear_producto_et_prioridad"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_weight="1"
-                    android:autofillHints=""
-                    android:background="@drawable/edittext_border"
-                    android:hint="@string/crear_producto_et_prioridad"
-                    android:inputType="numberDecimal"
-                    android:maxLength="60"
-                    android:maxLines="1"
-                    android:singleLine="true"
-                    android:textColor="@color/negro"
-                    android:textColorHint="@color/negro"
-                    android:textSize="18sp" />
-
-            </LinearLayout>
+                app:layout_constraintTop_toBottomOf="@id/crearTarea_ll_elementosPrecioYcategoria"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -159,9 +140,8 @@
             android:layout_marginBottom="50dp"
             android:onClick="crearProducto"
             android:text="@string/crearTarea_btn_escanear_codigo"
-            app:layout_constraintBottom_toTopOf="@id/crear_producto_btn_cancelar"
+            app:layout_constraintTop_toBottomOf="@id/crearTarea_cl_campos"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/crear_producto_btn_cancelar"
             app:layout_constraintStart_toStartOf="parent" />
 
         <Button

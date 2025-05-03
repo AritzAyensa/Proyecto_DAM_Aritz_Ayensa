@@ -45,7 +45,6 @@ class ProductoDAO {
             "precioAproximado" to producto.precioAproximado,
             "categoria" to producto.categoria,
             "codigoBarras" to producto.codigoBarras,
-            "prioridad" to producto.prioridad,
             "idCreador" to producto.idCreador
         )
         Log.e("ProductoDAO", "Producto creado")

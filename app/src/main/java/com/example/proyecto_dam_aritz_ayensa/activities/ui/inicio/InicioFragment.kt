@@ -134,6 +134,7 @@ class InicioFragment : Fragment() {
             progressBar.visibility = View.GONE
         }
     }
+
     private fun cargarListasCompartidas() {
         Log.i("Inicio", "Cargando listas compartidas")
         lifecycleScope.launch {

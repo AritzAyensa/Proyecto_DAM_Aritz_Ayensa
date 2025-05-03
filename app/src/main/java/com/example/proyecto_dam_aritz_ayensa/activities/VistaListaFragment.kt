@@ -115,6 +115,7 @@ class VistaListaFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         cargarLista()
+
     }
 
 
@@ -200,7 +201,8 @@ class VistaListaFragment : Fragment() {
         val view = LayoutInflater.from(requireContext())
             .inflate(R.layout.dialog_opciones_lista, null)
         // Obtén referencias a los botones:
-        val btnAñadir = view.findViewById<Button>(R.id.btnAñadirCrear)
+        val btnAñadir = view.findViewById<Button>(R.id.btnBuscarProducto)
+        val btnCrear = view.findViewById<Button>(R.id.btnCrearProducto)
         val btnCompartir = view.findViewById<Button>(R.id.btnCompartir)
         val btnEliminar = view.findViewById<Button>(R.id.btnEliminar)
 
@@ -210,6 +212,11 @@ class VistaListaFragment : Fragment() {
 
         btnAñadir.setOnClickListener {
             abrirAñadirProducto()
+            dialog.dismiss()
+        }
+
+        btnCrear.setOnClickListener {
+            goToCrearProducto()
             dialog.dismiss()
         }
         btnCompartir.setOnClickListener {
@@ -278,7 +285,12 @@ class VistaListaFragment : Fragment() {
 
         dialog.show()
     }
-
+    private fun goToCrearProducto() {
+        val bundle = Bundle().apply {
+            putString("idLista", idLista)
+        }
+        findNavController().navigate(R.id.action_vistaListaFragment_to_crearProductoFragment, bundle)
+    }
 
     @SuppressLint("SetTextI18n")
     private fun compartirLista(context: Context) {
@@ -487,9 +499,7 @@ class VistaListaFragment : Fragment() {
     }
 
     private fun ordenarProductos(lista: MutableList<Producto>): MutableList<Producto> {
-        return lista
-            .sortedWith(compareBy<Producto> { productosSeleccionados.contains(it.id) }
-                .thenBy { it.prioridad }).toMutableList()
+        return lista.sortedBy { GenericConstants.PRIORIDAD_CATEGORIAS[it.categoria] ?: Double.MAX_VALUE }.toMutableList()
     }
 
     @SuppressLint("NotifyDataSetChanged")

@@ -23,6 +23,7 @@ import com.example.proyecto_dam_aritz_ayensa.model.service.ListaService
 import com.example.proyecto_dam_aritz_ayensa.model.service.NotificacionService
 import com.example.proyecto_dam_aritz_ayensa.model.service.ProductoService
 import com.example.proyecto_dam_aritz_ayensa.model.service.UsuarioService
+import com.example.proyecto_dam_aritz_ayensa.utils.GenericConstants
 import com.example.proyecto_dam_aritz_ayensa.utils.SessionManager
 import com.example.proyecto_dam_aritz_ayensa.utils.Utils
 import com.journeyapps.barcodescanner.ScanContract
@@ -43,7 +44,6 @@ class CrearProductoFragment : Fragment() {
     private lateinit var spinner: Spinner
     private lateinit var inputNombre: EditText
     private lateinit var inputPrecio: EditText
-    private lateinit var inputPrioridad: EditText
 
     private lateinit var listaService: ListaService
     private lateinit var usuarioService: UsuarioService
@@ -56,7 +56,6 @@ class CrearProductoFragment : Fragment() {
     private lateinit var buttonEscanearProducto : Button
     private lateinit var buttonCancelar : Button
 
-    private val categorias = listOf("Fruta", "Verdura", "Carne", "Pescado","Limpieza","Higiene", "Otros")
     private var categoriaSeleccionada: String = ""
 
     override fun onCreateView(
@@ -77,7 +76,6 @@ class CrearProductoFragment : Fragment() {
 
         inputNombre = binding.crearProductoEtNombre
         inputPrecio = binding.crearProductoEtPrecio
-        inputPrioridad = binding.crearProductoEtPrioridad
 
         //Obtener el id de la lista
         arguments?.let {
@@ -116,14 +114,12 @@ class CrearProductoFragment : Fragment() {
             val textNombre = inputNombre.text.toString().trim()
 
             val precio: Double = inputPrecio.text.toString().toDouble()
-            val prioridad: Double = inputPrioridad.text.toString().toDouble()
 
-            if (textNombre.isNotEmpty() && precio > 0  && prioridad > 0 && categoriaSeleccionada.isNotEmpty()) {
+            if (textNombre.isNotEmpty() && precio > 0 && categoriaSeleccionada.isNotEmpty()) {
                 val producto = Producto() 
                 producto.nombre = textNombre
                 producto.precioAproximado = precio
-                producto.prioridad = prioridad
-                producto.categoria = spinner.selectedItem.toString()
+                producto.categoria = categoriaSeleccionada
                 producto.idCreador = userId
                 producto.codigoBarras = codigoBarras
 
@@ -146,8 +142,7 @@ class CrearProductoFragment : Fragment() {
         }
     }
     private fun configurarDropdownMenu() {
-
-        val adapter = ArrayAdapter(requireContext(), R.layout.simple_list_item_1, categorias)
+        val adapter = ArrayAdapter(requireContext(), R.layout.simple_list_item_1, GenericConstants.PRIORIDAD_CATEGORIAS.keys.toList())
         val autoCompleteTextView = binding.autoCompleteTextView
         autoCompleteTextView.setAdapter(adapter)
 

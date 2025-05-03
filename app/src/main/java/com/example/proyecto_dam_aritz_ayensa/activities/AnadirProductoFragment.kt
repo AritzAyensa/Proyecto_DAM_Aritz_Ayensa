@@ -31,6 +31,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import androidx.core.widget.addTextChangedListener
+import com.example.proyecto_dam_aritz_ayensa.model.dao.NotificacionDAO
 import com.example.proyecto_dam_aritz_ayensa.model.service.NotificacionService
 
 
@@ -65,6 +66,7 @@ class AnadirProductoFragment : Fragment() {
         _binding = FragmentAnadirProductoBinding.inflate(inflater, container, false)
 
         listaService = ListaService(ListaDAO())
+        notificacionService = NotificacionService(NotificacionDAO())
         usuarioService = UsuarioService(UsuarioDAO(),notificacionService)
         productoService = ProductoService(ProductoDAO())
         sessionManager = SessionManager(requireContext())
@@ -80,7 +82,7 @@ class AnadirProductoFragment : Fragment() {
         }
         configurarDropdownMenu()
         configurarBuscador()
-        cargarBotones()
+        /*cargarBotones()*/
         cargarProductos()
         return binding.root
     }
@@ -143,20 +145,14 @@ class AnadirProductoFragment : Fragment() {
         }
     }
 
-    private fun cargarBotones() {
+    /*private fun cargarBotones() {
         buttonCrearProducto = binding.btnCrearProducto
         if (buttonCrearProducto != null) {
             buttonCrearProducto.setOnClickListener {
                 goToCrearProducto()
             }
         }
-
-        /*buttonAñadirProducto = binding.btnAnadirProducto
-        if (buttonAñadirProducto != null) {
-            buttonAñadirProducto.setOnClickListener {
-            }
-        }*/
-    }
+    }*/
     private fun configurarDropdownMenu() {
 
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, categorias)
@@ -198,12 +194,12 @@ class AnadirProductoFragment : Fragment() {
 
 
 
-    private fun goToCrearProducto() {
+    /*private fun goToCrearProducto() {
         val bundle = Bundle().apply {
             putString("idLista", idLista)
         }
         findNavController().navigate(R.id.action_añadir_productoFragment_to_crearProductoFragment, bundle)
-    }
+    }*/
 
     override fun onDestroyView() {
         super.onDestroyView()

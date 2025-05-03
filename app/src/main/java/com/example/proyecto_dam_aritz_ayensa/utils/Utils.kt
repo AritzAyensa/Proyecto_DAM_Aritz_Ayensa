@@ -18,9 +18,9 @@ class Utils {
             Toast.makeText(context, mensaje, Toast.LENGTH_SHORT).show()
         }
 
-        /*fun mostrarMensaje(view : View, mensaje: CharSequence) {
+        fun mostrarMensajeSnackbar(view : View, mensaje: CharSequence) {
             Snackbar.make(view, mensaje, 500).setDuration(500).show()
-        }*/
+        }
 
 
         fun comprobarCorreo(email: String): Boolean {

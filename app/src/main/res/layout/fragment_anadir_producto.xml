@@ -64,8 +64,8 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_productos"
             android:layout_width="match_parent"
-            android:layout_height="420sp"
-            android:layout_marginTop="15dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="100dp"
             android:background="@drawable/edittext_border"
             app:layout_constraintEnd_toEndOf="parent"
             app:flow_maxElementsWrap="4"
@@ -82,7 +82,7 @@
             android:layout_marginTop="50sp"
             tools:ignore="MissingConstraints"/>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <!--<androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/anadir_producto_cc_botones"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -98,15 +98,15 @@
                 style="@style/ButtonAccept"
                 app:layout_constraintStart_toStartOf="parent"
                 />
-            <!--<Button
+            &lt;!&ndash;<Button
                 android:id="@+id/btnAnadirProducto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/anadir_producto_btn_añadirProducto"
                 app:layout_constraintEnd_toEndOf="parent"
                 style="@style/ButtonAccept"
-                />-->
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                />&ndash;&gt;
+        </androidx.constraintlayout.widget.ConstraintLayout>-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

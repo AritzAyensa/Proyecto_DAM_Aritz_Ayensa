@@ -60,6 +60,12 @@
             app:popUpTo="@id/navigation_añadir_producto"
             app:popUpToInclusive="false" />
 
+        <action
+            android:id="@+id/action_vistaListaFragment_to_crearProductoFragment"
+            app:destination="@id/navigation_crear_producto"
+            app:popUpTo="@id/navigation_crear_producto"
+            app:popUpToInclusive="false" />
+
     </fragment>
 
 
@@ -93,6 +99,11 @@
             android:id="@+id/action_crearProductoFragment_to_añadir_productoFragment"
             app:destination="@id/navigation_añadir_producto"
             app:popUpTo="@id/navigation_añadir_producto"
+            app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_crearProductoFragment_to_vistaListaFragment"
+            app:destination="@id/navigation_vista_lista"
+            app:popUpTo="@id/navigation_vista_lista"
             app:popUpToInclusive="false" />
 
     </fragment>

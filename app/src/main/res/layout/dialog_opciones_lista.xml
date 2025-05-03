@@ -15,11 +15,19 @@
         android:layout_marginBottom="16dp"/>
 
     <Button
-        android:id="@+id/btnAñadirCrear"
+        android:id="@+id/btnBuscarProducto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         style="@style/ButtonAccept"
-        android:text="Añadir/Crear producto"/>
+        android:text="Buscar producto"/>
+
+    <Button
+        android:id="@+id/btnCrearProducto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/ButtonAccept"
+        android:text="Crear producto"
+        android:layout_marginTop="8dp"/>
 
     <Button
         android:id="@+id/btnCompartir"
