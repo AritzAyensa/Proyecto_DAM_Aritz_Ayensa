@@ -1,7 +1,9 @@
 package com.example.proyecto_dam_aritz_ayensa.utils
 
 import android.content.Context
+import android.view.View
 import android.widget.Toast
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuthException
 
 /**
@@ -13,8 +15,12 @@ class Utils {
     companion object {
 
         fun mostrarMensaje(context: Context?, mensaje: String?) {
-            Toast.makeText(context, mensaje, Toast.LENGTH_LONG).show()
+            Toast.makeText(context, mensaje, Toast.LENGTH_SHORT).show()
         }
+
+        /*fun mostrarMensaje(view : View, mensaje: CharSequence) {
+            Snackbar.make(view, mensaje, 500).setDuration(500).show()
+        }*/
 
 
         fun comprobarCorreo(email: String): Boolean {

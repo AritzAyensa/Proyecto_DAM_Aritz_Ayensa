@@ -78,7 +78,7 @@ class VistaListaFragment : Fragment() {
     private lateinit var productoService: ProductoService
     private lateinit var notificacionesService: NotificacionService
     private var listaProductos: MutableList<Producto> = mutableListOf()
-    private val productosSeleccionadas = mutableListOf<String>()
+    private val productosSeleccionados = mutableListOf<String>()
     private var todosLosProductos = mutableListOf<Producto>()
     private lateinit var usuarioService: UsuarioService
     private lateinit var sessionManager: SessionManager
@@ -229,43 +229,56 @@ class VistaListaFragment : Fragment() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun completarCompra() {
-        try{
-            lifecycleScope.launch(Dispatchers.IO) {
-                listaService.eliminarProductosDeLista(idLista, productosSeleccionadas.toList())
-                lista = listaService.getListaById(idLista)!!
-                listaProductos = productoService.getProductosByIds(lista.idProductos).toMutableList()
-                activity?.runOnUiThread {
-                    adapter.actualizarProductos(listaProductos)
-                }
+        val dialog = AlertDialog.Builder(requireContext())
+            .setTitle("Completar compra")
+            .setMessage("¿Estás seguro de que quieres completar esta compra?")
+            .setNegativeButton("Cancelar", null)
+            .create()
 
+        dialog.setButton(AlertDialog.BUTTON_POSITIVE, "Confirmar") { _, _ -> }
 
-                var nombreUsuario = usuarioService.getUserNameById(userId)
-                var notificacion = Notificacion()
-                notificacion.tipo = GenericConstants.TIPO_COMPRA
+        dialog.setOnShowListener {
+            val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            positiveButton.setOnClickListener {
+                lifecycleScope.launch(Dispatchers.IO) {
+                    try {
+                        listaService.eliminarProductosDeLista(idLista, productosSeleccionados.toList())
+                        lista = listaService.getListaById(idLista)!!
+                        listaProductos = productoService.getProductosByIds(lista.idProductos).toMutableList()
 
-                notificacion.descripcion = nombreUsuario + " ha completado la compra " + lista.titulo
+                        activity?.runOnUiThread {
+                            adapter.actualizarProductos(listaProductos)
+                        }
 
-                var idsUsuarios : List<String> = lista.idsUsuariosCompartidos
-                idsUsuarios += userId
-                notificacion.idProductos += lista.idProductos
+                        val nombreUsuario = usuarioService.getUserNameById(userId)
+                        val notificacion = Notificacion(
+                            tipo = GenericConstants.TIPO_COMPRA,
+                            descripcion = "$nombreUsuario ha completado la compra ${lista.titulo}",
+                            idProductos = productosSeleccionados,
+                            fecha = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                        )
 
+                        var idsUsuarios = lista.idsUsuariosCompartidos + userId
+                        val idNotificacion = notificacionesService.saveNotificacion(notificacion)
+                        usuarioService.añadirNotificacionAUsuarios(idsUsuarios, idNotificacion)
 
-
-                val fechaActual = LocalDate.now()
-                val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-                notificacion.fecha = fechaActual.format(formatter)
-
-                val idNotificacion = notificacionesService.saveNotificacion(notificacion)
-                usuarioService.añadirNotificacionAUsuarios(idsUsuarios, idNotificacion)
-
-                withContext(Dispatchers.Main) {
-                    Utils.mostrarMensaje(requireContext(), "Compra completada")
+                        withContext(Dispatchers.Main) {
+                            Utils.mostrarMensaje(requireContext(), "Compra completada")
+                            dialog.dismiss()
+                        }
+                    } catch (e: Exception) {
+                        withContext(Dispatchers.Main) {
+                            Utils.mostrarMensaje(requireContext(), e.message ?: "Error")
+                            dialog.dismiss()
+                        }
+                    }
                 }
             }
-        }catch (e : Error){
-            Utils.mostrarMensaje(requireContext(), e.message.toString())
         }
+
+        dialog.show()
     }
+
 
     @SuppressLint("SetTextI18n")
     private fun compartirLista(context: Context) {
@@ -279,8 +292,8 @@ class VistaListaFragment : Fragment() {
             .setNegativeButton("Cancelar", null)
             .create()
 
-        // Configurar manualmente el botón positivo
-        dialog.setButton(AlertDialog.BUTTON_POSITIVE, "Aceptar") { _, _ -> } // Empty listener
+
+        dialog.setButton(AlertDialog.BUTTON_POSITIVE, "Aceptar") { _, _ -> }
 
         dialog.setOnShowListener {
             val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
@@ -475,7 +488,7 @@ class VistaListaFragment : Fragment() {
 
     private fun ordenarProductos(lista: MutableList<Producto>): MutableList<Producto> {
         return lista
-            .sortedWith(compareBy<Producto> { productosSeleccionadas.contains(it.id) }
+            .sortedWith(compareBy<Producto> { productosSeleccionados.contains(it.id) }
                 .thenBy { it.prioridad }).toMutableList()
     }
 
@@ -514,8 +527,8 @@ class VistaListaFragment : Fragment() {
                                     onItemClick = { Utils.mostrarMensaje(requireContext(), "click") },
                                     onCheckClick = { producto, isSelected ->
                                         // Alternar selección y reordenar
-                                        if (isSelected) productosSeleccionadas.add(producto.id)
-                                        else            productosSeleccionadas.remove(producto.id)
+                                        if (isSelected) productosSeleccionados.add(producto.id)
+                                        else            productosSeleccionados.remove(producto.id)
 
                                         listaProductos = ordenarProductos(listaProductos)
                                         adapter.actualizarProductos(listaProductos)

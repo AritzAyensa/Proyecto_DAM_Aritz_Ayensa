@@ -96,6 +96,20 @@ class ProductoDAO {
         }
     }
 
+    suspend fun calcularPrecioTotal(idsProductos: List<String>): Double {
+        return try {
+            val productosSnapshot = productosCollection
+                .whereIn("id", idsProductos)
+                .get()
+                .await()
+
+            val productos = productosSnapshot.toObjects(Producto::class.java)
+            productos.sumOf { it.precioAproximado ?: 0.0 }
+        } catch (e: Exception) {
+            Log.e("Firestore", "Error al calcular precio total", e)
+            0.0
+        }
+    }
 
 
 

@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.ProgressBar
+import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
@@ -30,10 +32,14 @@ import com.example.proyecto_dam_aritz_ayensa.model.service.ListaService
 import com.example.proyecto_dam_aritz_ayensa.model.service.NotificacionService
 import com.example.proyecto_dam_aritz_ayensa.model.service.ProductoService
 import com.example.proyecto_dam_aritz_ayensa.model.service.UsuarioService
+import com.example.proyecto_dam_aritz_ayensa.utils.GenericConstants
 import com.example.proyecto_dam_aritz_ayensa.utils.SessionManager
 import com.example.proyecto_dam_aritz_ayensa.utils.Utils
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -46,12 +52,10 @@ class NotificationsFragment : Fragment() {
     private lateinit var productoService: ProductoService
     private lateinit var notificacionService: NotificacionService
     private lateinit var recyclerViewNotificaciones: RecyclerView
-
+    private var bloqueado = false
 
     private lateinit var btnEliminarNotificacion: Button
-    private lateinit var btnLeerNotificacion: Button
 
-    private var notificaciones: List<Notificacion> = emptyList()
     private val notificacionesSeleccionadas = mutableListOf<String>()
 
     private lateinit var progressBar : ProgressBar
@@ -79,11 +83,6 @@ class NotificationsFragment : Fragment() {
             eliminarNotificacion()
         }
 
-
-        /*btnLeerNotificacion = binding.btnLeerNotificaciones
-        btnLeerNotificacion.setOnClickListener{
-            leerNotificacion()
-        }*/
         recyclerViewNotificaciones = binding.recyclerNotificaciones
 
 
@@ -98,22 +97,26 @@ class NotificationsFragment : Fragment() {
         lifecycleScope.launch {
             usuarioService.notificacionesUsuarioFlow(userId)
                 .flowWithLifecycle(lifecycle)
-                .collect { notificaciones ->
+                .collectLatest { notificaciones ->
+                    if (bloqueado) return@collectLatest  // Ignora mientras está bloqueado
+
                     progressBar.visibility = View.GONE
                     adapter = NotificacionAdapter(
                         notificaciones,
-                        onItemClick = { Utils.mostrarMensaje(requireContext(), "click") },
+                        onItemClick = { notif -> mostrarDetalleNotificacion(notif) },
                         onCheckClick = { notif, isSelected ->
                             if (isSelected) notificacionesSeleccionadas.add(notif.id)
                             else            notificacionesSeleccionadas.remove(notif.id)
                         }
                     )
-                    lifecycleScope.launch {
-                        usuarioService.marcarNotificacionesComoLeidas(userId, notificaciones.map { it.id })
-                    }
+
                     recyclerViewNotificaciones.apply {
                         layoutManager = LinearLayoutManager(requireContext())
                         adapter = this@NotificationsFragment.adapter
+                    }
+
+                    lifecycleScope.launch {
+                        usuarioService.marcarNotificacionesComoLeidas(userId, notificaciones.map { it.id })
                     }
                 }
         }
@@ -137,28 +140,94 @@ class NotificationsFragment : Fragment() {
             val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
             positiveButton.setOnClickListener {
                 lifecycleScope.launch {
+                    bloqueado = true
                     usuarioService.eliminarNotificacionesDeUsuarios(userId, notificacionesSeleccionadas)
+                    notificacionesSeleccionadas.clear()
+                    delay(500)
+                    bloqueado = false
+
+                    // Fuerza recarga manual
+                    usuarioService.notificacionesUsuarioFlow(userId)
+                        .firstOrNull()?.let { notificaciones ->
+                            adapter = NotificacionAdapter(
+                                notificaciones,
+                                onItemClick = { notif -> mostrarDetalleNotificacion(notif) },
+                                onCheckClick = { notif, isSelected ->
+                                    if (isSelected) notificacionesSeleccionadas.add(notif.id)
+                                    else notificacionesSeleccionadas.remove(notif.id)
+                                }
+                            )
+                            recyclerViewNotificaciones.adapter = adapter
+                        }
+
                     dialog.dismiss()
                 }
             }
         }
 
-        dialog.window?.apply {
-            setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
-            setLayout(
-                (resources.displayMetrics.widthPixels * 0.85).toInt(),
-                WindowManager.LayoutParams.WRAP_CONTENT
-            )
-        }
-
         dialog.show()
     }
 
-    /*private fun leerNotificacion() {
-        lifecycleScope.launch {
-            usuarioService.marcarNotificacionesComoLeidas(userId, notificaciones.map { it.id })
+
+
+    fun mostrarDetalleNotificacion(notificacion: Notificacion) {
+        val builder = AlertDialog.Builder(requireContext())
+
+        val contentLayout = LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(50, 40, 50, 10)
         }
-    }*/
+
+        val scrollView = ScrollView(requireContext()).apply {
+            addView(contentLayout)
+        }
+
+        val descripcionView = TextView(requireContext()).apply {
+            text = "${notificacion.descripcion}"
+        }
+
+        val fechaView = TextView(requireContext()).apply {
+            text = "Fecha: ${notificacion.fecha}"
+        }
+
+        contentLayout.addView(descripcionView)
+        contentLayout.addView(fechaView)
+
+        if (notificacion.tipo == GenericConstants.TIPO_COMPRA) {
+            lifecycleScope.launch {
+                val productos = productoService.getProductosByIds(notificacion.idProductos)
+                val totalPrecio = productos.sumOf { it.precioAproximado }
+
+                val productosTitulo = TextView(requireContext()).apply {
+                    text = "Productos:"
+                    setPadding(0, 20, 0, 10)
+                }
+
+                val precioTotalView = TextView(requireContext()).apply {
+                    text = "Precio total: %.2f €".format(totalPrecio)
+                    setPadding(0, 10, 0, 10)
+                }
+
+                withContext(Dispatchers.Main) {
+                    contentLayout.addView(productosTitulo)
+                    productos.forEach { producto ->
+                        val productoView = TextView(requireContext()).apply {
+                            text = "- ${producto.nombre}"
+                        }
+                        contentLayout.addView(productoView)
+                    }
+                    contentLayout.addView(precioTotalView)
+                }
+            }
+        }
+
+        builder.setView(scrollView)
+            .setPositiveButton("Cerrar", null)
+            .show()
+    }
+
+
+
 
 
 
