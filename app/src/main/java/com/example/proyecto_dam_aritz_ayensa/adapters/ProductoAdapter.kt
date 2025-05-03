@@ -53,6 +53,10 @@ class ProductoAdapter(
                 else { selectedIds.add(p.id); true }
                 onCheckClick(p, nowSelected)
             }
+
+            nombreProducto.setOnClickListener {
+                onItemClick(p)
+            }
         }
 
 

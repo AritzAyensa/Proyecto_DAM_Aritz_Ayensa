@@ -21,6 +21,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -109,14 +110,67 @@ class VistaListaFragment : Fragment() {
         cargarBotones()
         configurarDropdownMenu()
 
+
+
+
+        // 1. Configura RecyclerView aquí una sola vez
+        binding.recyclerProductos.layoutManager = LinearLayoutManager(requireContext())
+        adapter = ProductoAdapter(
+            listaProductos,
+            onItemClick = {producto -> mostrarOpcionesEdicionEliminar(requireContext(), producto) },
+            onCheckClick = { producto, isSelected ->
+                // Alternar selección y reordenar
+                if (isSelected) productosSeleccionados.add(producto.id)
+                else            productosSeleccionados.remove(producto.id)
+
+                listaProductos = ordenarProductos(listaProductos)
+                adapter.actualizarProductos(listaProductos)
+            }
+        )
+        recyclerViewProductos.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = this@VistaListaFragment.adapter
+        }
+
         return binding.root
     }
 
-    override fun onResume() {
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            progressBar.visibility = View.VISIBLE
+            val listaObtenida = withContext(Dispatchers.IO) {
+                listaService.getListaById(idLista)
+            } ?: run {
+                withContext(Dispatchers.Main) {
+                    Utils.mostrarMensaje(requireContext(), "Lista no encontrada")
+                    progressBar.visibility = View.GONE
+                }
+                return@launch
+            }
+            lista = listaObtenida
+
+            viewLifecycleOwner.lifecycle
+                .repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    listaService
+                        .productosDeListaFlow(idLista, productoService)
+                        .collect { productosRaw ->
+                            val ordenados = ordenarProductos(productosRaw.toMutableList())
+                            adapter.actualizarProductos(ordenados)
+                            progressBar.visibility = View.GONE
+
+                        }
+                }
+        }
+    }
+
+    /*override fun onResume() {
         super.onResume()
         cargarLista()
 
-    }
+    }*/
 
 
     private fun cargarBotones() {
@@ -499,8 +553,14 @@ class VistaListaFragment : Fragment() {
     }
 
     private fun ordenarProductos(lista: MutableList<Producto>): MutableList<Producto> {
-        return lista.sortedBy { GenericConstants.PRIORIDAD_CATEGORIAS[it.categoria] ?: Double.MAX_VALUE }.toMutableList()
+        return lista
+            .sortedWith(
+                compareBy<Producto> { productosSeleccionados.contains(it.id) }
+                    .thenBy { GenericConstants.PRIORIDAD_CATEGORIAS[it.categoria] ?: Double.MAX_VALUE }
+            )
+            .toMutableList()
     }
+
 
     @SuppressLint("NotifyDataSetChanged")
         private fun cargarLista() {
@@ -554,6 +614,32 @@ class VistaListaFragment : Fragment() {
                     }
             }
         }
+
+    private fun mostrarOpcionesEdicionEliminar(
+        context: Context,
+        producto: Producto
+    ) {
+        val builder = AlertDialog.Builder(requireContext(), R.style.MyDialogTheme)
+            .setTitle("Opciones")
+
+            builder.setPositiveButton("Editar producto") { dialog, _ ->
+                Utils.mostrarMensaje(requireContext(), "Editar")
+                dialog.dismiss()
+            }
+
+            builder.setNegativeButton("Eliminar producto") { dialog, _ ->
+                lifecycleScope.launch {
+                    listaService.eliminarProductoDeLista(idLista, producto.id)
+                    Utils.mostrarMensaje(requireContext(), producto.nombre + " eliminado de la lista")
+                }
+
+                dialog.dismiss()
+            }
+
+
+         builder.create().show()
+    }
+
 
     private fun abrirProducto(idProducto : String) {
         /*lifecycleScope.launch {

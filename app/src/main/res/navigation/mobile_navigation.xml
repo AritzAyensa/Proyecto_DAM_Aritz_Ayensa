@@ -104,7 +104,10 @@
             android:id="@+id/action_crearProductoFragment_to_vistaListaFragment"
             app:destination="@id/navigation_vista_lista"
             app:popUpTo="@id/navigation_vista_lista"
-            app:popUpToInclusive="false" />
+            app:popUpToInclusive="false"
+            app:popUpToSaveState="true"
+            app:restoreState="true" />
+
 
     </fragment>
 

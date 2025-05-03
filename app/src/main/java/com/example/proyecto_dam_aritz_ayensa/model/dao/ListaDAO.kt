@@ -78,6 +78,20 @@ class ListaDAO {
         }
     }
 
+    suspend fun eliminarProductoDeLista(idLista: String, idProducto: String) {
+        require(idLista.isNotBlank()) { "El ID de la lista no puede estar vacío" }
+        require(idProducto.isNotBlank()) { "El ID del producto no puede estar vacío" }
+
+        try {
+            listasCollection.document(idLista)
+                .update("idProductos", FieldValue.arrayRemove(idProducto))
+                .await()
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Error al eliminar el producto de la lista", e)
+        }
+    }
+
+
 
 
     suspend fun getMisListasByUsuarioId(idListas: List<String>): List<Lista> {

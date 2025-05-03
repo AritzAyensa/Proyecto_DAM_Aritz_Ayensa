@@ -41,6 +41,11 @@ class ListaService(private val listaDAO: ListaDAO) {
         return listaDAO.eliminarProductosDeLista(idLista, idsAEliminar)
     }
 
+
+    suspend fun eliminarProductoDeLista(idLista: String, idProducto: String) {
+        return listaDAO.eliminarProductoDeLista(idLista, idProducto)
+    }
+
     suspend fun getListaById(idLista: String) : Lista? {
         return listaDAO.getListaById(idLista)
     }

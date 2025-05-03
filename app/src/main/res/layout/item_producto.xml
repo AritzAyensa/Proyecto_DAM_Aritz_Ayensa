@@ -13,18 +13,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <!-- Campo de color -->
-        <!--<TextView
-            android:id="@+id/colorProducto"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:background="@drawable/btn_circular"/>-->
-
-        <!-- Campo de nombre de la tarea -->
-
         <ImageButton
             android:id="@+id/btnChech"
-            android:layout_width="wrap_content"
+            android:layout_width="35dp"
             android:layout_height="wrap_content"
             android:src="@drawable/outline_check_box_outline_blank_24"
             android:background="@android:color/transparent"
