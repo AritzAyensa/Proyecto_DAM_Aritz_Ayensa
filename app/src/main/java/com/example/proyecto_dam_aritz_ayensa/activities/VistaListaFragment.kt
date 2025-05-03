@@ -18,6 +18,8 @@ import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -55,11 +57,7 @@ class VistaListaFragment : Fragment() {
 
     private var _binding: FragmentVistaListaBinding? = null
     private val binding get() = _binding!!
-
-
-    /*lateinit var buttonAñadirProducto : Button
-    lateinit var buttonCompartirLista : Button
-    lateinit var buttonEliminarLista : Button*/
+    
     lateinit var buttonOpciones : Button
     lateinit var buttonCompletarCompra : Button
     lateinit var buttonEscanear : ImageButton
@@ -206,11 +204,10 @@ class VistaListaFragment : Fragment() {
         val btnCompartir = view.findViewById<Button>(R.id.btnCompartir)
         val btnEliminar = view.findViewById<Button>(R.id.btnEliminar)
 
-        // Activa o desactiva compartir según condición:
+
         btnCompartir.visibility =
             if (lista.idCreador == userId) View.VISIBLE else View.GONE
 
-        // Define listeners:
         btnAñadir.setOnClickListener {
             abrirAñadirProducto()
             dialog.dismiss()
@@ -224,7 +221,6 @@ class VistaListaFragment : Fragment() {
             dialog.dismiss()
         }
 
-        // Construye el AlertDialog usando el view personalizado
         dialog = AlertDialog.Builder(requireContext(), R.style.MyDialogTheme)
             .setView(view)
             .create()
@@ -428,23 +424,6 @@ class VistaListaFragment : Fragment() {
 
             dialog.show()
         }
-
-
-        private fun añadirProducto() {
-            val dialog = AlertDialog.Builder(requireContext() , R.style.MyDialogTheme)
-                .setTitle("Seleccionar acción")
-                .setPositiveButton("Escanear código") { dialog, _ ->
-                    escanearProducto()
-                    dialog.dismiss()
-                }
-                .setNeutralButton("Buscar producto") { dialog, _ ->
-                    abrirAñadirProducto()
-                    dialog.dismiss()
-                }
-                .create()
-
-            dialog.show()
-        }
         private fun abrirAñadirProducto() {
             val bundle = Bundle().apply {
                 putString("idLista", idLista)
@@ -494,78 +473,65 @@ class VistaListaFragment : Fragment() {
         }
     }
 
-        /*private fun cargarLista() {
-            lifecycleScope.launch {
-                lista = listaService.getListaById(idLista)!!
-                if (lista.idCreador == userId){
-                    buttonCompartirLista.visibility = View.VISIBLE
-                }
-                actualizarVista()
-                listaProductos = productoService.getProductosByIds(lista.idProductos)
-            }
-            adapter = ProductoAdapter(listaProductos) { producto ->
-                abrirProducto(producto.id)
-            }
+    private fun ordenarProductos(lista: MutableList<Producto>): MutableList<Producto> {
+        return lista
+            .sortedWith(compareBy<Producto> { productosSeleccionadas.contains(it.id) }
+                .thenBy { it.prioridad }).toMutableList()
+    }
 
-        }*/
-
-        private fun ordenarProductos(lista: MutableList<Producto>): MutableList<Producto> {
-            return lista
-                .sortedWith(compareBy<Producto> { productosSeleccionadas.contains(it.id) }
-                    .thenBy { it.prioridad }).toMutableList()
-        }
-        @SuppressLint("NotifyDataSetChanged")
+    @SuppressLint("NotifyDataSetChanged")
         private fun cargarLista() {
+            progressBar.visibility = View.VISIBLE
+
             lifecycleScope.launch {
-                progressBar.visibility = View.VISIBLE
-                try {
-                    // 1. Evitar !! (operador no-nulo inseguro)
-                    val listaObtenida = listaService.getListaById(idLista) ?: run {
-                        Utils.mostrarMensaje(context, "Lista no encontrada")
-                        return@launch
-                    }
-
-                    lista = listaObtenida
-
-                    // 2. Actualizar UI en el hilo principal
-                    /*withContext(Dispatchers.Main) {
-                        buttonCompartirLista.visibility = if (lista.idCreador == userId) View.VISIBLE else View.GONE
-                        actualizarVista()
-                    }*/
-                    // 3. Obtener productos de forma asíncrona
-                    listaProductos = ordenarProductos(productoService.getProductosByIds(lista.idProductos).toMutableList())
-
-                    // 4. Actualizar adapter en el hilo principal
+                // 1) Cargar datos estáticos de la lista (título, creador) una sola vez
+                val listaObtenida = withContext(Dispatchers.IO) {
+                    listaService.getListaById(idLista)
+                } ?: run {
                     withContext(Dispatchers.Main) {
-                            /*adapter = ProductoAdapter(listaProductos,) { producto ->
-                                abrirProducto(producto.id)
-                            }*/
-                            adapter = ProductoAdapter(
-                                listaProductos,
-                                onItemClick = { Utils.mostrarMensaje(requireContext(), "click") },
-                                onCheckClick = { producto, isSelected ->
-                                    if (isSelected) productosSeleccionadas.add(producto.id)
-                                    else            productosSeleccionadas.remove(producto.id)
-                                    listaProductos = ordenarProductos(listaProductos)
-                                    /*adapter.actualizarProductos(listaProductos)*/
-                                    adapter.actualizarProductos(listaProductos)
-                                }
-                            )
-                            recyclerViewProductos.apply {
-                                layoutManager = LinearLayoutManager(context)
-                                adapter = this@VistaListaFragment.adapter
-                            }
+                        Utils.mostrarMensaje(requireContext(), "Lista no encontrada")
+                        progressBar.visibility = View.GONE
                     }
-
-                } catch (e: Exception) {
-                    withContext(Dispatchers.Main) {
-                        Utils.mostrarMensaje(context, "Error: ${e.message}")
-                    }
+                    return@launch
                 }
+                lista = listaObtenida
 
-                progressBar.visibility = View.GONE
+
+                // 2) Suscribirse al Flow de productos de la lista
+                listaService.productosDeListaFlow(idLista, productoService)
+                    .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+                    .collect { productosRaw ->
+                        // 3) Ordenar según prioridad y estado marcado
+                        listaProductos = ordenarProductos(productosRaw.toMutableList())
+
+                        // 4) Actualizar o crear adapter en UI
+                        withContext(Dispatchers.Main) {
+                            if (::adapter.isInitialized) {
+                                adapter.actualizarProductos(listaProductos)
+                            } else {
+                                adapter = ProductoAdapter(
+                                    listaProductos,
+                                    onItemClick = { Utils.mostrarMensaje(requireContext(), "click") },
+                                    onCheckClick = { producto, isSelected ->
+                                        // Alternar selección y reordenar
+                                        if (isSelected) productosSeleccionadas.add(producto.id)
+                                        else            productosSeleccionadas.remove(producto.id)
+
+                                        listaProductos = ordenarProductos(listaProductos)
+                                        adapter.actualizarProductos(listaProductos)
+                                    }
+                                )
+                                recyclerViewProductos.apply {
+                                    layoutManager = LinearLayoutManager(context)
+                                    adapter = this@VistaListaFragment.adapter
+                                }
+                            }
+                            progressBar.visibility = View.GONE
+                        }
+                    }
             }
         }
+
     private fun abrirProducto(idProducto : String) {
         /*lifecycleScope.launch {
             if (listaService.getListaById(idLista) == null){

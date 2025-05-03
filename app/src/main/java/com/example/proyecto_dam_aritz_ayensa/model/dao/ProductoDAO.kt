@@ -70,6 +70,8 @@ class ProductoDAO {
         return productos
     }
 
+
+
     suspend fun getProductosByNombreYCategoria(nombre: String, categoria: String): List<Producto> {
         return try {
             val query = if (categoria.isNotBlank()) {
