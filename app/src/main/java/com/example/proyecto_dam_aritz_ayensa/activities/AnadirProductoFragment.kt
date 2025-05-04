@@ -1,6 +1,7 @@
 package com.example.proyecto_dam_aritz_ayensa.activities
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -111,7 +112,7 @@ class AnadirProductoFragment : Fragment() {
                                             )
                                         }
                                     } else {
-                                        listaService.añadirProductoALista(idLista, productoId)
+                                        listaService.añadirProductoALista(productoId, idLista)
                                         // Actualizar lista local
                                         lista = listaService.getListaById(idLista)!!
                                         withContext(Dispatchers.Main) {
@@ -122,12 +123,7 @@ class AnadirProductoFragment : Fragment() {
                                         }
                                     }
                                 } catch (e: Exception) {
-                                    withContext(Dispatchers.Main) {
-                                        Utils.mostrarMensaje(
-                                            requireContext(),
-                                            "Error: ${e.message}"
-                                        )
-                                    }
+                                    Log.e("AñadirProductoFragment", e.message.toString())
                                 }
                             }
                         }
@@ -138,9 +134,7 @@ class AnadirProductoFragment : Fragment() {
                     }
                 }
             } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    Utils.mostrarMensaje(context, "Error: ${e.message}")
-                }
+                Log.e("AñadirProductoFragment", e.message.toString())
             }
             progressBar.visibility = View.GONE
         }

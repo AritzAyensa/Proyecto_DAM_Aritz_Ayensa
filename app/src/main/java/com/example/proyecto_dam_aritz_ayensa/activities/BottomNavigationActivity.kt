@@ -60,26 +60,10 @@ class BottomNavigationActivity : AppCompatActivity() {
     }
 
     private fun setupNavigation() {
-        // 1. Obtener NavController desde el NavHostFragment
         navController = findNavController(R.id.nav_host_fragment_activity_bottom_navigation)
 
-        // 2. Configurar los destinos de nivel superior (IDs deben coincidir con los del menú)
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_inicio,
-                R.id.navigation_cuenta,
-                R.id.navigation_vista_lista,
-                R.id.navigation_añadir_producto,
-                R.id.navigation_crear_lista,
-                R.id.navigation_crear_producto,
-                R.id.navigation_notifications
-            )
-        )
-
-        // 3. Vincular BottomNavigationView con NavController
         binding.navView.setupWithNavController(navController)
 
-        // Obtén la referencia a tu BottomNavigationView
         val bottomNav = findViewById<BottomNavigationView>(R.id.nav_view)
 
         observeNotificationCount(userId)
