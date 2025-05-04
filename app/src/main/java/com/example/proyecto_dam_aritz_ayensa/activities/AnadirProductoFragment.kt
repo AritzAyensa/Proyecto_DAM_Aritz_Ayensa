@@ -33,6 +33,7 @@ import kotlinx.coroutines.withContext
 import androidx.core.widget.addTextChangedListener
 import com.example.proyecto_dam_aritz_ayensa.model.dao.NotificacionDAO
 import com.example.proyecto_dam_aritz_ayensa.model.service.NotificacionService
+import com.example.proyecto_dam_aritz_ayensa.utils.GenericConstants
 
 
 class AnadirProductoFragment : Fragment() {
@@ -155,7 +156,7 @@ class AnadirProductoFragment : Fragment() {
     }*/
     private fun configurarDropdownMenu() {
 
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, categorias)
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, GenericConstants.PRIORIDAD_CATEGORIAS.keys.sorted().toList())
         val autoCompleteTextView = binding.autoCompleteTextView
         autoCompleteTextView.setAdapter(adapter)
 

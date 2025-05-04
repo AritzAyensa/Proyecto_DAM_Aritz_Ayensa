@@ -3,6 +3,7 @@ package com.example.proyecto_dam_aritz_ayensa.activities
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -17,6 +18,7 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
@@ -69,7 +71,7 @@ class VistaListaFragment : Fragment() {
 
     private lateinit var tvTituloLista: TextView
     private lateinit var lista: Lista
-    private lateinit var productoParaAñadir: Producto
+    private lateinit var productoParaAnadir: Producto
 
     private lateinit var idLista: String
     private lateinit var userId : String
@@ -84,6 +86,7 @@ class VistaListaFragment : Fragment() {
     private lateinit var usuarioService: UsuarioService
     private lateinit var sessionManager: SessionManager
     private lateinit var progressBar : ProgressBar
+    @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -117,7 +120,7 @@ class VistaListaFragment : Fragment() {
         binding.recyclerProductos.layoutManager = LinearLayoutManager(requireContext())
         adapter = ProductoAdapter(
             listaProductos,
-            onItemClick = {producto -> mostrarOpcionesEdicionEliminar(requireContext(), producto) },
+            onItemClick = {producto -> mostrarOpcionesEdicionEliminar(producto) },
             onCheckClick = { producto, isSelected ->
                 // Alternar selección y reordenar
                 if (isSelected) productosSeleccionados.add(producto.id)
@@ -151,7 +154,7 @@ class VistaListaFragment : Fragment() {
                 return@launch
             }
             lista = listaObtenida
-
+            tvTituloLista.text = listaObtenida.titulo
             viewLifecycleOwner.lifecycle
                 .repeatOnLifecycle(Lifecycle.State.STARTED) {
                     listaService
@@ -166,36 +169,24 @@ class VistaListaFragment : Fragment() {
         }
     }
 
-    /*override fun onResume() {
-        super.onResume()
-        cargarLista()
-
-    }*/
-
-
+    @RequiresApi(Build.VERSION_CODES.S)
     private fun cargarBotones() {
         buttonOpciones = binding.btnOpciones
 
-        if (buttonOpciones != null) {
-            buttonOpciones.setOnClickListener {
-                opciones()
-            }
+        buttonOpciones.setOnClickListener {
+            opciones()
         }
 
         buttonEscanear = binding.btnEscanear
 
-        if (buttonEscanear != null) {
-            buttonEscanear.setOnClickListener {
-                escanearProducto()
-            }
+        buttonEscanear.setOnClickListener {
+            escanearProducto()
         }
 
         buttonCompletarCompra = binding.btnCompletarCompra
 
-        if (buttonCompletarCompra != null) {
-            buttonCompletarCompra.setOnClickListener {
-                completarCompra()
-            }
+        buttonCompletarCompra.setOnClickListener {
+            completarCompra()
         }
     }
 
@@ -209,10 +200,10 @@ class VistaListaFragment : Fragment() {
 
             autoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
 
-                productoParaAñadir = parent.getItemAtPosition(position) as Producto
+                productoParaAnadir = parent.getItemAtPosition(position) as Producto
                 lifecycleScope.launch(Dispatchers.IO) {
                     try {
-                        if (lista.idProductos.contains(productoParaAñadir.id)) {
+                        if (lista.idProductos.contains(productoParaAnadir.id)) {
                             withContext(Dispatchers.Main) {
                                 Utils.mostrarMensaje(
                                     requireContext(),
@@ -220,7 +211,7 @@ class VistaListaFragment : Fragment() {
                                 )
                             }
                         } else {
-                            listaService.añadirProductoALista(productoParaAñadir.id, idLista)
+                            listaService.añadirProductoALista(productoParaAnadir.id, idLista)
                             // Actualizar lista local
                             lista = listaService.getListaById(idLista)!!
                             listaProductos = productoService.getProductosByIds(lista.idProductos).toMutableList()
@@ -255,7 +246,7 @@ class VistaListaFragment : Fragment() {
         val view = LayoutInflater.from(requireContext())
             .inflate(R.layout.dialog_opciones_lista, null)
         // Obtén referencias a los botones:
-        val btnAñadir = view.findViewById<Button>(R.id.btnBuscarProducto)
+        val btnAnadir = view.findViewById<Button>(R.id.btnBuscarProducto)
         val btnCrear = view.findViewById<Button>(R.id.btnCrearProducto)
         val btnCompartir = view.findViewById<Button>(R.id.btnCompartir)
         val btnEliminar = view.findViewById<Button>(R.id.btnEliminar)
@@ -264,8 +255,8 @@ class VistaListaFragment : Fragment() {
         btnCompartir.visibility =
             if (lista.idCreador == userId) View.VISIBLE else View.GONE
 
-        btnAñadir.setOnClickListener {
-            abrirAñadirProducto()
+        btnAnadir.setOnClickListener {
+            abrirAnadirProducto()
             dialog.dismiss()
         }
 
@@ -319,7 +310,7 @@ class VistaListaFragment : Fragment() {
                             fecha = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
                         )
 
-                        var idsUsuarios = lista.idsUsuariosCompartidos + userId
+                        val idsUsuarios = lista.idsUsuariosCompartidos + userId
                         val idNotificacion = notificacionesService.saveNotificacion(notificacion)
                         usuarioService.añadirNotificacionAUsuarios(idsUsuarios, idNotificacion)
 
@@ -398,8 +389,8 @@ class VistaListaFragment : Fragment() {
                                                 idLista,
                                                 usuario.id
                                             )
-                                            var nombreUsuario = usuarioService.getUserNameById(userId)
-                                            var notificacion = Notificacion()
+                                            val nombreUsuario = usuarioService.getUserNameById(userId)
+                                            val notificacion = Notificacion()
                                             notificacion.tipo = GenericConstants.TIPO_LISTA_COMPRATIDA
 
                                             notificacion.descripcion = nombreUsuario + " ha compartido la lista " + lista.titulo + " con " + usuario.nombre
@@ -503,7 +494,7 @@ class VistaListaFragment : Fragment() {
 
             dialog.show()
         }
-        private fun abrirAñadirProducto() {
+        private fun abrirAnadirProducto() {
             val bundle = Bundle().apply {
                 putString("idLista", idLista)
             }
@@ -511,16 +502,19 @@ class VistaListaFragment : Fragment() {
 
         }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     private fun escanearProducto() {
         try{
             val options = ScanOptions()
             options.setPrompt("Escanea un codigo de barras")
+            options.setBeepEnabled(false)
             options.setOrientationLocked(false)
             barcodeLauncher.launch(options)
         }catch (e : Error){
             Utils.mostrarMensaje(requireContext(), e.message.toString())
         }
     }
+    @RequiresApi(Build.VERSION_CODES.S)
     private val barcodeLauncher = registerForActivityResult<ScanOptions, ScanIntentResult>(
         ScanContract()
     ) { result: ScanIntentResult ->
@@ -538,13 +532,16 @@ class VistaListaFragment : Fragment() {
                         if (lista != null) {
                             if(lista.idProductos.contains(producto.id)) {
                                 Utils.mostrarMensaje(requireContext(), "La lista ya contiene " + producto.nombre)
+                                Utils.vibrator(requireContext())
                             }else{
                                 listaService.añadirProductoALista(producto.id, idLista)
                                 Utils.mostrarMensaje(requireContext(), "Producto añadido: " + producto.nombre)
+                                Utils.vibrator(requireContext())
                             }
                         }
                     }else{
                         Utils.mostrarMensaje(requireContext(), "Producto no encontrado: " + codigoEscaneado)
+                        Utils.vibrator(requireContext())
                     }
                 }
             }
@@ -562,7 +559,7 @@ class VistaListaFragment : Fragment() {
     }
 
 
-    @SuppressLint("NotifyDataSetChanged")
+    /*@SuppressLint("NotifyDataSetChanged")
         private fun cargarLista() {
             progressBar.visibility = View.VISIBLE
 
@@ -613,17 +610,19 @@ class VistaListaFragment : Fragment() {
                         }
                     }
             }
-        }
+        }*/
 
     private fun mostrarOpcionesEdicionEliminar(
-        context: Context,
         producto: Producto
     ) {
         val builder = AlertDialog.Builder(requireContext(), R.style.MyDialogTheme)
             .setTitle("Opciones")
 
             builder.setPositiveButton("Editar producto") { dialog, _ ->
-                Utils.mostrarMensaje(requireContext(), "Editar")
+                val bundle = Bundle().apply {
+                    putString("idProducto", producto.id)
+                }
+                findNavController().navigate(R.id.action_vistaListaFragment_to_editarProductoFragment, bundle)
                 dialog.dismiss()
             }
 
@@ -632,31 +631,11 @@ class VistaListaFragment : Fragment() {
                     listaService.eliminarProductoDeLista(idLista, producto.id)
                     Utils.mostrarMensaje(requireContext(), producto.nombre + " eliminado de la lista")
                 }
-
                 dialog.dismiss()
             }
 
-
          builder.create().show()
     }
-
-
-    private fun abrirProducto(idProducto : String) {
-        /*lifecycleScope.launch {
-            if (listaService.getListaById(idLista) == null){
-                Utils.mostrarMensaje(context, "Lista no encontrada")
-            }else{
-                val bundle = Bundle().apply {
-                    putString("idLista", idLista)
-                }
-                findNavController().navigate(R.id.action_inicioFragment_to_vistaListaFragment, bundle)
-            }
-        }*/
-    }
-
-        private fun actualizarVista() {
-            tvTituloLista.text = lista.titulo
-        }
 
 
     override fun onDestroyView() {

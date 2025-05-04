@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Proyecto_DAM</string>
+    <string name="app_name">ListApp</string>
     <string name="proyecto_dam">Proyecto_DAM</string>
     <string name="logo_aplicacion">Logo de la aplicacion</string>
 
@@ -81,7 +81,7 @@
     <string name="crearTarea_tv_nuevo_producto">Nuevo producto</string>
     <string name="crear_producto_et_precio">Precio</string>
     <string name="crear_producto_et_prioridad">Prioridad</string>
-    <string name="crearTarea_btn_escanear_codigo">Escanear codigo</string>
+    <string name="crearTarea_btn_escanear_codigo">Escanear código</string>
     <string name="item_producto_tv_nombre_producto">Nombre producto</string>
     <string name="item_producto_tv_precio">0€</string>
     <string name="buscar_producto">Buscar producto</string>
@@ -91,6 +91,10 @@
     <string name="vista_lista_btn_opciones">Opciones</string>
     <string name="vista_lista_btn_completar_compra">Completar compra</string>
     <string name="marcar_como_le_do">Marcar como leído</string>
+    <string name="title_editar_producto">EditarProducto</string>
+    <string name="editar_producto">Editar producto</string>
+    <string name="button_editar_producto_guardar">Guardar</string>
+    <string name="button_editar_tarea_cancelar">Cancelar</string>
 
 
 </resources>

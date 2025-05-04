@@ -18,7 +18,6 @@
             android:id="@+id/vista_lista_tv_titulo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/vista_lista_tv_titulo"
             android:textAlignment="center"
             android:textSize="25sp"
 

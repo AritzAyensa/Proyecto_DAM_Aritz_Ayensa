@@ -7,12 +7,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.example.proyecto_dam_aritz_ayensa.databinding.FragmentCrearProductoBinding
+import com.example.proyecto_dam_aritz_ayensa.databinding.FragmentEditarProductoBinding
 import com.example.proyecto_dam_aritz_ayensa.model.dao.ListaDAO
 import com.example.proyecto_dam_aritz_ayensa.model.dao.NotificacionDAO
 import com.example.proyecto_dam_aritz_ayensa.model.dao.ProductoDAO
@@ -32,18 +34,19 @@ import com.journeyapps.barcodescanner.ScanOptions
 import kotlinx.coroutines.launch
 
 
-class CrearProductoFragment : Fragment() {
-    private var _binding: FragmentCrearProductoBinding? = null
+class EditarProductoFragment : Fragment() {
+    private var _binding: FragmentEditarProductoBinding? = null
     private val binding get() = _binding!!
-    private lateinit var lista: Lista
 
-    private lateinit var idLista: String
+    private lateinit var idProducto: String
+    private lateinit var producto: Producto
     private lateinit var userId : String
     private var codigoBarras : String = ""
 
     private lateinit var spinner: Spinner
     private lateinit var inputNombre: EditText
     private lateinit var inputPrecio: EditText
+    private lateinit var autoCompleteTextView: AutoCompleteTextView
 
     private lateinit var listaService: ListaService
     private lateinit var usuarioService: UsuarioService
@@ -63,7 +66,7 @@ class CrearProductoFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentCrearProductoBinding.inflate(inflater, container, false)
+        _binding = FragmentEditarProductoBinding.inflate(inflater, container, false)
 
         listaService = ListaService(ListaDAO())
 
@@ -74,14 +77,15 @@ class CrearProductoFragment : Fragment() {
         userId = sessionManager.getUserId().toString()
 
 
-        inputNombre = binding.crearProductoEtNombre
-        inputPrecio = binding.crearProductoEtPrecio
+        inputNombre = binding.editarProductoEtNombre
+        inputPrecio = binding.editarProductoEtPrecio
 
-        //Obtener el id de la lista
+
         arguments?.let {
-            idLista = it.getString("idLista").toString()
+            idProducto = it.getString("idProducto").toString()
         }
 
+        cargarProducto()
         cargarBotones()
         configurarDropdownMenu()
 
@@ -89,10 +93,10 @@ class CrearProductoFragment : Fragment() {
     }
 
     private fun cargarBotones() {
-        buttonCrearProducto = binding.btnCrearProducto
+        buttonCrearProducto = binding.btnEditarProducto
         if (buttonCrearProducto != null) {
             buttonCrearProducto.setOnClickListener {
-                crearProducto()
+                editarProducto()
             }
         }
         buttonEscanearProducto = binding.btnEscanearCodigo
@@ -101,7 +105,7 @@ class CrearProductoFragment : Fragment() {
                 escanearProducto()
             }
         }
-        buttonCancelar = binding.crearProductoBtnCancelar
+        buttonCancelar = binding.editarProductoBtnCancelar
         if (buttonCancelar != null) {
             buttonCancelar.setOnClickListener {
                 cancelar()
@@ -109,36 +113,66 @@ class CrearProductoFragment : Fragment() {
         }
     }
 
-    private fun crearProducto() {
+    private fun cargarProducto() {
+        try{
+            lifecycleScope.launch {
+                try {
+                    producto = productoService.getProductoById(idProducto)!!
+
+                    inputNombre.setText(producto.nombre)
+                    inputPrecio.setText(producto.precioAproximado.toString())
+                    autoCompleteTextView = binding.autoCompleteTextView
+                    autoCompleteTextView.setText(producto.categoria)
+                    categoriaSeleccionada = producto.categoria
+
+                    if (!producto.codigoBarras.isEmpty()){
+                        buttonEscanearProducto.text = "Cambiar código"
+                    }
+                } catch (e: Exception) {
+                    Log.e("EditarProductoFragment", "Error: ${e.message}")
+                    Utils.mostrarMensaje(requireContext(), "Error al cargar el producto")
+                    cancelar()
+                }
+
+
+            }
+        }catch (e : Error) {
+            Log.e("EditarProductoFragment", "Error: ${e.message}")
+            cancelar()
+        }
+    }
+
+
+    private fun editarProducto() {
         try{
             val textNombre = inputNombre.text.toString().trim()
 
-            val precio: Double = inputPrecio.text.toString().toDouble()
 
-            if (textNombre.isNotEmpty() && precio > 0 && categoriaSeleccionada.isNotEmpty() && GenericConstants.PRIORIDAD_CATEGORIAS.keys.contains(categoriaSeleccionada)) {
-                val producto = Producto() 
+            if (textNombre.isNotEmpty() && !inputPrecio.text.isNullOrEmpty() &&  inputPrecio.text.toString().toDouble() > 0 && categoriaSeleccionada.isNotEmpty() && GenericConstants.PRIORIDAD_CATEGORIAS.keys.contains(categoriaSeleccionada)) {
+
                 producto.nombre = textNombre
-                producto.precioAproximado = precio
+                producto.precioAproximado = inputPrecio.text.toString().toDouble()
                 producto.categoria = categoriaSeleccionada
                 producto.idCreador = userId
                 producto.codigoBarras = codigoBarras
 
                 lifecycleScope.launch {
                     try {
-                        var idProducto: String = productoService.saveProducto(producto)
-                        listaService.añadirProductoALista(idProducto, idLista)
+                        productoService.updateProducto(producto)
+                        Utils.mostrarMensaje(requireContext(), "Producto actualizado correctamente")
                         cancelar()
-                        Utils.mostrarMensaje(requireContext(), "Producto creado correctamente")
                     } catch (e: Exception) {
-                        Log.e("CrearProductoFragment", "Error: ${e.message}")
-                        Utils.mostrarMensaje(requireContext(), "Error al crear el producto")
+                        Log.e("EditarProductoFragment", "Error: ${e.message}")
+                        Utils.mostrarMensaje(requireContext(), "Error al editar el producto")
+                        cancelar()
                     }
                 }
             } else {
                 Utils.mostrarMensaje(requireContext(), "Complete correctamente todos los campos")
             }
         }catch (e : Error){
-            Utils.mostrarMensaje(requireContext(), e.message.toString())
+            Log.e("EditarProductoFragment", "Error: ${e.message}")
+            cancelar()
         }
     }
     private fun configurarDropdownMenu() {
@@ -157,6 +191,9 @@ class CrearProductoFragment : Fragment() {
             options.setPrompt("Escanea un codigo de barras")
             options.setOrientationLocked(false)
             barcodeLauncher.launch(options)
+            if (!codigoBarras.isEmpty()){
+                buttonEscanearProducto.text = "Cambiar código"
+            }
         }catch (e : Error){
             Utils.mostrarMensaje(requireContext(), e.message.toString())
         }

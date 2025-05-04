@@ -11,12 +11,12 @@ data class Producto(
     var idCreador: String = ""
 ):Comparable<Producto> {
     override fun compareTo(other: Producto): Int {
-        // Sacamos la prioridad de la categoría, con un valor muy alto por defecto
         val thisPri = GenericConstants.PRIORIDAD_CATEGORIAS[this.categoria] ?: Double.MAX_VALUE
         val otherPri = GenericConstants.PRIORIDAD_CATEGORIAS[other.categoria] ?: Double.MAX_VALUE
+        val priCompare = thisPri.compareTo(otherPri)
+        if (priCompare != 0) return priCompare
 
-        // Comparamos solo por prioridad
-        return thisPri.compareTo(otherPri)
+        return this.nombre.compareTo(other.nombre, ignoreCase = true)
     }
     override fun toString(): String = nombre
 

@@ -66,6 +66,13 @@
             app:popUpTo="@id/navigation_crear_producto"
             app:popUpToInclusive="false" />
 
+
+        <action
+            android:id="@+id/action_vistaListaFragment_to_editarProductoFragment"
+            app:destination="@id/navigation_editar_producto"
+            app:popUpTo="@id/navigation_editar_producto"
+            app:popUpToInclusive="false" />
+
     </fragment>
 
 
@@ -102,6 +109,22 @@
             app:popUpToInclusive="false" />
         <action
             android:id="@+id/action_crearProductoFragment_to_vistaListaFragment"
+            app:destination="@id/navigation_vista_lista"
+            app:popUpTo="@id/navigation_vista_lista"
+            app:popUpToInclusive="false"
+            app:popUpToSaveState="true"
+            app:restoreState="true" />
+
+
+    </fragment>
+    <fragment
+        android:id="@+id/navigation_editar_producto"
+        android:name="com.example.proyecto_dam_aritz_ayensa.activities.EditarProductoFragment"
+        android:label="@string/title_editar_producto"
+        tools:layout="@layout/fragment_editar_producto"
+        >
+        <action
+            android:id="@+id/action_editarProductoFragment_to_vistaListaFragment"
             app:destination="@id/navigation_vista_lista"
             app:popUpTo="@id/navigation_vista_lista"
             app:popUpToInclusive="false"

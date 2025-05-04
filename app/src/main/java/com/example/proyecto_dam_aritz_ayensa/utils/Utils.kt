@@ -1,8 +1,13 @@
 package com.example.proyecto_dam_aritz_ayensa.utils
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.view.View
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuthException
 
@@ -21,12 +26,23 @@ class Utils {
         fun mostrarMensajeSnackbar(view : View, mensaje: CharSequence) {
             Snackbar.make(view, mensaje, 500).setDuration(500).show()
         }
+        @RequiresApi(Build.VERSION_CODES.S)
+        @SuppressLint("ServiceCast")
+        fun vibrator(context: Context) {
+            // 1. Obtener el Vibrator
+            val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+            // Vibración única de 200 ms a intensidad por defecto
+            val effect = VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE)
+            vibrator.vibrate(effect)
+
+        }
 
 
         fun comprobarCorreo(email: String): Boolean {
-            val emailRegex =
-                "^(?!.*\\.\\.)(?!\\.)(?!.*\\.$)[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$".toRegex()
-            return email.matches(emailRegex)
+        val emailRegex =
+            "^(?!.*\\.\\.)(?!\\.)(?!.*\\.$)[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$".toRegex()
+        return email.matches(emailRegex)
         }
 
         /*fun comprobarContraseña(contraseña: String): Boolean {

@@ -13,12 +13,21 @@ class ProductoService(private val productoDAO: ProductoDAO) {
         return productoDAO.saveProducto(producto)
 
     }
+
+    suspend fun updateProducto(producto: Producto){
+        return productoDAO.updateProducto(producto)
+
+    }
     suspend fun getProductos(): List<Producto> {
         return productoDAO.getProductos()
     }
 
     suspend fun getProductosByIds(ids: List<String>): List<Producto> {
         return productoDAO.getProductosByIds(ids)
+
+    }
+    suspend fun getProductoById(id: String): Producto? {
+        return productoDAO.getProductoById(id)
 
     }
     suspend fun calcularPrecioTotal(idsProductos: List<String>): Double {

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".activities.CrearProductoFragment"
+    tools:context=".activities.EditarPerfilActivity"
     android:paddingTop="80dp"
     >
 
@@ -19,11 +19,11 @@
         >
 
         <TextView
-            android:id="@+id/crear_producto_tv_mis_productos"
+            android:id="@+id/editar_producto_tv_editar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="@string/crearTarea_tv_nuevo_producto"
+            android:text="@string/editar_producto"
             android:textSize="28sp"
 
             app:layout_constraintEnd_toEndOf="parent"
@@ -32,17 +32,17 @@
 
         <!-- Contenedor de Titulo -->
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/crearTarea_cl_campos"
+            android:id="@+id/editarTarea_cl_campos"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/crear_producto_tv_mis_productos">
+            app:layout_constraintTop_toBottomOf="@id/editar_producto_tv_editar">
 
             <!-- Contenedor para los elementos de Título -->
             <LinearLayout
-                android:id="@+id/crearTarea_ly_elementosTitulo"
+                android:id="@+id/editarProducto_ly_elementosTitulo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -52,7 +52,7 @@
 
                 <!-- Editar Texto de Título -->
                 <EditText
-                    android:id="@+id/crear_producto_et_nombre"
+                    android:id="@+id/editar_producto_et_nombre"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
@@ -60,7 +60,6 @@
                     android:layout_weight="1"
                     android:autofillHints=""
                     android:background="@drawable/edittext_border"
-                    android:hint="@string/crear_producto_et_titulo"
                     android:inputType="text"
                     android:maxLength="60"
                     android:maxLines="1"
@@ -72,18 +71,18 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/crearTarea_ll_elementosPrecioYcategoria"
+                android:id="@+id/editarProducto_ll_elementosPrecioYcategoria"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20sp"
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/crearTarea_ly_elementosTitulo">
+                app:layout_constraintTop_toBottomOf="@id/editarProducto_ly_elementosTitulo">
 
                 <!-- Editar Texto de Título -->
                 <EditText
-                    android:id="@+id/crear_producto_et_precio"
+                    android:id="@+id/editar_producto_et_precio"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
@@ -91,7 +90,6 @@
                     android:layout_weight="1"
                     android:autofillHints=""
                     android:background="@drawable/edittext_border"
-                    android:hint="@string/crear_producto_et_precio"
                     android:inputType="numberDecimal"
                     android:maxLength="60"
                     android:maxLines="1"
@@ -114,21 +112,20 @@
                         android:id="@+id/autoCompleteTextView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="10sp"
-                        android:hint="Categoría" />
+                        android:padding="10sp"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/crearTarea_ll_prioridad"
+                android:id="@+id/editarTarea_ll_prioridad"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20sp"
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/crearTarea_ll_elementosPrecioYcategoria"/>
+                app:layout_constraintTop_toBottomOf="@id/editarProducto_ll_elementosPrecioYcategoria"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -138,37 +135,38 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="50dp"
-            android:onClick="crearProducto"
+            android:onClick="editarProducto"
             android:text="@string/crearTarea_btn_escanear_codigo"
-            app:layout_constraintTop_toBottomOf="@id/crearTarea_cl_campos"
+            app:layout_constraintTop_toBottomOf="@id/editarTarea_cl_campos"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
+
         <Button
-            android:id="@+id/btn_crear_producto"
+            android:id="@+id/btn_editar_producto"
             style="@style/ButtonAccept"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
             android:width="150dp"
-            android:onClick="crearProducto"
-            android:text="@string/crearTarea_btn_crear_producto"
+            android:onClick="editarProducto"
+            android:text="@string/button_editar_producto_guardar"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/crear_producto_btn_cancelar" />
+            app:layout_constraintStart_toEndOf="@id/editar_producto_btn_cancelar" />
 
         <!-- Bóton de Cancelar que te lleva a la ventana Login-->
         <Button
-            android:id="@+id/crear_producto_btn_cancelar"
+            android:id="@+id/editar_producto_btn_cancelar"
             style="@style/ButtonCancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:width="150dp"
             android:onClick="goToCancelar"
-            android:text="@string/crearTarea_btn_cancelar"
+            android:text="@string/button_editar_tarea_cancelar"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btn_crear_producto"
+            app:layout_constraintEnd_toStartOf="@id/btn_editar_producto"
             app:layout_constraintStart_toStartOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 

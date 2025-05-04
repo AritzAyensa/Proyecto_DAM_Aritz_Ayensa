@@ -51,6 +51,34 @@ class ProductoDAO {
         docRef.set(productoData).await()
         return docRef.id
     }
+
+    suspend fun updateProducto(producto: Producto) {
+        if (producto.id.isBlank()) {
+            throw IllegalArgumentException("El ID del producto no puede estar vacío")
+        }
+
+        val productoData = mapOf(
+            "id" to producto.id,
+            "nombre" to producto.nombre,
+            "precioAproximado" to producto.precioAproximado,
+            "categoria" to producto.categoria,
+            "codigoBarras" to producto.codigoBarras,
+            "idCreador" to producto.idCreador
+        )
+
+        try {
+            productosCollection
+                .document(producto.id)
+                .set(productoData)
+                .await()
+            Log.d("ProductoDAO", "Producto actualizado correctamente")
+        } catch (e: Exception) {
+            Log.e("ProductoDAO", "Error al actualizar el producto", e)
+            throw e
+        }
+    }
+
+
     suspend fun getProductosByIds(idProductos: List<String>): List<Producto> {
         if (idProductos.isEmpty()) return emptyList()
 
@@ -68,6 +96,25 @@ class ProductoDAO {
 
         return productos
     }
+
+    suspend fun getProductoById(idProducto: String): Producto? {
+        if (idProducto.isBlank()) return null
+
+        return try {
+            val snapshot = productosCollection
+                .document(idProducto)
+                .get()
+                .await()
+
+            snapshot.toObject(Producto::class.java)?.apply {
+                // Si necesitas asignar manualmente el ID del documento al objeto
+                // this.id = snapshot.id
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
 
 
 
