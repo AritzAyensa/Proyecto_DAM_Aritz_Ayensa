@@ -42,37 +42,38 @@ class UsuarioDAO {
      * @param onSuccess Función de callback que se ejecuta si la operación es exitosa.
      * @param onFailure Función de callback que se ejecuta si ocurre un error durante la operación.
      */
-    fun saveUser(nombre: String,email: String,contraseña: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+    fun saveUser(
+        nombre: String,
+        email: String,
+        contraseña: String,
+        onSuccess: (String) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
         auth.createUserWithEmailAndPassword(email, contraseña)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    // Obtener el usuario desde task.result (no de auth.currentUser)
                     val user = task.result?.user
                     val userId = user?.uid
 
-                    // Cifrar la contraseña
                     val hashedPassword = HashUtil.hashPassword(contraseña)
 
-                    // Crear el mapa de datos
                     val usuarioData = hashMapOf(
                         "id" to userId,
                         "nombre" to nombre,
                         "email" to email,
                         "idListas" to listOf<String>(),
                         "idListasCompartidas" to listOf<String>(),
-                        "idsNotificaciones" to mapOf<String, Boolean>(),
-
+                        "idsNotificaciones" to mapOf<String, Boolean>()
                     )
 
                     if (userId != null) {
                         usuariosCollection.document(userId).set(usuarioData)
                             .addOnSuccessListener {
                                 Log.d("UsuarioService", "Usuario registrado con éxito")
-                                onSuccess()
+                                onSuccess(userId)
                             }
                             .addOnFailureListener { e ->
-                                // Rollback: Eliminar usuario de Auth si Firestore falla
-                                user?.delete()
+                                user.delete()
                                 onFailure(e)
                             }
                     } else {
@@ -83,6 +84,8 @@ class UsuarioDAO {
                 }
             }
     }
+
+
 
 
     suspend fun getIdMisListasByIdUsuario(idUsuario: String) : List<String>{

@@ -75,13 +75,12 @@ class SessionManager(context: Context) {
      * @param userEmail Email del usuario.
      * @param userPassword Contraseña del usuario.
      */
-    fun saveCredentials(userEmail: String, userPassword: String) {
+    fun saveCredentials(userEmail: String) {
         prefs.edit().apply {
-            putString("USER_EMAIL", userEmail) // Guardar el email del usuario
-            putBoolean("REMEMBER_CHECK", true) // Marcar que se deben recordar las credenciales
-            apply() // Guardar los cambios de manera asíncrona
+            putString("USER_EMAIL", userEmail)
+            putBoolean("REMEMBER_CHECK", true)
+            apply()
         }
-        println("📌 Guardando credenciales: $userEmail, $userPassword, Check: true") // Log para depuración
     }
 
     /**
@@ -91,11 +90,17 @@ class SessionManager(context: Context) {
      */
     fun clearCredentials() {
         prefs.edit().apply {
-            remove("USER_EMAIL") // Eliminar el email del usuario
-            putBoolean("REMEMBER_CHECK", false) // Marcar que no se deben recordar las credenciales
-            apply() // Guardar los cambios de manera asíncrona
+            remove("USER_EMAIL")
+            putBoolean("REMEMBER_CHECK", false)
+            apply()
         }
-        println("📌 Eliminando") // Log para depuración
+    }
+
+    fun clearSession() {
+        prefs.edit().apply {
+            putBoolean("REMEMBER_CHECK", false)
+            apply()
+        }
     }
 
     /**
@@ -121,14 +126,4 @@ class SessionManager(context: Context) {
         return prefs.getString("USER_EMAIL", null) // Obtener el email del usuario
     }
 
-    /**
-     * Método: getUserPassword
-     *
-     * Obtiene la contraseña del usuario almacenada.
-     *
-     * @return Contraseña del usuario o `null` si no está almacenada.
-     */
-    /*fun getUserPassword(): String? {
-        return prefs.getString("USER_PASSWORD", null) // Obtener la contraseña del usuario
-    }*/
 }

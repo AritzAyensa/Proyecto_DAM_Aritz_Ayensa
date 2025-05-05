@@ -1,5 +1,6 @@
 package com.example.proyecto_dam_aritz_ayensa.activities
 
+import android.Manifest
 import android.app.ProgressDialog
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -56,6 +57,9 @@ class LoginActivity : AppCompatActivity() {
         sessionManager = SessionManager(this)
         println("Estado de REMEMBER_CHECK en inicio: ${sessionManager.isChecked()}")
 
+        if (!sessionManager.isChecked()) {
+            FirebaseAuth.getInstance().signOut()
+        }
         if (sessionManager.isLoggedIn() && hayConexionInternet()) {
             val usuarioID: String? = sessionManager.getUserId()
             println("ID usuario = $usuarioID")
@@ -72,15 +76,13 @@ class LoginActivity : AppCompatActivity() {
                 val emailUser = inputCorreo.text.toString()
                 val passwordUser = inputContra.text.toString()
                 if (emailUser.isNotEmpty() && passwordUser.isNotEmpty()) {
-                    sessionManager.saveCredentials(emailUser, passwordUser)
-                    println("Credenciales guardadas")
+                    sessionManager.saveCredentials(emailUser)
                 } else {
                     Utils.mostrarMensaje(this, "Ingrese el correo y la contraseña")
                     rememberCheck.isChecked = false
                 }
             } else {
                 sessionManager.clearCredentials()
-                println("Credenciales eliminadas")
             }
         }
     }
@@ -122,7 +124,12 @@ class LoginActivity : AppCompatActivity() {
                         cargarDatosUsuario(email) { usuarioObtenido ->
                             if (usuarioObtenido != null) {
                                 usuario = usuarioObtenido
-                                sessionManager.saveUserSession(usuario.id)
+                                if (rememberCheck.isChecked) {
+                                    sessionManager.saveUserSession(usuario.id)
+                                } else {
+                                    sessionManager.saveCredentials(usuario.email)
+                                    sessionManager.clearSession()
+                                }
                             } else {
                                 Utils.mostrarMensaje(this, "Usuario no encontrado")
                             }
@@ -196,7 +203,7 @@ class LoginActivity : AppCompatActivity() {
      * Verificar y solicitar permisos de notificación
      */
     private fun verificarYSolicitarPermisos() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // Verifica que la version de Android sea 33 o superior (en versiones anteriores no se dan permisos)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(
                     this,
                     android.Manifest.permission.POST_NOTIFICATIONS
@@ -205,7 +212,11 @@ class LoginActivity : AppCompatActivity() {
                 // Si no se ha dado permiso, lo pide
                 ActivityCompat.requestPermissions(
                     this,
-                    arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1
+                    arrayOf(
+                        Manifest.permission.CAMERA,
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ),
+                    1
                 )
             }
         }
@@ -229,14 +240,35 @@ class LoginActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 1) { // Código de solicitud de permiso
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permiso concedido, ahora puedes enviar notificaciones
-                Utils.mostrarMensaje(this, "Permiso concedido")
-            } else {
-                // Permiso denegado, informa al usuario
-                Utils.mostrarMensaje(this, "Permiso para notificaciones denegado")
+
+        if (requestCode == 1) {
+            var cameraGranted = false
+            var notificationsGranted = false
+
+            for (i in permissions.indices) {
+                when (permissions[i]) {
+                    Manifest.permission.CAMERA -> {
+                        if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                            cameraGranted = true
+                        } else {
+                            Utils.mostrarMensaje(this, "Permiso de cámara denegado")
+                        }
+                    }
+                    Manifest.permission.POST_NOTIFICATIONS -> {
+                        if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                            notificationsGranted = true
+                        } else {
+                            Utils.mostrarMensaje(this, "Permiso de notificaciones denegado")
+                        }
+                    }
+                }
+            }
+
+            if (!cameraGranted && !notificationsGranted) {
+                Utils.mostrarMensaje(this, "Se requieren permisos para continuar. La aplicación se cerrará.")
+                finishAffinity() // Cierra todas las actividades y sale de la app
             }
         }
     }
+
 }

@@ -1,5 +1,4 @@
 package com.example.proyecto_dam_aritz_ayensa.model.service
-import com.example.proyecto_dam_aritz_ayensa.model.dao.NotificacionDAO
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Usuario
 import com.example.proyecto_dam_aritz_ayensa.model.dao.UsuarioDAO
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Notificacion
@@ -18,7 +17,7 @@ import kotlinx.coroutines.flow.flowOn
  */
 class UsuarioService(private val usuarioDAO: UsuarioDAO,
                      private val notificacionService: NotificacionService) {
-    fun saveUser(nombre: String, email: String, contraseña: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+    fun saveUser(nombre: String, email: String, contraseña: String, onSuccess: (Any?) -> Unit, onFailure: (Exception) -> Unit) {
         // Elimina la verificación previa de usuarioExistente
         usuarioDAO.saveUser(nombre, email, contraseña, onSuccess, onFailure)
     }
