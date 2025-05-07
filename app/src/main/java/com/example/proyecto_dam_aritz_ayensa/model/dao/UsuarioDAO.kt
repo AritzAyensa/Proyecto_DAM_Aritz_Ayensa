@@ -46,6 +46,7 @@ class UsuarioDAO {
         nombre: String,
         email: String,
         contraseña: String,
+        token: String, // 🔹 ahora también recibe el token
         onSuccess: (String) -> Unit,
         onFailure: (Exception) -> Unit
     ) {
@@ -63,7 +64,8 @@ class UsuarioDAO {
                         "email" to email,
                         "idListas" to listOf<String>(),
                         "idListasCompartidas" to listOf<String>(),
-                        "idsNotificaciones" to mapOf<String, Boolean>()
+                        "idsNotificaciones" to mapOf<String, Boolean>(),
+                        "fmcTokens" to listOf(token)
                     )
 
                     if (userId != null) {
@@ -86,6 +88,41 @@ class UsuarioDAO {
     }
 
 
+    fun añadirTokenAUsuario(
+        userId: String,
+        token: String,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        val userDoc = usuariosCollection.document(userId)
+        userDoc.get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val tokens = document.get("fmcTokens") as? List<*> ?: emptyList<Any>()
+                    if (!tokens.contains(token)) {
+                        userDoc.update("fmcTokens", FieldValue.arrayUnion(token))
+                            .addOnSuccessListener { onSuccess() }
+                            .addOnFailureListener { e -> onFailure(e) }
+                    } else {
+                        // Ya lo tiene, no hace falta actualizar
+                        onSuccess()
+                    }
+                } else {
+                    onFailure(Exception("Usuario no encontrado"))
+                }
+            }
+            .addOnFailureListener { e -> onFailure(e) }
+    }
+
+
+
+    fun eliminarFcmToken(uid: String, token: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+            usuariosCollection.document(uid).update("fcmTokens", FieldValue.arrayRemove(token))
+            .addOnSuccessListener { onSuccess() }
+            .addOnFailureListener { e -> onFailure(e) }
+    }
+
+
 
 
     suspend fun getIdMisListasByIdUsuario(idUsuario: String) : List<String>{
@@ -100,6 +137,30 @@ class UsuarioDAO {
             emptyList()
         }
     }
+
+    suspend fun getUserIdsByListId(listId: String): List<String> {
+
+
+        // Consulta 1: usuarios donde idListas contiene listId
+        val snap1 = usuariosCollection
+            .whereArrayContains("idListas", listId)
+            .get()
+            .await()
+
+        // Consulta 2: usuarios donde idListasCompartidas contiene listId
+        val snap2 = usuariosCollection
+            .whereArrayContains("idListasCompartidas", listId)
+            .get()
+            .await()
+
+        val ids = mutableSetOf<String>()
+        (snap1.documents + snap2.documents).forEach { doc ->
+            doc.id.let { ids.add(it) }
+        }
+        return ids.toList()
+    }
+
+
 
 
     suspend fun getMisListasSizeByIdUsuario(idUsuario: String): Int {

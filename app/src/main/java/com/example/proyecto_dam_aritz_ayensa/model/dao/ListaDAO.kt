@@ -126,7 +126,6 @@ class ListaDAO {
                     descripcion = document.getString("descripcion") ?: "",
                     color = document.getString("color") ?: "#FFFFFF",
                     idCreador = document.getString("idCreador") ?: "",
-                    idsUsuariosCompartidos = document.get("idsUsuariosCompartidos") as? List<String> ?: emptyList(),
                     idProductos = document.get("idProductos") as? List<String> ?: emptyList()
                 )
             } else {

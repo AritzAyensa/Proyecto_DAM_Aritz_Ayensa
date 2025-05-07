@@ -18,6 +18,7 @@ import com.example.proyecto_dam_aritz_ayensa.model.dao.UsuarioDAO
 import com.example.proyecto_dam_aritz_ayensa.model.service.NotificacionService
 import com.example.proyecto_dam_aritz_ayensa.model.service.UsuarioService
 import com.example.proyecto_dam_aritz_ayensa.utils.SessionManager
+import com.google.firebase.messaging.FirebaseMessaging
 
 class CuentaFragment : Fragment() {
 
@@ -99,6 +100,21 @@ class CuentaFragment : Fragment() {
 
         // Verifica que el contexto no sea nulo
         if (context != null) {
+            val uid = sessionManager.getUserId()
+            val token = FirebaseMessaging.getInstance().token.result
+
+            usuarioService.eliminarFcmToken(uid.toString(), token,
+                onSuccess = {
+                    // Continuar con el cierre de sesión
+                    sessionManager.clearSession()
+                    // Navegar a la pantalla de inicio de sesión o realizar otras acciones necesarias
+                },
+                onFailure = { e ->
+                    Log.e("Logout", "Error al eliminar el token FCM: ${e.message}")
+                    // Manejar el error según sea necesario
+                }
+            )
+
             startActivity(intent)
             requireActivity().finish()
         } else {

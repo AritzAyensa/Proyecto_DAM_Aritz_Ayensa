@@ -31,6 +31,7 @@ import com.example.proyecto_dam_aritz_ayensa.R
 import com.example.proyecto_dam_aritz_ayensa.adapters.NotificacionAdapter
 import com.example.proyecto_dam_aritz_ayensa.adapters.ProductoAdapter
 import com.example.proyecto_dam_aritz_ayensa.databinding.FragmentVistaListaBinding
+import com.example.proyecto_dam_aritz_ayensa.model.dao.InvitacionDAO
 import com.example.proyecto_dam_aritz_ayensa.model.dao.ListaDAO
 import com.example.proyecto_dam_aritz_ayensa.model.dao.NotificacionDAO
 import com.example.proyecto_dam_aritz_ayensa.model.dao.ProductoDAO
@@ -39,6 +40,7 @@ import com.example.proyecto_dam_aritz_ayensa.model.entity.Lista
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Notificacion
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Producto
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Usuario
+import com.example.proyecto_dam_aritz_ayensa.model.service.InvitacionService
 import com.example.proyecto_dam_aritz_ayensa.model.service.ListaService
 import com.example.proyecto_dam_aritz_ayensa.model.service.NotificacionService
 import com.example.proyecto_dam_aritz_ayensa.model.service.ProductoService
@@ -46,6 +48,7 @@ import com.example.proyecto_dam_aritz_ayensa.model.service.UsuarioService
 import com.example.proyecto_dam_aritz_ayensa.utils.GenericConstants
 import com.example.proyecto_dam_aritz_ayensa.utils.SessionManager
 import com.example.proyecto_dam_aritz_ayensa.utils.Utils
+import com.google.firebase.firestore.FieldValue
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
@@ -80,6 +83,7 @@ class VistaListaFragment : Fragment() {
     private lateinit var listaService: ListaService
     private lateinit var productoService: ProductoService
     private lateinit var notificacionesService: NotificacionService
+    private lateinit var invitacionService: InvitacionService
     private var listaProductos: MutableList<Producto> = mutableListOf()
     private val productosSeleccionados = mutableListOf<String>()
     private var todosLosProductos = mutableListOf<Producto>()
@@ -97,6 +101,7 @@ class VistaListaFragment : Fragment() {
         listaService = ListaService(ListaDAO())
         productoService = ProductoService(ProductoDAO())
         notificacionesService = NotificacionService(NotificacionDAO())
+        invitacionService = InvitacionService(InvitacionDAO())
         usuarioService = UsuarioService(UsuarioDAO(), notificacionesService)
         sessionManager = SessionManager(requireContext())
         userId = sessionManager.getUserId().toString()
@@ -310,7 +315,7 @@ class VistaListaFragment : Fragment() {
                             fecha = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
                         )
 
-                        val idsUsuarios = lista.idsUsuariosCompartidos + userId
+                        val idsUsuarios = usuarioService.getUserIdsByListId(lista.id)
                         val idNotificacion = notificacionesService.saveNotificacion(notificacion)
                         usuarioService.añadirNotificacionAUsuarios(idsUsuarios, idNotificacion)
 
@@ -339,7 +344,8 @@ class VistaListaFragment : Fragment() {
 
     @SuppressLint("SetTextI18n")
     private fun compartirLista(context: Context) {
-        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_email_input, null)
+        val dialogView = LayoutInflater.from(context)
+            .inflate(R.layout.dialog_email_input, null)
         val inputEmail = dialogView.findViewById<EditText>(R.id.input_email)
         val textoError = dialogView.findViewById<TextView>(R.id.texto_error)
 
@@ -349,16 +355,14 @@ class VistaListaFragment : Fragment() {
             .setNegativeButton("Cancelar", null)
             .create()
 
-
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, "Aceptar") { _, _ -> }
-
         dialog.setOnShowListener {
             val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
             positiveButton.setOnClickListener {
                 val email = inputEmail.text.toString().trim()
 
                 when {
-                    (email.isEmpty()) -> {
+                    email.isEmpty() -> {
                         textoError.visibility = View.VISIBLE
                         textoError.text = "El campo no puede estar vacío"
                         inputEmail.requestFocus()
@@ -368,7 +372,7 @@ class VistaListaFragment : Fragment() {
                         textoError.text = "Correo incorrecto"
                         inputEmail.requestFocus()
                     }
-                    email == sessionManager.getUserEmail() ->{
+                    email == sessionManager.getUserEmail() -> {
                         textoError.visibility = View.VISIBLE
                         textoError.text = "Introduce otro correo"
                         inputEmail.requestFocus()
@@ -378,40 +382,46 @@ class VistaListaFragment : Fragment() {
                             onSuccess = { usuario ->
                                 lifecycleScope.launch {
                                     if (usuario != null) {
-                                        if(usuario.idListasCompartidas.contains(idLista)){
+                                        if (usuario.idListasCompartidas.contains(idLista)) {
                                             textoError.visibility = View.VISIBLE
                                             textoError.text = "Ya has compartido la lista con este usuario anteriormente"
                                             inputEmail.requestFocus()
-                                        }else{
+                                        } else {
+                                            // 1) Añadir lista compartida
+                                            usuarioService.añadirListaCompartidaAUsuario(idLista, usuario.id)
 
-                                            Log.i("USUARIO", "compartida")
-                                            usuarioService.añadirListaCompartidaAUsuario(
-                                                idLista,
-                                                usuario.id
-                                            )
+                                            // 2) Crear invitación en Firestore para disparar la Cloud Function
                                             val nombreUsuario = usuarioService.getUserNameById(userId)
-                                            val notificacion = Notificacion()
-                                            notificacion.tipo = GenericConstants.TIPO_LISTA_COMPRATIDA
+                                            val inviteData = mapOf(
+                                                "toUid"     to usuario.id,
+                                                "fromUid"   to userId,
+                                                "fromName"  to nombreUsuario,
+                                                "listName"  to lista.titulo,
+                                                "timestamp" to FieldValue.serverTimestamp()
+                                            )
+                                            invitacionService.notificacionCompartirLista(inviteData,
+                                                onSuccess = { /* FCM push se envía vía Cloud Function */ },
+                                                onError   = { /* log si hace falta */ }
+                                            )
 
-                                            notificacion.descripcion = nombreUsuario + " ha compartido la lista " + lista.titulo + " con " + usuario.nombre
-
-                                            var idsUsuarios : List<String> = lista.idsUsuariosCompartidos
-                                            idsUsuarios += userId
-                                            notificacion.idProductos += lista.idProductos
-
-
-
-                                            val fechaActual = LocalDate.now()
-                                            val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-                                            notificacion.fecha = fechaActual.format(formatter)
-
-                                            val idNotificacion = notificacionesService.saveNotificacion(notificacion)
+                                            // 3) Notificación interna a todos los usuarios
+                                            val noti = Notificacion().apply {
+                                                tipo = GenericConstants.TIPO_LISTA_COMPRATIDA
+                                                descripcion = "$nombreUsuario ha compartido la lista \"${lista.titulo}\" con ${usuario.nombre}"
+                                                idProductos = lista.idProductos.toMutableList()
+                                                fecha = LocalDate.now()
+                                                    .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                                            }
+                                            val idsUsuarios = usuarioService.getUserIdsByListId(lista.id)
+                                            val idNotificacion = notificacionesService.saveNotificacion(noti)
                                             usuarioService.añadirNotificacionAUsuarios(idsUsuarios, idNotificacion)
 
-                                            Utils.mostrarMensaje(requireContext(), "Lista "+ lista.titulo + " compartida con " + usuario.nombre)
+                                            // 4) Feedback y cierre
+                                            Utils.mostrarMensaje(requireContext(),
+                                                "Lista \"${lista.titulo}\" compartida con ${usuario.nombre}")
                                             dialog.dismiss()
                                         }
-                                    }else{
+                                    } else {
                                         textoError.visibility = View.VISIBLE
                                         textoError.text = "Correo no encontrado"
                                         inputEmail.requestFocus()
@@ -420,7 +430,7 @@ class VistaListaFragment : Fragment() {
                             },
                             onFailure = {
                                 textoError.visibility = View.VISIBLE
-                                textoError.text = "Correo no encontrado"
+                                textoError.text = "Error al buscar usuario"
                                 inputEmail.requestFocus()
                             }
                         )
@@ -428,14 +438,14 @@ class VistaListaFragment : Fragment() {
                 }
 
                 // Mostrar teclado si hay error
-                if (email.isEmpty() || !Utils.comprobarCorreo(email)) {
+                if (textoError.visibility == View.VISIBLE) {
                     val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     imm.showSoftInput(inputEmail, InputMethodManager.SHOW_IMPLICIT)
                 }
             }
         }
 
-        // Configuración de teclado y tamaño
+        // Ajuste de tamaño y teclado
         dialog.window?.apply {
             setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
             setLayout(
@@ -443,11 +453,11 @@ class VistaListaFragment : Fragment() {
                 WindowManager.LayoutParams.WRAP_CONTENT
             )
         }
-
         dialog.show()
     }
 
-        private fun eliminarLista(context: Context) {
+
+    private fun eliminarLista(context: Context) {
             val dialog = AlertDialog.Builder(context)
                 .setTitle("Eliminar lista")
                 .setNegativeButton("Cancelar", null)

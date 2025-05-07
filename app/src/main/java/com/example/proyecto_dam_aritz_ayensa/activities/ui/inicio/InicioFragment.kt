@@ -49,8 +49,7 @@ class InicioFragment : Fragment() {
     private lateinit var progressBar : ProgressBar
     private lateinit var progressBar2 : ProgressBar
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
+
     private val binding get() = _binding!!
 
     override fun onCreateView(

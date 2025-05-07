@@ -13,6 +13,7 @@ import com.example.proyecto_dam_aritz_ayensa.model.dao.UsuarioDAO
 import com.example.proyecto_dam_aritz_ayensa.model.service.NotificacionService
 import com.example.proyecto_dam_aritz_ayensa.utils.SessionManager
 import com.example.proyecto_dam_aritz_ayensa.utils.Utils
+import com.google.firebase.messaging.FirebaseMessaging
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -79,6 +80,7 @@ class RegisterActivity : AppCompatActivity() {
             nombre = nombrePorDefecto,
             email = email,
             contraseña = password,
+            FirebaseMessaging.getInstance().token.toString(),
             onSuccess = { userId ->
                 Utils.mostrarMensaje(this, "Registro exitoso")
                 onSuccess(userId.toString())

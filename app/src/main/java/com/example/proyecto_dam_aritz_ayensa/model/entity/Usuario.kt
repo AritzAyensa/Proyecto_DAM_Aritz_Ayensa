@@ -11,5 +11,6 @@ data class Usuario (
     var email: String = "",
     var idListas: List<String> = emptyList(),
     var idListasCompartidas: List<String> = emptyList(),
-    var idsNotificaciones: Map<String, Boolean> = emptyMap()
+    var idsNotificaciones: Map<String, Boolean> = emptyMap(),
+    var fmcTokens: List<String> = emptyList()
 )

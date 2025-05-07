@@ -2,6 +2,8 @@ package com.example.proyecto_dam_aritz_ayensa.model.service
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Usuario
 import com.example.proyecto_dam_aritz_ayensa.model.dao.UsuarioDAO
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Notificacion
+import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.DocumentReference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -17,11 +19,18 @@ import kotlinx.coroutines.flow.flowOn
  */
 class UsuarioService(private val usuarioDAO: UsuarioDAO,
                      private val notificacionService: NotificacionService) {
-    fun saveUser(nombre: String, email: String, contraseña: String, onSuccess: (Any?) -> Unit, onFailure: (Exception) -> Unit) {
+    fun saveUser(nombre: String, email: String, contraseña: String, token: String, onSuccess: (Any?) -> Unit, onFailure: (Exception) -> Unit) {
         // Elimina la verificación previa de usuarioExistente
-        usuarioDAO.saveUser(nombre, email, contraseña, onSuccess, onFailure)
+        usuarioDAO.saveUser(nombre, email, contraseña,token, onSuccess, onFailure)
+    }
+    fun añadirTokenAUsuario(uid: String, token: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        usuarioDAO.añadirTokenAUsuario(uid, token, onSuccess, onFailure)
     }
 
+
+    fun eliminarFcmToken(uid: String, token: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        usuarioDAO.eliminarFcmToken(uid, token, onSuccess, onFailure)
+    }
     /**
      * Método: getUser
      *
@@ -57,6 +66,11 @@ class UsuarioService(private val usuarioDAO: UsuarioDAO,
 
     suspend fun getUserNameById(usuarioID: String) : String? {
         return usuarioDAO.getUserNameById(usuarioID)
+    }
+
+
+    suspend fun getUserIdsByListId(listId: String): List<String> {
+        return usuarioDAO.getUserIdsByListId(listId)
     }
     fun notificacionesSinLeerCountFlow(userId: String): Flow<Int> {
         return usuarioDAO.notificacionesSinLeerCountFlow(userId)
