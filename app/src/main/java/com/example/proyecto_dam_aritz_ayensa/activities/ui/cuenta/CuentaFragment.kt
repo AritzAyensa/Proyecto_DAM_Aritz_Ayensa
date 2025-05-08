@@ -89,34 +89,33 @@ class CuentaFragment : Fragment() {
                 Log.e("UserService", "Error al obtener el usuario", exception)
             })
     }
-
-
     private fun cerrarSesion() {
-        sessionManager.logout()
-
-        val intent = Intent(requireContext(), LoginActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
 
         // Verifica que el contexto no sea nulo
         if (context != null) {
             val uid = sessionManager.getUserId()
-            val token = FirebaseMessaging.getInstance().token.result
+            FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val token = task.result
 
-            usuarioService.eliminarFcmToken(uid.toString(), token,
-                onSuccess = {
-                    // Continuar con el cierre de sesión
-                    sessionManager.clearSession()
-                    // Navegar a la pantalla de inicio de sesión o realizar otras acciones necesarias
-                },
-                onFailure = { e ->
-                    Log.e("Logout", "Error al eliminar el token FCM: ${e.message}")
-                    // Manejar el error según sea necesario
+                    usuarioService.eliminarFcmToken(uid.toString(), token,
+                        onSuccess = {
+                            sessionManager.logout()
+                            sessionManager.clearSession()
+                            val intent = Intent(requireContext(), LoginActivity::class.java).apply {
+                                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            }
+                            startActivity(intent)
+                            requireActivity().finish()
+                        },
+                        onFailure = { e ->
+                            Log.e("Logout", "Error al eliminar el token FCM: ${e.message}")
+                        }
+                    )
+                } else {
+                    Log.e("Logout", "No se pudo obtener el token FCM", task.exception)
                 }
-            )
-
-            startActivity(intent)
-            requireActivity().finish()
+            }
         } else {
             Log.e("CuentaFragment", "Contexto nulo al cerrar sesión")
         }

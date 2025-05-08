@@ -1,6 +1,10 @@
 package com.example.proyecto_dam_aritz_ayensa.utils
 
 import android.annotation.SuppressLint
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -13,7 +17,12 @@ import com.google.firebase.messaging.RemoteMessage
 
 class MiFirebaseMessagingService : FirebaseMessagingService() {
 
-    private var sessionManager: SessionManager = SessionManager(this)
+    private lateinit var sessionManager: SessionManager
+
+    override fun onCreate() {
+        super.onCreate()
+        sessionManager = SessionManager(applicationContext)
+    }
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
@@ -45,6 +54,33 @@ class MiFirebaseMessagingService : FirebaseMessagingService() {
         NotificationManagerCompat.from(this)
             .notify(System.currentTimeMillis().toInt(), notif.build())
     }
+    /*override fun onMessageReceived(remoteMessage: RemoteMessage) {
+        // Verificar si el mensaje contiene datos
+        remoteMessage.data.isNotEmpty().let {
+            val title = remoteMessage.data["title"]
+            val body = remoteMessage.data["body"]
+            if (title != null && body != null) {
+                mostrarNotificacion(title, body)
+            }
+        }
+    }
+
+    private fun mostrarNotificacion(title: String, body: String) {
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val channelId = "invitaciones"
+
+        // Construir la notificación
+        val notification = NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(R.mipmap.logo)
+            .setContentTitle(title)
+            .setContentText(body)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            .build()
+
+        // Mostrar la notificación
+        notificationManager.notify(0, notification)
+    }*/
 
 
 }

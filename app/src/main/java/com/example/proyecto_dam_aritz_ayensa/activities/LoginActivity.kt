@@ -1,6 +1,8 @@
 package com.example.proyecto_dam_aritz_ayensa.activities
 
 import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.ProgressDialog
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -15,6 +17,7 @@ import android.widget.EditText
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -29,6 +32,7 @@ import com.example.proyecto_dam_aritz_ayensa.utils.SessionManager
 import com.example.proyecto_dam_aritz_ayensa.utils.Utils
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
+import com.google.firebase.messaging.FirebaseMessaging
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var usuarioService: UsuarioService
@@ -44,6 +48,7 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
 
         notificacionService = NotificacionService(NotificacionDAO())
         usuarioService = UsuarioService(UsuarioDAO(), notificacionService)
@@ -134,6 +139,23 @@ class LoginActivity : AppCompatActivity() {
                                 Utils.mostrarMensaje(this, "Usuario no encontrado")
                             }
                         }
+                        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                val token = task.result
+
+                                usuarioService.añadirTokenAUsuario(sessionManager.getUserId().toString(), token,
+                                    onSuccess = {
+                                        Log.e("Login", "Token añadido")
+                                    },
+                                    onFailure = { e ->
+                                        Log.e("Login", "Error al añadir el token FCM: ${e.message}")
+                                    }
+                                )
+                            } else {
+                                Log.e("Login", "No se pudo obtener el token FCM", task.exception)
+                            }
+                        }
+
                         // Opcional: Obtener datos adicionales desde Firestore
                         iniciarSesion()
                     /*} else {
@@ -193,6 +215,7 @@ class LoginActivity : AppCompatActivity() {
     }*/
 
     private fun iniciarSesion() {
+
         startActivity(Intent(this, BottomNavigationActivity::class.java))
         finish()
     }

@@ -16,9 +16,6 @@ import com.google.firebase.messaging.FirebaseMessaging
 class SplashScreenActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        FirebaseApp.initializeApp(this)
-
-
 
         setContentView(R.layout.activity_splash_screen)
 

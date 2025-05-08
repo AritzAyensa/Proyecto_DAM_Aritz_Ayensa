@@ -14,7 +14,7 @@ exports.sendInviteNotification = onDocumentCreated(
     // Leer todos los tokens del usuario (array)
     const userSnap = await admin
       .firestore()
-      .collection('users')
+      .collection('usuarios')
       .doc(invite.toUid)
       .get();
     const tokens = userSnap.get('fcmTokens');
@@ -31,3 +31,5 @@ exports.sendInviteNotification = onDocumentCreated(
     return admin.messaging().sendToDevice(tokens, payload);
   }
 );
+
+

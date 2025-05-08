@@ -65,7 +65,7 @@ class UsuarioDAO {
                         "idListas" to listOf<String>(),
                         "idListasCompartidas" to listOf<String>(),
                         "idsNotificaciones" to mapOf<String, Boolean>(),
-                        "fmcTokens" to listOf(token)
+                        "fcmTokens" to listOf(token)
                     )
 
                     if (userId != null) {
@@ -98,9 +98,9 @@ class UsuarioDAO {
         userDoc.get()
             .addOnSuccessListener { document ->
                 if (document.exists()) {
-                    val tokens = document.get("fmcTokens") as? List<*> ?: emptyList<Any>()
+                    val tokens = document.get("fcmTokens") as? List<*> ?: emptyList<Any>()
                     if (!tokens.contains(token)) {
-                        userDoc.update("fmcTokens", FieldValue.arrayUnion(token))
+                        userDoc.update("fcmTokens", FieldValue.arrayUnion(token))
                             .addOnSuccessListener { onSuccess() }
                             .addOnFailureListener { e -> onFailure(e) }
                     } else {
