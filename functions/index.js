@@ -38,7 +38,9 @@ exports.sendInviteNotification = onDocumentCreated(
           },
           android: {
             priority: 'HIGH',
-            notification: { channelId: 'invitaciones' },
+            notification: { channelId: 'invitaciones',
+                            image: 'ic_logo' 
+                          },
           },
         };
         return messaging.send(msg)

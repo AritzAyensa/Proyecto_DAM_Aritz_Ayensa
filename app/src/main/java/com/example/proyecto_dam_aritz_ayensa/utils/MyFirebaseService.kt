@@ -19,7 +19,7 @@ class MyFirebaseService : FirebaseMessagingService() {
 
     override fun onCreate() {
         super.onCreate()
-        /*createNotificationChannel()*/
+        createNotificationChannel()
     }
 
     override fun onNewToken(token: String) {
@@ -60,23 +60,21 @@ class MyFirebaseService : FirebaseMessagingService() {
     }
 
     private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                "invitaciones",
-                "Invitaciones",
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                description = "Canal para notificaciones de invitaciones"
-            }
-            val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-            manager.createNotificationChannel(channel)
+        val channel = NotificationChannel(
+            "invitaciones",
+            "Invitaciones",
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            description = "Canal para notificaciones de invitaciones"
         }
+        val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        manager.createNotificationChannel(channel)
     }
 
     @SuppressLint("MissingPermission")
     private fun mostrarNotificacion(title: String, body: String) {
         val notification = NotificationCompat.Builder(this, "invitaciones")
-            .setSmallIcon(R.mipmap.logo) // ¡Verificar que este recurso existe!
+            .setSmallIcon(R.drawable.ic_logo)
             .setContentTitle(title)
             .setContentText(body)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
