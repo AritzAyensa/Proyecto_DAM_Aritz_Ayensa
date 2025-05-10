@@ -5,7 +5,6 @@ import android.app.Dialog
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -21,17 +20,15 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.proyecto_dam_aritz_ayensa.R
-import com.example.proyecto_dam_aritz_ayensa.adapters.NotificacionAdapter
 import com.example.proyecto_dam_aritz_ayensa.adapters.ProductoAdapter
 import com.example.proyecto_dam_aritz_ayensa.databinding.FragmentVistaListaBinding
-import com.example.proyecto_dam_aritz_ayensa.model.dao.InvitacionDAO
+import com.example.proyecto_dam_aritz_ayensa.model.dao.NotificacionEmergenteDAO
 import com.example.proyecto_dam_aritz_ayensa.model.dao.ListaDAO
 import com.example.proyecto_dam_aritz_ayensa.model.dao.NotificacionDAO
 import com.example.proyecto_dam_aritz_ayensa.model.dao.ProductoDAO
@@ -39,8 +36,7 @@ import com.example.proyecto_dam_aritz_ayensa.model.dao.UsuarioDAO
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Lista
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Notificacion
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Producto
-import com.example.proyecto_dam_aritz_ayensa.model.entity.Usuario
-import com.example.proyecto_dam_aritz_ayensa.model.service.InvitacionService
+import com.example.proyecto_dam_aritz_ayensa.model.service.NotificacionEmergenteService
 import com.example.proyecto_dam_aritz_ayensa.model.service.ListaService
 import com.example.proyecto_dam_aritz_ayensa.model.service.NotificacionService
 import com.example.proyecto_dam_aritz_ayensa.model.service.ProductoService
@@ -83,7 +79,7 @@ class VistaListaFragment : Fragment() {
     private lateinit var listaService: ListaService
     private lateinit var productoService: ProductoService
     private lateinit var notificacionesService: NotificacionService
-    private lateinit var invitacionService: InvitacionService
+    private lateinit var notificacionEmergenteService: NotificacionEmergenteService
     private var listaProductos: MutableList<Producto> = mutableListOf()
     private val productosSeleccionados = mutableListOf<String>()
     private var todosLosProductos = mutableListOf<Producto>()
@@ -101,7 +97,7 @@ class VistaListaFragment : Fragment() {
         listaService = ListaService(ListaDAO())
         productoService = ProductoService(ProductoDAO())
         notificacionesService = NotificacionService(NotificacionDAO())
-        invitacionService = InvitacionService(InvitacionDAO())
+        notificacionEmergenteService = NotificacionEmergenteService(NotificacionEmergenteDAO())
         usuarioService = UsuarioService(UsuarioDAO(), notificacionesService)
         sessionManager = SessionManager(requireContext())
         userId = sessionManager.getUserId().toString()
@@ -299,26 +295,52 @@ class VistaListaFragment : Fragment() {
             positiveButton.setOnClickListener {
                 lifecycleScope.launch(Dispatchers.IO) {
                     try {
+                        // 1) Eliminar productos de la lista y recargar datos
                         listaService.eliminarProductosDeLista(idLista, productosSeleccionados.toList())
                         lista = listaService.getListaById(idLista)!!
-                        listaProductos = productoService.getProductosByIds(lista.idProductos).toMutableList()
+                        listaProductos = productoService
+                            .getProductosByIds(lista.idProductos)
+                            .toMutableList()
 
+                        // 2) Actualizar UI
                         activity?.runOnUiThread {
                             adapter.actualizarProductos(listaProductos)
                         }
 
+                        // 3) Construir datos de la noti interna
                         val nombreUsuario = usuarioService.getUserNameById(userId)
                         val notificacion = Notificacion(
                             tipo = GenericConstants.TIPO_COMPRA,
                             descripcion = "$nombreUsuario ha completado la compra ${lista.titulo}",
                             idProductos = productosSeleccionados,
-                            fecha = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                            fecha = LocalDate
+                                .now()
+                                .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
                         )
 
+                        // 4) Guardar noti interna y asignar a usuarios
                         val idsUsuarios = usuarioService.getUserIdsByListId(lista.id)
                         val idNotificacion = notificacionesService.saveNotificacion(notificacion)
                         usuarioService.añadirNotificacionAUsuarios(idsUsuarios, idNotificacion)
 
+                        // 5) Crear notificaciones emergentes FCM
+                        idsUsuarios.forEach { targetUid ->
+                            val notiEmergenteData = mapOf(
+                                "toUid"     to targetUid,
+                                "fromUid"   to userId,
+                                "fromName"  to nombreUsuario,
+                                "listName"  to lista.titulo,
+                                "timestamp" to FieldValue.serverTimestamp(),
+                                "tipo"      to GenericConstants.TIPO_COMPRA
+                            )
+                            notificacionEmergenteService.saveNotificacionEmergente(
+                                notiEmergenteData,
+                                onSuccess = { },
+                                onError   = { }
+                            )
+                        }
+
+                        // 6) Feedback y cierre de diálogo
                         withContext(Dispatchers.Main) {
                             Utils.mostrarMensaje(requireContext(), "Compra completada")
                             dialog.dismiss()
@@ -335,6 +357,7 @@ class VistaListaFragment : Fragment() {
 
         dialog.show()
     }
+
     private fun goToCrearProducto() {
         val bundle = Bundle().apply {
             putString("idLista", idLista)
@@ -392,14 +415,15 @@ class VistaListaFragment : Fragment() {
 
                                             // 2) Crear invitación en Firestore para disparar la Cloud Function
                                             val nombreUsuario = usuarioService.getUserNameById(userId)
-                                            val inviteData = mapOf(
+                                            val notificacionEmergenteData = mapOf(
                                                 "toUid"     to usuario.id,
                                                 "fromUid"   to userId,
                                                 "fromName"  to nombreUsuario,
                                                 "listName"  to lista.titulo,
-                                                "timestamp" to FieldValue.serverTimestamp()
+                                                "timestamp" to FieldValue.serverTimestamp(),
+                                                "tipo" to GenericConstants.TIPO_LISTA_COMPRATIDA
                                             )
-                                            invitacionService.notificacionCompartirLista(inviteData,
+                                            notificacionEmergenteService.saveNotificacionEmergente(notificacionEmergenteData,
                                                 onSuccess = { /* FCM push se envía vía Cloud Function */ },
                                                 onError   = { /* log si hace falta */ }
                                             )
@@ -567,60 +591,6 @@ class VistaListaFragment : Fragment() {
             )
             .toMutableList()
     }
-
-
-    /*@SuppressLint("NotifyDataSetChanged")
-        private fun cargarLista() {
-            progressBar.visibility = View.VISIBLE
-
-            lifecycleScope.launch {
-                // 1) Cargar datos estáticos de la lista (título, creador) una sola vez
-                val listaObtenida = withContext(Dispatchers.IO) {
-                    listaService.getListaById(idLista)
-                } ?: run {
-                    withContext(Dispatchers.Main) {
-                        Utils.mostrarMensaje(requireContext(), "Lista no encontrada")
-                        progressBar.visibility = View.GONE
-                    }
-                    return@launch
-                }
-                lista = listaObtenida
-
-
-                // 2) Suscribirse al Flow de productos de la lista
-                listaService.productosDeListaFlow(idLista, productoService)
-                    .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
-                    .collect { productosRaw ->
-                        // 3) Ordenar según prioridad y estado marcado
-                        listaProductos = ordenarProductos(productosRaw.toMutableList())
-
-                        // 4) Actualizar o crear adapter en UI
-                        withContext(Dispatchers.Main) {
-                            if (::adapter.isInitialized) {
-                                adapter.actualizarProductos(listaProductos)
-                            } else {
-                                adapter = ProductoAdapter(
-                                    listaProductos,
-                                    onItemClick = { Utils.mostrarMensaje(requireContext(), "click") },
-                                    onCheckClick = { producto, isSelected ->
-                                        // Alternar selección y reordenar
-                                        if (isSelected) productosSeleccionados.add(producto.id)
-                                        else            productosSeleccionados.remove(producto.id)
-
-                                        listaProductos = ordenarProductos(listaProductos)
-                                        adapter.actualizarProductos(listaProductos)
-                                    }
-                                )
-                                recyclerViewProductos.apply {
-                                    layoutManager = LinearLayoutManager(context)
-                                    adapter = this@VistaListaFragment.adapter
-                                }
-                            }
-                            progressBar.visibility = View.GONE
-                        }
-                    }
-            }
-        }*/
 
     private fun mostrarOpcionesEdicionEliminar(
         producto: Producto

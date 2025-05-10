@@ -7,7 +7,7 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 
 
-class InvitacionDAO {
+class NotificacionEmergenteDAO {
 
     // Instancia de Firestore para interactuar con la base de datos
     private val db = FirebaseFirestore.getInstance()
@@ -16,10 +16,10 @@ class InvitacionDAO {
     private val auth = FirebaseAuth.getInstance()
 
     // Referencia a la colección "usuarios" en Firestore
-    private val invitacionCollection = db.collection("invitations")
+    private val notificacionesEmergentesCollection = db.collection("notificacionesEmergentes")
 
-    fun addInvitation(inviteData: Map<String, Any?>): Task<DocumentReference> {
-        return invitacionCollection.add(inviteData)
+    fun saveNotificacionEmergente(notificacionEmergenteData: Map<String, Any?>): Task<DocumentReference> {
+        return notificacionesEmergentesCollection.add(notificacionEmergenteData)
     }
 
 

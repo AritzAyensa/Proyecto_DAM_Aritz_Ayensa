@@ -5,63 +5,91 @@ const { getMessaging } = require('firebase-admin/messaging');
 admin.initializeApp();
 const messaging = getMessaging();
 
-exports.sendInviteNotification = onDocumentCreated(
+exports.sendNotification = onDocumentCreated(
   {
-    document: 'invitations/{inviteId}',
+    document: 'notificacionesEmergentes/{notifId}',
     region: 'europe-west1',
   },
   async (event) => {
     try {
-      const invite = event.data?.data();
-      if (!invite) return null;
+      const data = event.data?.data();
+      if (!data) return null;
 
+      const {
+        toUid,     
+        fromUid,   
+        fromName,
+        listName,  
+        tipo    
+      } = data;
+
+      if (!toUid || !tipo) return null;
+
+      // 1) Tokens del usuario destino
       const userDoc = await admin
         .firestore()
         .collection('usuarios')
-        .doc(invite.toUid)
+        .doc(toUid)
         .get();
       if (!userDoc.exists) return null;
 
       const tokens = userDoc.get('fcmTokens') || [];
       if (tokens.length === 0) return null;
 
+      // 2) Configurar título, cuerpo y canal según tipo
+      let title, body, channel;
+      if (tipo === 1) {
+        title   = 'Nueva invitación';
+        body    = `${fromName} te ha compartido "${listName}"`;
+        channel = 'notificacionesEmergentes';
+      } else if (tipo === 2) {
+        title   = 'Compra completada';
+        body    = `${fromName} ha completado la compra "${listName}"`;
+        channel = 'notificacionesEmergentes';
+      } else {
+        console.warn(`Tipo desconocido: ${tipo}`);
+        return null;
+      }
+
+      // 3) Enviar push a cada token
       const sendPromises = tokens.map(token => {
         const msg = {
           token,
-          notification: {
-            title: 'Nueva invitación',
-            body: `${invite.fromName} te ha compartido "${invite.listName}"`,
-          },
+          notification: { title, body },
           data: {
-            listId: invite.listId || '',
-            fromUid: invite.fromUid || '',
+            tipo:     String(tipo),
+            fromUid,
+            fromName,
+            listName
           },
           android: {
             priority: 'HIGH',
-            notification: { channelId: 'invitaciones',
-                            image: 'ic_logo' 
-                          },
-          },
+            notification: {
+              channelId: channel,
+              icon:      'ic_logo' 
+            }
+          }
         };
         return messaging.send(msg)
           .then(() => ({ success: true, token }))
-          .catch(err => ({ success: false, token, error: err }));
+          .catch(error => ({ success: false, token, error }));
       });
 
-      const results = await Promise.all(sendPromises);
+      const results      = await Promise.all(sendPromises);
       const successCount = results.filter(r => r.success).length;
-      const failed = results.filter(r => !r.success);
+      const failed       = results.filter(r => !r.success);
 
-      console.log(`${successCount} notificaciones enviadas`);
+      console.log(`${successCount} notificaciones enviadas (tipo ${tipo})`);
 
+      // 4) Limpiar tokens inválidos
       if (failed.length) {
         const badTokens = failed.map(f => f.token);
         await admin
           .firestore()
           .collection('usuarios')
-          .doc(invite.toUid)
+          .doc(toUid)
           .update({
-            fcmTokens: admin.firestore.FieldValue.arrayRemove(...badTokens),
+            fcmTokens: admin.firestore.FieldValue.arrayRemove(...badTokens)
           });
         console.log(`Tokens eliminados: ${badTokens.join(', ')}`);
       }

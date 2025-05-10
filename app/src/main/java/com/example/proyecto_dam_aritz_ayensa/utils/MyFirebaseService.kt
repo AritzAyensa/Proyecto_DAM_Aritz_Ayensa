@@ -15,7 +15,7 @@ import com.google.firebase.messaging.RemoteMessage
 
 class MyFirebaseService : FirebaseMessagingService() {
 
-    private lateinit var sessionManager: SessionManager
+    private val CHANNEL_ID = "notificacionesEmergentes"
 
     override fun onCreate() {
         super.onCreate()
@@ -28,59 +28,69 @@ class MyFirebaseService : FirebaseMessagingService() {
     }
 
     private fun guardarTokenEnFirestore(token: String) {
-        sessionManager = SessionManager(applicationContext)
-        val userRef = FirebaseFirestore.getInstance()
+        val sessionManager = SessionManager(applicationContext)
+        FirebaseFirestore.getInstance()
             .collection("usuarios")
             .document(sessionManager.getUserId().toString())
-
-        // Añadir token como elemento de un ARRAY (no mapa)
-        userRef.update("fcmTokens", FieldValue.arrayUnion(token))
-            .addOnSuccessListener {
-                Log.d("FCM", "Token guardado correctamente")
-            }
-            .addOnFailureListener { e ->
-                Log.e("FCM", "Error al guardar el token", e)
-            }
+            .update("fcmTokens", FieldValue.arrayUnion(token))
+            .addOnSuccessListener { Log.d("FCM", "Token guardado correctamente") }
+            .addOnFailureListener { e -> Log.e("FCM", "Error al guardar token", e) }
     }
 
-    @SuppressLint("MissingPermission") // El permiso se verifica en Activity
+    @SuppressLint("MissingPermission")
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        // Manejar notificación en primer plano
-        remoteMessage.notification?.let { notification ->
-            mostrarNotificacion(
-                notification.title ?: "Nueva invitación",
-                notification.body ?: "Tienes una nueva invitación"
-            )
+        // Extraer datos
+        val data    = remoteMessage.data
+        val tipo    = data["tipo"]?.toIntOrNull()
+        val from    = data["fromName"] ?: "Alguien"
+        val list    = data["listName"] ?: ""
+        val title: String
+        val body: String
+
+        // Elegir título y cuerpo según tipo
+        when (tipo) {
+            1 -> {
+                title = "Nueva invitación"
+                body  = "$from te ha compartido \"$list\""
+            }
+            2 -> {
+                title = "Compra completada"
+                body  = "$from ha completado la compra \"$list\""
+            }
+            else -> {
+                // Fallback a payload notification si existe
+                remoteMessage.notification?.let {
+                    mostrarNotificacion(it.title ?: "", it.body ?: "")
+                }
+                return
+            }
         }
 
-        // Procesar datos adicionales (opcional)
-        val listId = remoteMessage.data["listId"]
-        val fromUid = remoteMessage.data["fromUid"]
-        Log.d("FCM", "Datos recibidos: listId=$listId, fromUid=$fromUid")
+        mostrarNotificacion(title, body)
+        Log.d("FCM", "Notificación recibida: tipo=$tipo, from=$from, list=$list")
     }
 
     private fun createNotificationChannel() {
-        val channel = NotificationChannel(
-            "invitaciones",
-            "Invitaciones",
-            NotificationManager.IMPORTANCE_HIGH
-        ).apply {
-            description = "Canal para notificaciones de invitaciones"
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                "Notificaciones ListApp",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply { description = "Canal único para todas las notificaciones" }
+            (getSystemService(NotificationManager::class.java))
+                .createNotificationChannel(channel)
         }
-        val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        manager.createNotificationChannel(channel)
     }
 
     @SuppressLint("MissingPermission")
     private fun mostrarNotificacion(title: String, body: String) {
-        val notification = NotificationCompat.Builder(this, "invitaciones")
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_logo)
             .setContentTitle(title)
             .setContentText(body)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
             .build()
-
         NotificationManagerCompat.from(this)
             .notify(System.currentTimeMillis().toInt(), notification)
     }
