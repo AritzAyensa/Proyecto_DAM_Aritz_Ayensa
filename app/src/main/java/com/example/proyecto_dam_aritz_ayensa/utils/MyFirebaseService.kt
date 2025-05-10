@@ -3,25 +3,23 @@ package com.example.proyecto_dam_aritz_ayensa.utils
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.example.proyecto_dam_aritz_ayensa.R
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
-class MiFirebaseMessagingService : FirebaseMessagingService() {
+class MyFirebaseService : FirebaseMessagingService() {
 
     private lateinit var sessionManager: SessionManager
 
     override fun onCreate() {
         super.onCreate()
-        sessionManager = SessionManager(applicationContext)
+        /*createNotificationChannel()*/
     }
 
     override fun onNewToken(token: String) {
@@ -30,10 +28,12 @@ class MiFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     private fun guardarTokenEnFirestore(token: String) {
+        sessionManager = SessionManager(applicationContext)
         val userRef = FirebaseFirestore.getInstance()
             .collection("usuarios")
             .document(sessionManager.getUserId().toString())
 
+        // Añadir token como elemento de un ARRAY (no mapa)
         userRef.update("fcmTokens", FieldValue.arrayUnion(token))
             .addOnSuccessListener {
                 Log.d("FCM", "Token guardado correctamente")
@@ -43,46 +43,47 @@ class MiFirebaseMessagingService : FirebaseMessagingService() {
             }
     }
 
-    @SuppressLint("MissingPermission")
-    override fun onMessageReceived(msg: RemoteMessage) {
-        val notif = NotificationCompat.Builder(this, "invitaciones")
-            .setSmallIcon(R.mipmap.logo)
-            .setContentTitle(msg.notification?.title)
-            .setContentText(msg.notification?.body)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setAutoCancel(true)
-        NotificationManagerCompat.from(this)
-            .notify(System.currentTimeMillis().toInt(), notif.build())
+    @SuppressLint("MissingPermission") // El permiso se verifica en Activity
+    override fun onMessageReceived(remoteMessage: RemoteMessage) {
+        // Manejar notificación en primer plano
+        remoteMessage.notification?.let { notification ->
+            mostrarNotificacion(
+                notification.title ?: "Nueva invitación",
+                notification.body ?: "Tienes una nueva invitación"
+            )
+        }
+
+        // Procesar datos adicionales (opcional)
+        val listId = remoteMessage.data["listId"]
+        val fromUid = remoteMessage.data["fromUid"]
+        Log.d("FCM", "Datos recibidos: listId=$listId, fromUid=$fromUid")
     }
-    /*override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        // Verificar si el mensaje contiene datos
-        remoteMessage.data.isNotEmpty().let {
-            val title = remoteMessage.data["title"]
-            val body = remoteMessage.data["body"]
-            if (title != null && body != null) {
-                mostrarNotificacion(title, body)
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                "invitaciones",
+                "Invitaciones",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "Canal para notificaciones de invitaciones"
             }
+            val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            manager.createNotificationChannel(channel)
         }
     }
 
+    @SuppressLint("MissingPermission")
     private fun mostrarNotificacion(title: String, body: String) {
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val channelId = "invitaciones"
-
-        // Construir la notificación
-        val notification = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.mipmap.logo)
+        val notification = NotificationCompat.Builder(this, "invitaciones")
+            .setSmallIcon(R.mipmap.logo) // ¡Verificar que este recurso existe!
             .setContentTitle(title)
             .setContentText(body)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
             .build()
 
-        // Mostrar la notificación
-        notificationManager.notify(0, notification)
-    }*/
-
-
+        NotificationManagerCompat.from(this)
+            .notify(System.currentTimeMillis().toInt(), notification)
+    }
 }
-
-

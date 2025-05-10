@@ -125,42 +125,37 @@ class LoginActivity : AppCompatActivity() {
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    /*if (auth.currentUser?.isEmailVerified == true) { // Verificar correo*/
-                        cargarDatosUsuario(email) { usuarioObtenido ->
-                            if (usuarioObtenido != null) {
-                                usuario = usuarioObtenido
-                                if (rememberCheck.isChecked) {
-                                    sessionManager.saveUserSession(usuario.id)
-                                } else {
-                                    sessionManager.saveCredentials(usuario.email)
-                                    sessionManager.clearSession()
+                    cargarDatosUsuario(email) { usuarioObtenido ->
+                        if (usuarioObtenido != null) {
+                            usuario = usuarioObtenido
+
+                            // 1) Guardar sesión PRIMERO
+                            if (rememberCheck.isChecked) {
+                                sessionManager.saveUserSession(usuario.id)
+                            } else {
+                                sessionManager.saveCredentials(usuario.email)
+                                sessionManager.clearSession()
+                            }
+
+                            // 2) Obtener token FCM y guardarlo
+                            FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    val token = task.result
+                                    usuarioService.añadirTokenAUsuario(
+                                        usuario.id,
+                                        token,
+                                        onSuccess = { Log.d("FCM", "Token añadido") },
+                                        onFailure = { e -> Log.e("FCM", "Error", e) }
+                                    )
                                 }
-                            } else {
-                                Utils.mostrarMensaje(this, "Usuario no encontrado")
                             }
-                        }
-                        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                val token = task.result
 
-                                usuarioService.añadirTokenAUsuario(sessionManager.getUserId().toString(), token,
-                                    onSuccess = {
-                                        Log.e("Login", "Token añadido")
-                                    },
-                                    onFailure = { e ->
-                                        Log.e("Login", "Error al añadir el token FCM: ${e.message}")
-                                    }
-                                )
-                            } else {
-                                Log.e("Login", "No se pudo obtener el token FCM", task.exception)
-                            }
+                            // 3) Iniciar actividad principal
+                            iniciarSesion()
+                        } else {
+                            Utils.mostrarMensaje(this, "Usuario no encontrado")
                         }
-
-                        // Opcional: Obtener datos adicionales desde Firestore
-                        iniciarSesion()
-                    /*} else {
-                        Utils.mostrarMensaje(this, "Verifica tu correo electrónico")
-                    }*/
+                    }
                 } else {
 
                     val error = task.exception?.message ?: "Error desconocido"
