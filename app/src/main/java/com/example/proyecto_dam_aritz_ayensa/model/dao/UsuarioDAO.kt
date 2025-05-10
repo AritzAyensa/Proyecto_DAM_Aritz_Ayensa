@@ -491,34 +491,29 @@ class UsuarioDAO {
      * @param onSuccess Función de callback que se ejecuta si la operación es exitosa. Recibe un objeto Usuario o null si no se encuentra el usuario.
      * @param onFailure Función de callback que se ejecuta si ocurre un error durante la operación.
      */
-    fun getUserByEmail(usuarioEmail: String, onSuccess: (Usuario?) -> Unit, onFailure: (Exception) -> Unit) {
-        // Buscar el usuario en Firestore por su email
-        usuariosCollection.whereEqualTo("email", usuarioEmail).get()
-            .addOnSuccessListener { querySnapshot ->
-                if (!querySnapshot.isEmpty) {
-                    // Obtener el primer documento de los resultados (asumiendo que el email es único)
-                    val document = querySnapshot.documents.first()
-
-                    // Mapear los datos del documento a un objeto Usuario
-                    val nombre = document.getString("nombre") ?: ""
-                    val contrasena = document.getString("contrasena") ?: ""
-
-                    val usuario = Usuario(
-                        id = document.id,
-                        nombre = nombre,
-                        email = usuarioEmail
-                    )
-                    onSuccess(usuario)
-                } else {
-                    // Si no se encuentra ningún usuario, retornar null
+    fun getUserByEmail(
+        usuarioEmail: String,
+        onSuccess: (Usuario?) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        usuariosCollection
+            .whereEqualTo("email", usuarioEmail)
+            .get()
+            .addOnSuccessListener { qs ->
+                val doc = qs.documents.firstOrNull()
+                if (doc == null) {
                     onSuccess(null)
+                } else {
+                    // Firestore rellena automáticamente todos los campos
+                    val usuario = doc.toObject(Usuario::class.java)
+                        // inyecta el id del doc en la propiedad id
+                        ?.copy(id = doc.id)
+                    onSuccess(usuario)
                 }
             }
-            .addOnFailureListener { exception ->
-                // Manejar errores y ejecutar el callback onFailure
-                onFailure(exception)
-            }
+            .addOnFailureListener { onFailure(it) }
     }
+
 
     /**
      * Método: updatePassword

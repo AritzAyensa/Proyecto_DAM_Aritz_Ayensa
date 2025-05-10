@@ -324,21 +324,23 @@ class VistaListaFragment : Fragment() {
                         usuarioService.añadirNotificacionAUsuarios(idsUsuarios, idNotificacion)
 
                         // 5) Crear notificaciones emergentes FCM
-                        idsUsuarios.forEach { targetUid ->
-                            val notiEmergenteData = mapOf(
-                                "toUid"     to targetUid,
-                                "fromUid"   to userId,
-                                "fromName"  to nombreUsuario,
-                                "listName"  to lista.titulo,
-                                "timestamp" to FieldValue.serverTimestamp(),
-                                "tipo"      to GenericConstants.TIPO_COMPRA
-                            )
-                            notificacionEmergenteService.saveNotificacionEmergente(
-                                notiEmergenteData,
-                                onSuccess = { },
-                                onError   = { }
-                            )
-                        }
+                        idsUsuarios
+                            .filter { it != userId }
+                            .forEach { targetUid ->
+                                val notiEmergenteData = mapOf(
+                                    "toUid"     to targetUid,
+                                    "fromUid"   to userId,
+                                    "fromName"  to nombreUsuario,
+                                    "listName"  to lista.titulo,
+                                    "timestamp" to FieldValue.serverTimestamp(),
+                                    "tipo"      to GenericConstants.TIPO_COMPRA
+                                )
+                                notificacionEmergenteService.saveNotificacionEmergente(
+                                    notiEmergenteData,
+                                    onSuccess = { },
+                                    onError   = { }
+                                )
+                            }
 
                         // 6) Feedback y cierre de diálogo
                         withContext(Dispatchers.Main) {
@@ -404,52 +406,55 @@ class VistaListaFragment : Fragment() {
                         usuarioService.getUserByEmail(email,
                             onSuccess = { usuario ->
                                 lifecycleScope.launch {
-                                    if (usuario != null) {
-                                        if (usuario.idListasCompartidas.contains(idLista)) {
-                                            textoError.visibility = View.VISIBLE
-                                            textoError.text = "Ya has compartido la lista con este usuario anteriormente"
-                                            inputEmail.requestFocus()
-                                        } else {
-                                            // 1) Añadir lista compartida
-                                            usuarioService.añadirListaCompartidaAUsuario(idLista, usuario.id)
-
-                                            // 2) Crear invitación en Firestore para disparar la Cloud Function
-                                            val nombreUsuario = usuarioService.getUserNameById(userId)
-                                            val notificacionEmergenteData = mapOf(
-                                                "toUid"     to usuario.id,
-                                                "fromUid"   to userId,
-                                                "fromName"  to nombreUsuario,
-                                                "listName"  to lista.titulo,
-                                                "timestamp" to FieldValue.serverTimestamp(),
-                                                "tipo" to GenericConstants.TIPO_LISTA_COMPRATIDA
-                                            )
-                                            notificacionEmergenteService.saveNotificacionEmergente(notificacionEmergenteData,
-                                                onSuccess = { /* FCM push se envía vía Cloud Function */ },
-                                                onError   = { /* log si hace falta */ }
-                                            )
-
-                                            // 3) Notificación interna a todos los usuarios
-                                            val noti = Notificacion().apply {
-                                                tipo = GenericConstants.TIPO_LISTA_COMPRATIDA
-                                                descripcion = "$nombreUsuario ha compartido la lista \"${lista.titulo}\" con ${usuario.nombre}"
-                                                idProductos = lista.idProductos.toMutableList()
-                                                fecha = LocalDate.now()
-                                                    .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
-                                            }
-                                            val idsUsuarios = usuarioService.getUserIdsByListId(lista.id)
-                                            val idNotificacion = notificacionesService.saveNotificacion(noti)
-                                            usuarioService.añadirNotificacionAUsuarios(idsUsuarios, idNotificacion)
-
-                                            // 4) Feedback y cierre
-                                            Utils.mostrarMensaje(requireContext(),
-                                                "Lista \"${lista.titulo}\" compartida con ${usuario.nombre}")
-                                            dialog.dismiss()
-                                        }
-                                    } else {
+                                    if (usuario == null) {
                                         textoError.visibility = View.VISIBLE
                                         textoError.text = "Correo no encontrado"
                                         inputEmail.requestFocus()
+                                        return@launch
                                     }
+                                    // Nuevo: evitar compartir si ya compartida
+                                    if (usuario.idListasCompartidas.contains(idLista)) {
+                                        textoError.visibility = View.VISIBLE
+                                        textoError.text = "Ya has compartido la lista con este usuario anteriormente"
+                                        inputEmail.requestFocus()
+                                        return@launch
+                                    }
+
+                                    // 1) Añadir lista compartida
+                                    usuarioService.añadirListaCompartidaAUsuario(idLista, usuario.id)
+
+                                    // 2) Crear invitación en Firestore para FCM
+                                    val nombreUsuario = usuarioService.getUserNameById(userId)
+                                    val notificacionEmergenteData = mapOf(
+                                        "toUid"     to usuario.id,
+                                        "fromUid"   to userId,
+                                        "fromName"  to nombreUsuario,
+                                        "listName"  to lista.titulo,
+                                        "timestamp" to FieldValue.serverTimestamp(),
+                                        "tipo"      to GenericConstants.TIPO_LISTA_COMPRATIDA
+                                    )
+                                    notificacionEmergenteService.saveNotificacionEmergente(
+                                        notificacionEmergenteData,
+                                        onSuccess = { /* FCM push via Cloud Function */ },
+                                        onError   = { /* log si hace falta */ }
+                                    )
+
+                                    // 3) Notificación interna a todos los usuarios
+                                    val noti = Notificacion().apply {
+                                        tipo = GenericConstants.TIPO_LISTA_COMPRATIDA
+                                        descripcion = "$nombreUsuario ha compartido la lista \"${lista.titulo}\" con ${usuario.nombre}"
+                                        idProductos = lista.idProductos.toMutableList()
+                                        fecha = LocalDate.now()
+                                            .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                                    }
+                                    val idsUsuarios = usuarioService.getUserIdsByListId(lista.id)
+                                    val idNotificacion = notificacionesService.saveNotificacion(noti)
+                                    usuarioService.añadirNotificacionAUsuarios(idsUsuarios, idNotificacion)
+
+                                    // 4) Feedback y cierre
+                                    Utils.mostrarMensaje(requireContext(),
+                                        "Lista \"${lista.titulo}\" compartida con ${usuario.nombre}")
+                                    dialog.dismiss()
                                 }
                             },
                             onFailure = {

@@ -13,6 +13,8 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 
 class NotificacionDAO {
@@ -26,6 +28,7 @@ class NotificacionDAO {
     // Referencia a la colección "usuarios" en Firestore
     private val notificacionesCollection = db.collection("notificaciones")
 
+    private val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
     suspend fun saveNotificacion(notificacion: Notificacion): String {
         val docRef = notificacionesCollection.document()
@@ -50,8 +53,9 @@ class NotificacionDAO {
                 .whereArrayContains("idsUsuarios", idUsuario)
                 .get()
                 .await()
-            // Mapear al data class Notificacion
-            querySnapshot.toObjects(Notificacion::class.java)
+            querySnapshot
+                .toObjects(Notificacion::class.java)
+                .sortedByDescending { LocalDate.parse(it.fecha, formatter) }
         } catch (e: Exception) {
             Log.e("NotificacionDAO", "Error al obtener notificaciones para el usuario $idUsuario", e)
             emptyList()
@@ -69,11 +73,10 @@ class NotificacionDAO {
                 .whereIn(FieldPath.documentId(), chunk)
                 .get()
                 .await()
-
             notificaciones.addAll(querySnapshot.toObjects(Notificacion::class.java))
         }
-
         return notificaciones
+            .sortedByDescending { LocalDate.parse(it.fecha, formatter) }
     }
 
 
@@ -102,7 +105,7 @@ class NotificacionDAO {
         }
     }
 
-    fun notificacionesCountFlow(userId: String): Flow<Int> = callbackFlow {
+   /* fun notificacionesCountFlow(userId: String): Flow<Int> = callbackFlow {
         val query = notificacionesCollection
             .whereArrayContains("idsUsuarios", userId)
 
@@ -121,5 +124,28 @@ class NotificacionDAO {
         awaitClose {
             registration.remove()
         }
+    }*/
+
+    fun notificacionesCountFlow(userId: String): Flow<Int> = callbackFlow {
+        val query = notificacionesCollection
+            .whereArrayContains("idsUsuarios", userId)
+
+        val registration = query.addSnapshotListener { snapshots, error ->
+            if (error != null) {
+                close(error)
+            } else {
+                try {
+                    val list = snapshots
+                        ?.toObjects(Notificacion::class.java)
+                        ?.sortedByDescending { LocalDate.parse(it.fecha, formatter) }
+                    trySend(list?.size ?: 0).isSuccess
+                } catch (e: Exception) {
+                    close(e)
+                }
+            }
+        }
+
+        awaitClose { registration.remove() }
     }
+
 }
