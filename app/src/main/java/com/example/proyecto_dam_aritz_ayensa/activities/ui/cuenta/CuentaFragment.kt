@@ -99,6 +99,7 @@ class CuentaFragment : Fragment() {
                             Glide.with(requireContext())
                                 .load(imageUrl)
                                 .placeholder(R.drawable.perfil)
+                                .circleCrop()
                                 .into(fotoPerfil)
                         },
                         onFailure = { exception ->

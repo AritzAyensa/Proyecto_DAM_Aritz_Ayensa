@@ -336,7 +336,6 @@ class UsuarioDAO {
                     // Mapear los datos del documento a un objeto Usuario
                     val nombre = document.getString("nombre") ?: ""
                     val email = document.getString("email") ?: ""
-                    val contrasena = document.getString("contrasena") ?: ""
 
                     // Crear un objeto Usuario con los datos obtenidos
                     val usuario = Usuario(id = usuarioID, nombre = nombre, email = email)
@@ -425,8 +424,7 @@ class UsuarioDAO {
     fun updateUser(usuario: Usuario, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
         // Crear un mapa con los datos actualizados del usuario
         val usuarioData = hashMapOf(
-            "nombre" to usuario.nombre,
-            "email" to usuario.email
+            "nombre" to usuario.nombre
         )
 
         // Actualizar el documento del usuario en Firestore
