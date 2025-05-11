@@ -8,14 +8,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
+import com.example.proyecto_dam_aritz_ayensa.R
 import com.example.proyecto_dam_aritz_ayensa.activities.EditarPerfilActivity
 import com.example.proyecto_dam_aritz_ayensa.activities.LoginActivity
 import com.example.proyecto_dam_aritz_ayensa.databinding.FragmentCuentaBinding
 import com.example.proyecto_dam_aritz_ayensa.model.dao.NotificacionDAO
+import com.example.proyecto_dam_aritz_ayensa.model.dao.StorageDAO
 import com.example.proyecto_dam_aritz_ayensa.model.dao.UsuarioDAO
 import com.example.proyecto_dam_aritz_ayensa.model.service.NotificacionService
+import com.example.proyecto_dam_aritz_ayensa.model.service.StorageService
 import com.example.proyecto_dam_aritz_ayensa.model.service.UsuarioService
 import com.example.proyecto_dam_aritz_ayensa.utils.SessionManager
 import com.google.firebase.messaging.FirebaseMessaging
@@ -28,9 +33,11 @@ class CuentaFragment : Fragment() {
     // Datos del usuario
     private lateinit var tvNombre: TextView
     private lateinit var tvCorreo: TextView
+    private lateinit var fotoPerfil: ImageView
 
     lateinit var buttonEditar : ImageButton
     private lateinit var usuarioService: UsuarioService
+    private lateinit var storageService: StorageService
     private lateinit var notificacionesService: NotificacionService
     private lateinit var sessionManager: SessionManager
     // This property is only valid between onCreateView and
@@ -46,12 +53,14 @@ class CuentaFragment : Fragment() {
         _binding = FragmentCuentaBinding.inflate(inflater, container, false)
 
         notificacionesService = NotificacionService(NotificacionDAO())
+        storageService = StorageService(StorageDAO())
         usuarioService = UsuarioService(UsuarioDAO(), notificacionesService)
         sessionManager = SessionManager(requireContext())
         userId = sessionManager.getUserId().toString()
 
         tvNombre = binding.nombreUsuario
         tvCorreo = binding.correoUsuario
+        fotoPerfil = binding.fotoPerfil
 
         buttonCerrarSesion = binding.btnCerrarSesion
         buttonCerrarSesion = binding.btnCerrarSesion
@@ -83,12 +92,25 @@ class CuentaFragment : Fragment() {
                     val userId = usuario.id
                     tvNombre.text = usuario.nombre
                     tvCorreo.text = usuario.email
+
+                    // Cargar la foto de perfil usando Glide
+                    storageService.getFotoPerfilUrl(userId,
+                        onSuccess = { imageUrl ->
+                            Glide.with(requireContext())
+                                .load(imageUrl)
+                                .placeholder(R.drawable.perfil)
+                                .into(fotoPerfil)
+                        },
+                        onFailure = { exception ->
+                            Log.e("StorageService", "Error al obtener la foto de perfil", exception)
+                        })
                 }
             },
             onFailure = { exception ->
                 Log.e("UserService", "Error al obtener el usuario", exception)
             })
     }
+
     private fun cerrarSesion() {
 
         // Verifica que el contexto no sea nulo

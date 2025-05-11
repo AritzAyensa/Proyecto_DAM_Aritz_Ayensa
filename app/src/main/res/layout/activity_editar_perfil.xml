@@ -49,7 +49,7 @@
             app:layout_constraintTop_toBottomOf="@id/cl_barra_superior"
             app:layout_constraintStart_toStartOf="parent"
             android:textSize="25sp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="50dp"
             android:layout_marginStart="16dp"
             android:textStyle="bold"/>
         <ImageView
@@ -63,6 +63,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="16dp"/>
+        <Button
+            android:id="@+id/btnCambiarFoto"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/cambiar_foto_de_perfil"
+            style="@style/ButtonAccept"
+            android:layout_margin="16dp"
+            app:layout_constraintTop_toBottomOf="@id/fotoPerfil"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:onClick="cambiarFotoPerfil"/>
 
         <View
             android:id="@+id/lineaDivisoria"
@@ -79,7 +90,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/editar_perfil_et_usuario"
-            app:layout_constraintTop_toBottomOf="@id/lineaDivisoria"
+            app:layout_constraintTop_toBottomOf="@id/btnCambiarFoto"
             app:layout_constraintStart_toStartOf="parent"
             android:textSize="25sp"
             android:layout_marginTop="35dp"
@@ -106,36 +117,6 @@
             android:textColor="@color/negro"/>
 
         <!-- Correo del usuario -->
-        <TextView
-            android:id="@+id/tv_email"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/editar_perfil_et_email"
-            app:layout_constraintTop_toBottomOf="@id/et_nombreUsuario"
-            app:layout_constraintStart_toStartOf="parent"
-            android:textSize="25sp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="26dp"
-            android:textStyle="bold"/>
-        <EditText
-            android:id="@+id/et_CorreoUsuario"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:gravity="start|center_vertical"
-            android:padding="8dp"
-            app:layout_constraintTop_toBottomOf="@id/tv_email"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:background="@drawable/edittext_border"
-            android:layout_marginStart="30dp"
-            android:layout_marginEnd="30dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            android:autofillHints=""
-            android:inputType="text"
-            tools:ignore="LabelFor"
-            android:textColor="@color/negro"/>
 
         <!-- Botón Cancelar -->
         <Button

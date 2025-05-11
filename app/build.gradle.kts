@@ -1,7 +1,8 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("com.google.gms.google-services") // Necesario para Firebase
+    id("com.google.gms.google-services")
+    kotlin("kapt")
 }
 
 android {
@@ -48,6 +49,10 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-messaging-ktx")
+    implementation("com.google.firebase:firebase-storage-ktx")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    kapt("com.github.bumptech.glide:compiler:4.16.0")
+
 
     // Coroutines para Firebase
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.0")

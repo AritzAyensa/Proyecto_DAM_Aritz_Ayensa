@@ -95,6 +95,7 @@
     <string name="editar_producto">Editar producto</string>
     <string name="button_editar_producto_guardar">Guardar</string>
     <string name="button_editar_tarea_cancelar">Cancelar</string>
+    <string name="cambiar_foto_de_perfil">Cambiar foto de perfil</string>
 
 
 </resources>

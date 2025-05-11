@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -25,7 +26,7 @@ class EditarPerfilActivity : AppCompatActivity() {
 
     // Datos del usuario
     private lateinit var etNombre: EditText
-    private lateinit var etCorreo: EditText
+    private lateinit var ivFotoPerfil: ImageView
 
     private lateinit var userId : String
 
@@ -47,7 +48,7 @@ class EditarPerfilActivity : AppCompatActivity() {
 
         // Datos del usuario
         etNombre = findViewById(R.id.et_nombreUsuario)
-        etCorreo = findViewById(R.id.et_CorreoUsuario)
+        ivFotoPerfil = findViewById(R.id.fotoPerfil)
 
         // Botones
         btnCancelar = findViewById(R.id.btnCancelar)
@@ -59,14 +60,12 @@ class EditarPerfilActivity : AppCompatActivity() {
 
 
         nombre = etNombre.text.toString().trim()
-        email = etCorreo.text.toString().trim()
     }
 
 
 
     private fun validarDatos(): Int {
         nombre = etNombre.text.toString().trim()
-        email = etCorreo.text.toString().trim()
 
         val esNombreValido = Utils.validarNombreUsuario(nombre)
         val esCorreoValido = Utils.comprobarCorreo(email)
@@ -89,7 +88,6 @@ class EditarPerfilActivity : AppCompatActivity() {
                     Log.d("UserService", "Usuario obtenido: ${usuario.nombre}")
                     val userId = usuario.id
                     etNombre.setText(usuario.nombre)
-                    etCorreo.setText(usuario.email)
                 }
             },
             onFailure = { exception ->
@@ -126,4 +124,6 @@ class EditarPerfilActivity : AppCompatActivity() {
     fun cancelar(view: View) {
         finish()
     }
+
+    fun cambiarFotoPerfil(view: View) {}
 }
