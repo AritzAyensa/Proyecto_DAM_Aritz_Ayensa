@@ -1,9 +1,6 @@
 package com.example.proyecto_dam_aritz_ayensa.model.service
 import com.example.proyecto_dam_aritz_ayensa.model.dao.ListaDAO
-import com.example.proyecto_dam_aritz_ayensa.model.entity.Usuario
-import com.example.proyecto_dam_aritz_ayensa.model.dao.UsuarioDAO
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Lista
-import com.example.proyecto_dam_aritz_ayensa.model.entity.Notificacion
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Producto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -50,7 +47,7 @@ class ListaService(private val listaDAO: ListaDAO) {
         return listaDAO.getListaById(idLista)
     }
 
-    suspend fun getMisListasByUsuarioId(idListas: List<String>):List<Lista> {
+    suspend fun getMisListasByListasId(idListas: List<String>):List<Lista> {
         return listaDAO.getMisListasByUsuarioId(idListas)
     }
 

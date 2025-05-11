@@ -7,10 +7,12 @@ import com.example.proyecto_dam_aritz_ayensa.model.entity.Notificacion
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Usuario
+import com.example.proyecto_dam_aritz_ayensa.model.service.ListaService
 import com.example.proyecto_dam_aritz_ayensa.model.service.NotificacionService
 import com.example.proyecto_dam_aritz_ayensa.utils.HashUtil
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
@@ -123,9 +125,50 @@ class UsuarioDAO {
     }
 
 
+    fun getMisListasByUsuarioIdFlow(idUsuario: String, listaService: ListaService): Flow<List<Lista>> = callbackFlow {
+        val docRef = usuariosCollection.document(idUsuario)
+        val listenerRegistration: ListenerRegistration = docRef.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                close(error)
+                return@addSnapshotListener
+            }
 
+            if (snapshot != null && snapshot.exists()) {
+                val idListas = snapshot.get("idListas") as? List<String> ?: emptyList()
+                launch {
+                    val listas = listaService.getMisListasByListasId(idListas)
+                    trySend(listas).isSuccess
+                }
+            } else {
+                trySend(emptyList()).isSuccess
+            }
+        }
 
-    suspend fun getIdMisListasByIdUsuario(idUsuario: String) : List<String>{
+        awaitClose { listenerRegistration.remove() }
+    }
+
+    fun getListasCompartidasByUsuarioIdFlow(idUsuario: String, listaService: ListaService): Flow<List<Lista>> = callbackFlow {
+        val docRef = usuariosCollection.document(idUsuario)
+        val listenerRegistration: ListenerRegistration = docRef.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                close(error)
+                return@addSnapshotListener
+            }
+
+            if (snapshot != null && snapshot.exists()) {
+                val idListasCompartidas = snapshot.get("idListasCompartidas") as? List<String> ?: emptyList()
+                launch {
+                    val listasCompartidas = listaService.getMisListasByListasId(idListasCompartidas)
+                    trySend(listasCompartidas).isSuccess
+                }
+            } else {
+                trySend(emptyList()).isSuccess
+            }
+        }
+
+        awaitClose { listenerRegistration.remove() }
+    }
+    /*suspend fun getIdMisListasByIdUsuario(idUsuario: String) : List<String>{
         val document = usuariosCollection
             .document(idUsuario)
             .get()
@@ -136,7 +179,7 @@ class UsuarioDAO {
         } else {
             emptyList()
         }
-    }
+    }*/
 
     suspend fun getUserIdsByListId(listId: String): List<String> {
 
@@ -183,40 +226,6 @@ class UsuarioDAO {
         }
     }
 
-
-    suspend fun getIdListasCompartidasByIdUsuario(idUsuario: String) : List<String>{
-        val document = usuariosCollection
-            .document(idUsuario)
-            .get()
-            .await()
-
-        return if (document.exists()) {
-            document.get("idListasCompartidas") as? List<String> ?: emptyList()
-        } else {
-            emptyList()
-        }
-    }
-
-
-    suspend fun getListasCompartidasSizeByIdUsuario(idUsuario: String): Int {
-        return try {
-            val document = usuariosCollection
-                .document(idUsuario)
-                .get()
-                .await()
-
-            if (document.exists()) {
-                // Obtener la lista y verificar que no sea nula
-                val idListas = document.get("idListas") as? List<String>
-                idListas?.size ?: 0 // Si es nulo, retorna 0
-            } else {
-                0 // Usuario no encontrado
-            }
-        } catch (e: Exception) {
-            Log.e("Firestore", "Error al obtener tamaño de listas", e)
-            -1 // Opcional: Retornar -1 en caso de error
-        }
-    }
 
     suspend fun añadirNotificacionAUsuarios(
         idsUsuarios: List<String>,

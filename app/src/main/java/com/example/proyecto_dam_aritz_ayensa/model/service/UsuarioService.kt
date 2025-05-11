@@ -1,11 +1,14 @@
 package com.example.proyecto_dam_aritz_ayensa.model.service
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Usuario
 import com.example.proyecto_dam_aritz_ayensa.model.dao.UsuarioDAO
+import com.example.proyecto_dam_aritz_ayensa.model.entity.Lista
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Notificacion
+import com.example.proyecto_dam_aritz_ayensa.model.entity.Producto
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.DocumentReference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 
@@ -131,22 +134,24 @@ class UsuarioService(private val usuarioDAO: UsuarioDAO,
         usuarioDAO.eliminarListaCompartidaDeUsuarios(idListaCompartida)
     }
 
-    suspend fun getIdMisListasByIdUsuario(idUsuario: String) : List<String> {
-       return usuarioDAO.getIdMisListasByIdUsuario(idUsuario)
+    fun getMisListasByUsuarioIdFlow(idUsuario: String, listaService: ListaService): Flow<List<Lista>>{
+        return usuarioDAO.getMisListasByUsuarioIdFlow(idUsuario, listaService)
+            .distinctUntilChanged()
+            .flowOn(Dispatchers.IO)
     }
+
+    fun getListasCompartidasByUsuarioIdFlow(idUsuario: String, listaService: ListaService): Flow<List<Lista>>{
+        return usuarioDAO.getListasCompartidasByUsuarioIdFlow(idUsuario, listaService)
+            .distinctUntilChanged()
+            .flowOn(Dispatchers.IO)
+    }
+
+
 
     suspend fun getMisListasSizeByIdUsuario(idUsuario: String): Int {
         return usuarioDAO.getMisListasSizeByIdUsuario(idUsuario)
     }
 
-
-    suspend fun getIdListasCompartidasByIdUsuario(idUsuario: String) : List<String> {
-        return usuarioDAO.getIdListasCompartidasByIdUsuario(idUsuario)
-    }
-
-    suspend fun getListasCompartidasSizeByIdUsuario(idUsuario: String): Int {
-        return usuarioDAO.getListasCompartidasSizeByIdUsuario(idUsuario)
-    }
 
     /**
      * Método: deleteUser
