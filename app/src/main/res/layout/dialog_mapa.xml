@@ -1,0 +1,26 @@
+<!-- res/layout/dialog_mapa.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!--<ImageView
+        android:id="@+id/imageViewMapa"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:contentDescription="@string/mapa" />-->
+    <com.example.proyecto_dam_aritz_ayensa.utils.ZoomableImageView
+        android:id="@+id/imageViewMapa"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:contentDescription="@string/mapa" />
+
+
+    <Button
+        android:id="@+id/btnCerrar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:text="@string/cerrar" />
+</LinearLayout>

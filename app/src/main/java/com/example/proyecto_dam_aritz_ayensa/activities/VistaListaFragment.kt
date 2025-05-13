@@ -1,8 +1,10 @@
 package com.example.proyecto_dam_aritz_ayensa.activities
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
+import android.graphics.drawable.PictureDrawable
 import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -15,16 +17,18 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.caverock.androidsvg.RenderOptions
+import com.caverock.androidsvg.SVG
 import com.example.proyecto_dam_aritz_ayensa.R
 import com.example.proyecto_dam_aritz_ayensa.adapters.ProductoAdapter
 import com.example.proyecto_dam_aritz_ayensa.databinding.FragmentVistaListaBinding
@@ -63,6 +67,7 @@ class VistaListaFragment : Fragment() {
     lateinit var buttonOpciones : Button
     lateinit var buttonCompletarCompra : Button
     lateinit var buttonEscanear : ImageButton
+    lateinit var buttonAbrirMapa : ImageButton
 
     private lateinit var recyclerViewProductos: RecyclerView
     private lateinit var adapter: ProductoAdapter
@@ -162,6 +167,7 @@ class VistaListaFragment : Fragment() {
                         .productosDeListaFlow(idLista, productoService)
                         .collect { productosRaw ->
                             val ordenados = ordenarProductos(productosRaw.toMutableList())
+                            listaProductos = ordenados;
                             adapter.actualizarProductos(ordenados)
                             progressBar.visibility = View.GONE
 
@@ -182,6 +188,11 @@ class VistaListaFragment : Fragment() {
 
         buttonEscanear.setOnClickListener {
             escanearProducto()
+        }
+        buttonAbrirMapa = binding.btnAbrirMapa
+
+        buttonAbrirMapa.setOnClickListener {
+            abrirMapa()
         }
 
         buttonCompletarCompra = binding.btnCompletarCompra
@@ -621,6 +632,44 @@ class VistaListaFragment : Fragment() {
 
          builder.create().show()
     }
+
+    fun abrirMapa() {
+        if (!listaProductos.isNullOrEmpty()){
+            if (!listaProductos[0].categoria.isNullOrEmpty()){
+                val categoria = listaProductos[0].categoria
+                val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_mapa, null)
+                val imageView = dialogView.findViewById<ImageView>(R.id.imageViewMapa)
+                val btnCerrar = dialogView.findViewById<Button>(R.id.btnCerrar)
+
+                val builder = AlertDialog.Builder(requireContext())
+                    .setView(dialogView)
+                val dialog = builder.create()
+                dialog.show()
+
+                btnCerrar.setOnClickListener { dialog.dismiss() }
+
+                // Cargar el SVG desde assets
+                val assetManager = requireContext().assets
+                val inputStream = assetManager.open("mapaEroskiRocha.svg")
+                val svg = SVG.getFromInputStream(inputStream)
+
+
+                val css = "#$categoria { fill: #FF0000; }"
+
+                // Aplicar las reglas CSS al renderizar
+                val renderOptions = RenderOptions.create().css(css)
+                val picture = svg.renderToPicture(renderOptions)
+                val drawable = PictureDrawable(picture)
+
+                imageView.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+                imageView.setImageDrawable(drawable)
+            }
+
+
+        }
+    }
+
+
 
 
     override fun onDestroyView() {

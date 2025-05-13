@@ -83,4 +83,10 @@ dependencies {
 
     // QR
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+
+
+    implementation ("com.caverock:androidsvg:1.4")
+
+
+
 }

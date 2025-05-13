@@ -105,9 +105,24 @@
             android:text="@string/vista_lista_btn_completar_compra"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/btnOpciones"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnAbrirMapa"
             style="@style/ButtonAccept"
             />
+
+        <ImageButton
+            android:id="@+id/btnAbrirMapa"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:scaleType="centerInside"
+            android:layout_marginEnd="5sp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/outline_map_24"
+            android:background="@drawable/btn_circular"
+            android:elevation="6dp"
+            app:layout_constraintStart_toEndOf="@id/btnCompletarCompra"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:ignore="MissingConstraints" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
