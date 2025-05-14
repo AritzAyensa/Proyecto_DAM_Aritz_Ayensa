@@ -17,8 +17,6 @@
         android:id="@+id/input_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/negro"
-        android:background="@drawable/edittext_border"
         android:inputType="textEmailAddress"
         android:imeOptions="actionDone"
         />

@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="negro">#FF000000</color>
+    <color name="negro">#08080C</color>
+    <color name="negro_2">#101119</color>
+
+    <color name="gris_oscuro">#4F5564</color>
+    <color name="gris">#9297A3</color>
+    <color name="gris_claro">#C9CBD1</color>
+
     <color name="blanco">#FFFFFFFF</color>
-    <color name="rojo">#ff0000</color>
-    <color name="rojo_oscuro">#a10202</color>
 
-    <color name="gris">#ffffff</color>
-
-    <color name="gris_oscuro">#525050</color>
-    <color name="spinner_text">#FF000000</color>
+    <color name="rojo">#E40021</color>
+    <color name="rojo_2">#C80425</color>
+    <color name="rojo_oscuro">#A2152D</color>
 </resources>

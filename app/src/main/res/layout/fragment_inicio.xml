@@ -30,19 +30,27 @@
         android:layout_marginLeft="10sp"
         android:background="@android:color/transparent"
         tools:ignore="MissingConstraints"/>-->
-
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/mc_recycler_mis_listas"
+        android:layout_width="match_parent"
+        android:layout_height="250sp"
+        android:minHeight="250sp"
+        app:cardCornerRadius="8dp"
+        android:layout_marginTop="15dp"
+        app:strokeWidth="2dp"
+        app:strokeColor="?attr/colorOnSurface"
+        app:cardBackgroundColor="?attr/colorSurface"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/inicio_tv_mis_listas"
+        tools:ignore="MissingConstraints">
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_mis_listas"
         android:layout_width="match_parent"
         android:layout_height="250sp"
         android:minHeight="250sp"
-        android:layout_marginTop="15dp"
-        android:background="@drawable/edittext_border"
-        app:layout_constraintEnd_toEndOf="parent"
         app:flow_maxElementsWrap="4"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/inicio_tv_mis_listas" />
+        app:layout_constraintHorizontal_bias="0.0"/>
+    </com.google.android.material.card.MaterialCardView>
     <ProgressBar
         android:id="@+id/loading_spinner"
         style="?android:progressBarStyleLarge"
@@ -64,7 +72,7 @@
         android:layout_marginTop="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/recycler_mis_listas"
+        app:layout_constraintTop_toBottomOf="@id/mc_recycler_mis_listas"
         />
     <!--<ImageButton
         android:id="@+id/inicio_btn_recargar_listas_compartidas"
@@ -80,21 +88,28 @@
         app:layout_constraintTop_toBottomOf="@id/recycler_mis_listas"
 
         tools:ignore="MissingConstraints"/>-->
-
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:minHeight="200sp"
+        android:layout_height="170sp"
+        app:cardCornerRadius="8dp"
+        android:layout_marginTop="15sp"
+        app:strokeWidth="2dp"
+        app:strokeColor="?attr/colorOnSurface"
+        app:cardBackgroundColor="?attr/colorSurface"
+        app:layout_constraintTop_toBottomOf="@id/inicio_tv_listas_compartidas"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="MissingConstraints">
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_listas_compartidas"
         android:layout_width="match_parent"
         android:minHeight="200sp"
         android:layout_height="170sp"
-        android:layout_marginTop="15sp"
         android:layout_marginBottom="50sp"
-        android:background="@drawable/edittext_border"
-        app:layout_constraintTop_toBottomOf="@id/inicio_tv_listas_compartidas"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-
         app:flow_maxElementsWrap="4"
         />
+    </com.google.android.material.card.MaterialCardView>
     <ProgressBar
         android:id="@+id/loading_spinner2"
         style="?android:progressBarStyleLarge"
@@ -109,12 +124,12 @@
 
     <Button
         android:id="@+id/btnAnadirLista"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="60dp"
-        android:layout_marginEnd="60dp"
         android:text="@string/inicio_btn_añadir_lista"
         style="@style/ButtonAccept"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

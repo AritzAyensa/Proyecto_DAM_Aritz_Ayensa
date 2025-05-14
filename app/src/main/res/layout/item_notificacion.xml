@@ -1,4 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layout_tareas_campos_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -19,7 +20,7 @@
             android:src="@drawable/outline_check_box_outline_blank_24"
             android:background="@android:color/transparent"
             android:layout_gravity="center_vertical"
-            />
+            app:tint="?attr/colorOnSurface" />
         <TextView
             android:id="@+id/descripcionNotificacion"
             android:layout_width="0dp"
@@ -27,7 +28,7 @@
             android:layout_marginStart="15dp"
             android:layout_weight="1"
             android:text="@string/notificacion"
-            android:textColor="@color/negro"
+            android:textColor="?attr/colorOnSurface"
             android:layout_gravity="center_vertical" />
 
 
@@ -36,7 +37,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/negro"
+        android:background="?attr/colorOnSurface"
         android:layout_marginTop="10sp"
     />
 </LinearLayout>

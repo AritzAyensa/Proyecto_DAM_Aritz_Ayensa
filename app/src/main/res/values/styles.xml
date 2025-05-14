@@ -9,12 +9,12 @@
     <!-- Botones -->
     <style name="ButtonCancel">
         <item name="android:backgroundTint">@color/rojo_oscuro</item>
-        <item name="android:textColor">@color/blanco</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
     <style name="ButtonAccept">
         <item name="android:backgroundTint">@color/rojo</item>
-        <item name="android:textColor">@color/blanco</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
     <style name="MyDialogTheme" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
@@ -22,5 +22,24 @@
         <item name="buttonBarNeutralButtonStyle">@style/ButtonAccept</item>
         <item name="buttonBarNegativeButtonStyle">@style/ButtonCancel</item>
     </style>
+
+
+
+    <!-- EditText con línea inferior -->
+    <style name="Widget.Proyecto_DAM_Aritz_Ayensa.EditText.Underline" parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox">
+        <item name="android:background">@null</item>
+        <item name="boxStrokeColor">?attr/colorOnSurface</item>
+        <item name="boxStrokeWidth">2dp</item>
+        <item name="boxStrokeWidthFocused">2dp</item>
+    </style>
+
+    <!-- RecyclerView con fondo y borde redondeado -->
+    <style name="Widget.Proyecto_DAM_Aritz_Ayensa.RecyclerView.Border" parent="Widget.MaterialComponents.CardView">
+        <item name="cardUseCompatPadding">true</item>
+        <item name="cardCornerRadius">8dp</item>
+        <item name="cardBackgroundColor">?attr/colorSurface</item>
+    </style>
+
+
 
 </resources>

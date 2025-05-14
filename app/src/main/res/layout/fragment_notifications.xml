@@ -30,19 +30,26 @@
                 tools:ignore="MissingConstraints" />
 
 
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_notificaciones"
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="60dp"
-                android:background="@drawable/edittext_border"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:flow_maxElementsWrap="4"
+                app:cardCornerRadius="8dp"
+                app:strokeWidth="2dp"
                 android:layout_marginBottom="60sp"
+                app:strokeColor="?attr/colorOnSurface"
+                app:cardBackgroundColor="?attr/colorSurface"
                 app:layout_constraintTop_toBottomOf="@id/anadir_producto_tv_titulo"
                 app:layout_constraintBottom_toTopOf="@id/btnEliminarNotificaciones"
-                />
+                tools:ignore="MissingConstraints">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_notificaciones"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:flow_maxElementsWrap="4"
+                    />
+            </com.google.android.material.card.MaterialCardView>
             <ProgressBar
                 android:id="@+id/loading_spinner"
                 style="?android:progressBarStyleLarge"

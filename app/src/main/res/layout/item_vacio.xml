@@ -12,7 +12,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/item_vacio_tv_texto_ejemplo"
-            android:textColor="@color/negro"
+            android:textColor="?attr/colorOnSurface"
             android:textSize="20sp"
             android:textAlignment="center"/>
 </LinearLayout>

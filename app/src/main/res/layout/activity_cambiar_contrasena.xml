@@ -32,7 +32,6 @@
         android:inputType="textEmailAddress"
         android:padding="16dp"
         android:layout_marginBottom="16dp"
-        android:background="@android:drawable/edit_text"
         android:autofillHints="" />
 
     <!-- Botón para enviar el enlace de restablecimiento -->

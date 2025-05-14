@@ -3,7 +3,9 @@
     android:orientation="vertical"
     android:padding="16dp"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="?attr/colorSurfaceBright"
+    >
     <com.example.proyecto_dam_aritz_ayensa.utils.ZoomableImageView
         android:id="@+id/imageViewMapa"
         android:layout_width="match_parent"
@@ -16,5 +18,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
+        style="@style/ButtonCancel"
         android:text="@string/cerrar" />
 </LinearLayout>

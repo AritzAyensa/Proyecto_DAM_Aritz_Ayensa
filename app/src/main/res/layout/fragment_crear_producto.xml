@@ -59,14 +59,11 @@
                     android:layout_marginEnd="10dp"
                     android:layout_weight="1"
                     android:autofillHints=""
-                    android:background="@drawable/edittext_border"
                     android:hint="@string/crear_producto_et_titulo"
                     android:inputType="text"
                     android:maxLength="60"
                     android:maxLines="1"
                     android:singleLine="true"
-                    android:textColor="@color/negro"
-                    android:textColorHint="@color/negro"
                     android:textSize="18sp" />
 
             </LinearLayout>
@@ -90,15 +87,12 @@
                     android:layout_marginEnd="10dp"
                     android:layout_weight="1"
                     android:autofillHints=""
-                    android:background="@drawable/edittext_border"
                     android:hint="@string/crear_producto_et_precio"
                     android:inputType="numberDecimal"
                     android:maxLength="60"
                     android:maxLines="1"
                     android:layout_marginTop="3sp"
                     android:singleLine="true"
-                    android:textColor="@color/negro"
-                    android:textColorHint="@color/negro"
                     android:textSize="18sp" />
 
                 <com.google.android.material.textfield.TextInputLayout

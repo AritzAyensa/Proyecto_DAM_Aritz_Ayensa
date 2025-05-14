@@ -53,17 +53,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
-                android:background="@drawable/edittext_border"
                 android:layout_weight="1"
                 android:hint="@string/crear_lista_et_titulo"
-                android:textColorHint="@color/negro"
                 android:maxLines="1"
                 android:singleLine="true"
                 android:textSize="18sp"
                 android:autofillHints=""
                 android:inputType="text"
-                android:maxLength="60"
-                android:textColor="@color/negro"/>
+                android:maxLength="60"/>
 
             <!-- Botón para elegir color -->
             <Button
@@ -81,17 +78,14 @@
             android:layout_height="100sp"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
-            android:background="@drawable/edittext_border"
             android:layout_weight="1"
             android:hint="@string/crear_lista_et_descripcion"
-            android:textColorHint="@color/negro"
             android:gravity="top|start"
             android:inputType="textMultiLine"
             android:minLines="1"
             android:maxLines="6"
             android:singleLine="true"
             android:textSize="18sp"
-            android:textColor="@color/negro"
             android:autofillHints=""
             android:layout_marginTop="20sp"
             app:layout_constraintTop_toBottomOf="@id/crearTarea_ly_elementosTitulo"

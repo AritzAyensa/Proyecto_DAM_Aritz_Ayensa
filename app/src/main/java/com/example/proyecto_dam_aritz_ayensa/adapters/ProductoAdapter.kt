@@ -41,10 +41,10 @@ class ProductoAdapter(
             // 1) Establece siempre el icono y el fondo según el estado actual:
             if (selectedIds.contains(p.id)) {
                 btnCheck.setImageResource(R.drawable.outline_check_box_24)
-                container.setBackgroundColor(Color.LTGRAY)
+                container.setBackgroundColor(Color.GRAY)
             } else {
                 btnCheck.setImageResource(R.drawable.outline_check_box_outline_blank_24)
-                container.setBackgroundColor(Color.WHITE)
+                container.setBackgroundColor(Color.TRANSPARENT)
             }
 
             // 2) Listener de click: solo cambia el estado y llama al fragment

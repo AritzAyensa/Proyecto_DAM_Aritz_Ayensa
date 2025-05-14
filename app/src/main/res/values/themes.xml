@@ -1,25 +1,18 @@
-    <!-- CLARO -->
 <resources xmlns:tools="http://schemas.android.com/tools">
-<!-- Tema base claro -->
-<style name="Base.Theme.Proyecto_DAM_Aritz_Ayensa" parent="Theme.Material3.Light.NoActionBar">
-    <item name="colorPrimary">@color/rojo</item>
-    <item name="colorPrimaryVariant">@color/rojo_oscuro</item>
-    <item name="colorOnPrimary">@color/blanco</item>
 
-    <!-- Fondo y textos -->
-    <item name="android:windowBackground">@color/blanco</item>
-    <item name="android:textColorPrimary">@color/negro</item>
-    <item name="android:textColorHint">@color/negro</item>
-
-</style>
-    <style name="Widget.Material3.BottomNavigationView.ActiveIndicator" parent="">
-        <item name="android:width">@dimen/m3_bottom_nav_item_active_indicator_width</item>
-        <item name="android:height">@dimen/m3_bottom_nav_item_active_indicator_height</item>
-        <item name="marginHorizontal">@dimen/m3_bottom_nav_item_active_indicator_margin_horizontal</item>
-        <item name="shapeAppearance">@style/ShapeAppearance.Material3.NavigationBarView.ActiveIndicator</item>
-        <item name="android:color">@color/rojo</item>
+    <style name="Theme.Proyecto_DAM_Aritz_Ayensa" parent="Theme.Material3.Light.NoActionBar">
+        <!-- Primarios -->
+        <item name="colorPrimary">@color/rojo</item>
+        <item name="colorPrimaryVariant">@color/rojo_oscuro</item>
+        <item name="colorOnPrimary">@color/blanco</item>
+        <!-- Superficies -->
+        <item name="colorSurface">@color/blanco</item>
+        <item name="colorSurfaceBright">@color/blanco</item>
+        <item name="colorOnSurface">@color/negro</item>
+        <item name="android:windowBackground">@color/blanco</item>
+        <!-- Texto -->
+        <item name="android:textColorPrimary">@color/negro</item>
+        <item name="android:textColorHint">@color/negro</item>
     </style>
 
-<!-- Tema final claro -->
-<style name="Theme.Proyecto_DAM_Aritz_Ayensa" parent="Base.Theme.Proyecto_DAM_Aritz_Ayensa" />
 </resources>

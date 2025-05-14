@@ -61,15 +61,23 @@
             </com.google.android.material.textfield.TextInputLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:cardCornerRadius="8dp"
+            app:strokeWidth="2dp"
+            app:strokeColor="?attr/colorOnSurface"
+            app:cardBackgroundColor="?attr/colorSurface"
+            android:layout_marginTop="100dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/filtros_ll"
+            tools:ignore="MissingConstraints">
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_productos"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="100dp"
-            android:background="@drawable/edittext_border"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:flow_maxElementsWrap="4"
-            app:layout_constraintTop_toBottomOf="@id/filtros_ll"/>
+            app:flow_maxElementsWrap="4"/>
+        </com.google.android.material.card.MaterialCardView>
         <ProgressBar
             android:id="@+id/loading_spinner"
             style="?android:progressBarStyleLarge"

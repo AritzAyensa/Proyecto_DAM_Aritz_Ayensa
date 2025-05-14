@@ -86,7 +86,8 @@ dependencies {
 
 
     implementation ("com.caverock:androidsvg:1.4")
-
+    implementation (libs.androidx.appcompat)
+    implementation ("com.google.android.material:material:1.11.0")
 
 
 }
