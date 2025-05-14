@@ -664,8 +664,8 @@ class VistaListaFragment : Fragment() {
                 imageView.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
                 imageView.setImageDrawable(drawable)
             }
-
-
+        }else{
+            Utils.mostrarMensaje(requireContext(), "Lista vacía")
         }
     }
 

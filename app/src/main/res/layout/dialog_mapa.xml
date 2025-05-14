@@ -4,12 +4,6 @@
     android:padding="16dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-
-    <!--<ImageView
-        android:id="@+id/imageViewMapa"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:contentDescription="@string/mapa" />-->
     <com.example.proyecto_dam_aritz_ayensa.utils.ZoomableImageView
         android:id="@+id/imageViewMapa"
         android:layout_width="match_parent"

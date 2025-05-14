@@ -25,6 +25,10 @@ class ZoomableImageView @JvmOverloads constructor(
     private var mid = PointF()
     private var oldDist = 1f
 
+    private var minScale = 1f
+    private var maxScale = 5f
+    private var currentScale = 1f
+
     companion object {
         private const val NONE = 0
         private const val DRAG = 1
@@ -34,54 +38,74 @@ class ZoomableImageView @JvmOverloads constructor(
     init {
         scaleType = ScaleType.MATRIX
         imageMatrix = matrix
-        setOnTouchListener { v, event ->
-            scaleDetector.onTouchEvent(event)
-
-            val touchCount = event.pointerCount
-
-            when (event.action and MotionEvent.ACTION_MASK) {
-                MotionEvent.ACTION_DOWN -> {
-                    savedMatrix.set(matrix)
-                    start.set(event.x, event.y)
-                    mode = DRAG
-                }
-                MotionEvent.ACTION_POINTER_DOWN -> {
-                    oldDist = spacing(event)
-                    if (oldDist > 10f) {
-                        savedMatrix.set(matrix)
-                        midPoint(mid, event)
-                        mode = ZOOM
-                    }
-                }
-                MotionEvent.ACTION_MOVE -> {
-                    if (mode == DRAG) {
-                        matrix.set(savedMatrix)
-                        val dx = event.x - start.x
-                        val dy = event.y - start.y
-                        matrix.postTranslate(dx, dy)
-                    } else if (mode == ZOOM && touchCount >= 2) {
-                        val newDist = spacing(event)
-                        if (newDist > 10f) {
-                            matrix.set(savedMatrix)
-                            val scale = newDist / oldDist
-                            matrix.postScale(scale, scale, mid.x, mid.y)
-                        }
-                    }
-                }
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> {
-                    mode = NONE
-                }
-            }
-
+        post {
+            // Establecer zoom inicial centrado
+            val scale = 1.5f // Ajusta este valor según tus necesidades
+            val dx = (width - drawable.intrinsicWidth * scale) / 2
+            val dy = (height - drawable.intrinsicHeight * scale) / 2
+            matrix.postScale(scale, scale)
+            matrix.postTranslate(dx, dy)
             imageMatrix = matrix
-            true
+            currentScale = scale
         }
     }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        scaleDetector.onTouchEvent(event)
+
+        when (event.action and MotionEvent.ACTION_MASK) {
+            MotionEvent.ACTION_DOWN -> {
+                savedMatrix.set(matrix)
+                start.set(event.x, event.y)
+                mode = DRAG
+            }
+            MotionEvent.ACTION_POINTER_DOWN -> {
+                oldDist = spacing(event)
+                if (oldDist > 10f) {
+                    savedMatrix.set(matrix)
+                    midPoint(mid, event)
+                    mode = ZOOM
+                }
+            }
+            MotionEvent.ACTION_MOVE -> {
+                if (mode == DRAG) {
+                    matrix.set(savedMatrix)
+                    val dx = event.x - start.x
+                    val dy = event.y - start.y
+                    matrix.postTranslate(dx, dy)
+                    fixTranslation()
+                } else if (mode == ZOOM) {
+                    // El manejo del zoom se realiza en onScale
+                }
+            }
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> {
+                mode = NONE
+            }
+        }
+
+        imageMatrix = matrix
+        return true
+    }
+
+    override fun onScale(detector: ScaleGestureDetector): Boolean {
+        val scaleFactor = detector.scaleFactor
+        val newScale = currentScale * scaleFactor
+        if (newScale in minScale..maxScale) {
+            matrix.postScale(scaleFactor, scaleFactor, detector.focusX, detector.focusY)
+            currentScale = newScale
+            fixTranslation()
+        }
+        return true
+    }
+
+    override fun onScaleBegin(detector: ScaleGestureDetector): Boolean = true
+
+    override fun onScaleEnd(detector: ScaleGestureDetector) {}
 
     private fun spacing(event: MotionEvent): Float {
         val x = event.getX(0) - event.getX(1)
         val y = event.getY(0) - event.getY(1)
-        return sqrt(x * x + y * y)
+        return kotlin.math.sqrt(x * x + y * y)
     }
 
     private fun midPoint(point: PointF, event: MotionEvent) {
@@ -90,15 +114,45 @@ class ZoomableImageView @JvmOverloads constructor(
         point.set(x / 2, y / 2)
     }
 
-    override fun onScale(detector: ScaleGestureDetector): Boolean {
-        val scaleFactor = detector.scaleFactor
-        matrix.postScale(scaleFactor, scaleFactor, detector.focusX, detector.focusY)
-        imageMatrix = matrix
-        return true
+    private fun fixTranslation() {
+        val values = FloatArray(9)
+        matrix.getValues(values)
+        val transX = values[Matrix.MTRANS_X]
+        val transY = values[Matrix.MTRANS_Y]
+        val scaleX = values[Matrix.MSCALE_X]
+        val scaleY = values[Matrix.MSCALE_Y]
+
+        val drawable = drawable ?: return
+
+        val imageWidth = drawable.intrinsicWidth * scaleX
+        val imageHeight = drawable.intrinsicHeight * scaleY
+
+        val viewWidth = width.toFloat()
+        val viewHeight = height.toFloat()
+
+        var deltaX = 0f
+        var deltaY = 0f
+
+        if (imageWidth > viewWidth) {
+            if (transX > 0) {
+                deltaX = -transX
+            } else if (transX + imageWidth < viewWidth) {
+                deltaX = viewWidth - (transX + imageWidth)
+            }
+        } else {
+            deltaX = (viewWidth - imageWidth) / 2 - transX
+        }
+
+        if (imageHeight > viewHeight) {
+            if (transY > 0) {
+                deltaY = -transY
+            } else if (transY + imageHeight < viewHeight) {
+                deltaY = viewHeight - (transY + imageHeight)
+            }
+        } else {
+            deltaY = (viewHeight - imageHeight) / 2 - transY
+        }
+
+        matrix.postTranslate(deltaX, deltaY)
     }
-
-    override fun onScaleBegin(detector: ScaleGestureDetector): Boolean = true
-
-    override fun onScaleEnd(detector: ScaleGestureDetector) {}
 }
-
