@@ -1,49 +1,59 @@
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="wrap_content"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.MaterialComponents.CardView"
+    app:cardCornerRadius="16dp"
+    app:cardBackgroundColor="?attr/colorSurface"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="24dp"
-    android:background="?attr/colorSurfaceBright"
-    android:gravity="center">
-
-    <TextView
-        android:id="@+id/tituloDialogo"
-        android:layout_width="wrap_content"
+        android:layout_gravity="center">
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Opciones"
-        android:textSize="18sp"
-        android:textColor="?attr/colorOnSurface"
-        android:layout_marginBottom="16dp"/>
+        android:padding="24dp"
+        android:background="?attr/colorSurfaceBright"
+        android:gravity="center">
 
-    <Button
-        android:id="@+id/btnBuscarProducto"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="@style/ButtonAccept"
-        android:text="Buscar producto"/>
+        <TextView
+            android:id="@+id/tituloDialogo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Opciones"
+            android:textSize="18sp"
+            android:textColor="?attr/colorOnSurface"
+            android:layout_marginBottom="16dp"/>
 
-    <Button
-        android:id="@+id/btnCrearProducto"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="@style/ButtonAccept"
-        android:text="Crear producto"
-        android:layout_marginTop="8dp"/>
+        <Button
+            android:id="@+id/btnBuscarProducto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/ButtonAccept"
+            android:text="Buscar producto"/>
 
-    <Button
-        android:id="@+id/btnCompartir"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Compartir lista"
-        style="@style/ButtonAccept"
-        android:layout_marginTop="8dp"/>
+        <Button
+            android:id="@+id/btnCrearProducto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/ButtonAccept"
+            android:text="Crear producto"
+            android:layout_marginTop="8dp"/>
 
-    <Button
-        android:id="@+id/btnEliminar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Eliminar lista"
-        style="@style/ButtonCancel"
-        android:layout_marginTop="8dp"/>
-</LinearLayout>
+        <Button
+            android:id="@+id/btnCompartir"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Compartir lista"
+            style="@style/ButtonAccept"
+            android:layout_marginTop="8dp"/>
+
+        <Button
+            android:id="@+id/btnEliminar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Eliminar lista"
+            style="@style/ButtonCancel"
+            android:layout_marginTop="8dp"/>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

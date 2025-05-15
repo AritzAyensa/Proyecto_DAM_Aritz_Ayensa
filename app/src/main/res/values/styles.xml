@@ -21,6 +21,10 @@
         <item name="buttonBarPositiveButtonStyle">@style/ButtonAccept</item>
         <item name="buttonBarNeutralButtonStyle">@style/ButtonAccept</item>
         <item name="buttonBarNegativeButtonStyle">@style/ButtonCancel</item>
+        <item name="backgroundColor">?attr/colorSurface</item>
+
+        <item name="materialCardViewStyle">@style/MyMaterialCardView</item>
+
     </style>
 
 
@@ -60,6 +64,14 @@
     <style name="CircleImageView" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
+    </style>
+
+
+
+    <style name="MyMaterialCardView" parent="Widget.MaterialComponents.CardView">
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">8dp</item>
+        <item name="cardBackgroundColor">?attr/colorSurface</item>
     </style>
 
 

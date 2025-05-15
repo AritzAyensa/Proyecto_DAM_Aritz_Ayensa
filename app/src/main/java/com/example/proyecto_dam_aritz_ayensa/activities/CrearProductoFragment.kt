@@ -112,8 +112,11 @@ class CrearProductoFragment : Fragment() {
     private fun crearProducto() {
         try{
             val textNombre = inputNombre.text.toString().trim()
+            var precio: Double = 0.0
 
-            val precio: Double = inputPrecio.text.toString().toDouble()
+            if (!inputPrecio.text.isNullOrEmpty()){
+                precio = inputPrecio.text.toString().toDouble()
+            }
 
             if (textNombre.isNotEmpty() && precio > 0 && categoriaSeleccionada.isNotEmpty() && GenericConstants.PRIORIDAD_CATEGORIAS.keys.contains(categoriaSeleccionada)) {
                 val producto = Producto() 
