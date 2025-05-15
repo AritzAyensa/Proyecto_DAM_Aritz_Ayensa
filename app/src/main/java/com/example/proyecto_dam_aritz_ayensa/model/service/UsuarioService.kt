@@ -134,13 +134,13 @@ class UsuarioService(private val usuarioDAO: UsuarioDAO,
         usuarioDAO.eliminarListaCompartidaDeUsuarios(idListaCompartida)
     }
 
-    fun getMisListasByUsuarioIdFlow(idUsuario: String, listaService: ListaService): Flow<List<Lista>>{
+    fun getMisListasByUsuarioIdFlow(idUsuario: String, listaService: ListaService): Flow<MutableList<Lista>>{
         return usuarioDAO.getMisListasByUsuarioIdFlow(idUsuario, listaService)
             .distinctUntilChanged()
             .flowOn(Dispatchers.IO)
     }
 
-    fun getListasCompartidasByUsuarioIdFlow(idUsuario: String, listaService: ListaService): Flow<List<Lista>>{
+    fun getListasCompartidasByUsuarioIdFlow(idUsuario: String, listaService: ListaService): Flow<MutableList<Lista>>{
         return usuarioDAO.getListasCompartidasByUsuarioIdFlow(idUsuario, listaService)
             .distinctUntilChanged()
             .flowOn(Dispatchers.IO)

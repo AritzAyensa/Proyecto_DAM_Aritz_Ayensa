@@ -125,7 +125,7 @@ class UsuarioDAO {
     }
 
 
-    fun getMisListasByUsuarioIdFlow(idUsuario: String, listaService: ListaService): Flow<List<Lista>> = callbackFlow {
+    fun getMisListasByUsuarioIdFlow(idUsuario: String, listaService: ListaService): Flow<MutableList<Lista>> = callbackFlow {
         val docRef = usuariosCollection.document(idUsuario)
         val listenerRegistration: ListenerRegistration = docRef.addSnapshotListener { snapshot, error ->
             if (error != null) {
@@ -136,18 +136,18 @@ class UsuarioDAO {
             if (snapshot != null && snapshot.exists()) {
                 val idListas = snapshot.get("idListas") as? List<String> ?: emptyList()
                 launch {
-                    val listas = listaService.getMisListasByListasId(idListas)
+                    val listas = listaService.getMisListasByListasId(idListas).toMutableList()
                     trySend(listas).isSuccess
                 }
             } else {
-                trySend(emptyList()).isSuccess
+                trySend(emptyList<Lista>().toMutableList()).isSuccess
             }
         }
 
         awaitClose { listenerRegistration.remove() }
     }
 
-    fun getListasCompartidasByUsuarioIdFlow(idUsuario: String, listaService: ListaService): Flow<List<Lista>> = callbackFlow {
+    fun getListasCompartidasByUsuarioIdFlow(idUsuario: String, listaService: ListaService): Flow<MutableList<Lista>> = callbackFlow {
         val docRef = usuariosCollection.document(idUsuario)
         val listenerRegistration: ListenerRegistration = docRef.addSnapshotListener { snapshot, error ->
             if (error != null) {
@@ -159,10 +159,10 @@ class UsuarioDAO {
                 val idListasCompartidas = snapshot.get("idListasCompartidas") as? List<String> ?: emptyList()
                 launch {
                     val listasCompartidas = listaService.getMisListasByListasId(idListasCompartidas)
-                    trySend(listasCompartidas).isSuccess
+                    trySend(listasCompartidas.toMutableList()).isSuccess
                 }
             } else {
-                trySend(emptyList()).isSuccess
+                trySend(emptyList<Lista>().toMutableList()).isSuccess
             }
         }
 

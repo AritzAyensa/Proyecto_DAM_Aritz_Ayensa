@@ -38,7 +38,7 @@
         app:layout_constraintTop_toBottomOf="@id/fotoPerfil"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:background="@color/negro"
+        android:background="?attr/colorOnSurface"
         android:layout_margin="15dp" />
 
     <!-- Nombre de usuario -->

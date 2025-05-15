@@ -87,7 +87,7 @@
                     android:layout_weight="1"
                     android:autofillHints=""
                     android:inputType="numberDecimal"
-                    android:maxLength="60"
+                    android:maxLength="5"
                     android:maxLines="1"
                     android:layout_marginTop="3sp"
                     android:singleLine="true"

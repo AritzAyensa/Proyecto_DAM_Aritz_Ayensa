@@ -3,24 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/Widget.MaterialComponents.CardView"
     app:cardCornerRadius="16dp"
-    app:cardBackgroundColor="?attr/colorSurface"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="24dp"
+    app:cardBackgroundColor="?attr/colorSurfaceBright"
         android:layout_gravity="center">
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="24dp"
-        android:background="?attr/colorSurfaceBright"
         android:gravity="center">
 
         <TextView
             android:id="@+id/tituloDialogo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Opciones"
+            android:text="@string/opciones"
             android:textSize="18sp"
             android:textColor="?attr/colorOnSurface"
             android:layout_marginBottom="16dp"/>
@@ -30,21 +28,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/ButtonAccept"
-            android:text="Buscar producto"/>
+            android:text="@string/buscar_producto"/>
 
         <Button
             android:id="@+id/btnCrearProducto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/ButtonAccept"
-            android:text="Crear producto"
+            android:text="@string/crear_producto"
             android:layout_marginTop="8dp"/>
 
         <Button
             android:id="@+id/btnCompartir"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Compartir lista"
+            android:text="@string/compartir_lista"
             style="@style/ButtonAccept"
             android:layout_marginTop="8dp"/>
 
@@ -52,7 +50,7 @@
             android:id="@+id/btnEliminar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Eliminar lista"
+            android:text="@string/eliminar_lista"
             style="@style/ButtonCancel"
             android:layout_marginTop="8dp"/>
     </LinearLayout>

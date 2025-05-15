@@ -99,6 +99,12 @@
     <string name="mapa">Mapa</string>
     <string name="cerrar">Cerrar</string>
     <string name="color">Color</string>
+    <string name="opciones">Opciones</string>
+    <string name="crear_producto">Crear producto</string>
+    <string name="compartir_lista">Compartir lista</string>
+    <string name="eliminar_lista">Eliminar lista</string>
+    <string name="email_incorrecto">Email incorrecto</string>
+    <string name="categoria">Categoría</string>
 
 
 </resources>

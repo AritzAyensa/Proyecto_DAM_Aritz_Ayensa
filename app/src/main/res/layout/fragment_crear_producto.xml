@@ -89,7 +89,7 @@
                     android:autofillHints=""
                     android:hint="@string/crear_producto_et_precio"
                     android:inputType="numberDecimal"
-                    android:maxLength="60"
+                    android:maxLength="5"
                     android:maxLines="1"
                     android:layout_marginTop="3sp"
                     android:singleLine="true"
@@ -109,7 +109,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="10sp"
-                        android:hint="Categoría" />
+                        android:hint="@string/categoria" />
                 </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>

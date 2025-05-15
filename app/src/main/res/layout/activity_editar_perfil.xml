@@ -111,9 +111,9 @@
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
             android:autofillHints=""
+            android:maxLength="40"
             android:inputType="text"
-            tools:ignore="LabelFor"
-            android:textColor="@color/negro"/>
+            tools:ignore="LabelFor"/>
 
         <!-- Correo del usuario -->
 

@@ -29,6 +29,7 @@ import com.example.proyecto_dam_aritz_ayensa.model.service.StorageService
 import com.example.proyecto_dam_aritz_ayensa.model.service.UsuarioService
 import com.example.proyecto_dam_aritz_ayensa.utils.SessionManager
 import com.example.proyecto_dam_aritz_ayensa.utils.Utils
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.io.File
 import java.io.FileOutputStream
 
@@ -120,23 +121,26 @@ class EditarPerfilActivity : AppCompatActivity() {
 
     // Abre cámara o galería
     fun cambiarFotoPerfil(view: View) {
-        AlertDialog.Builder(this)
-            .setItems(arrayOf("Tomar foto","Elegir de galería")) { _, which ->
-                if (which == 0) {
-                    // Ahora sí, dentro de la opción cámara pides permiso
-                    if (checkSelfPermission(Manifest.permission.CAMERA)
-                        != PackageManager.PERMISSION_GRANTED
-                    ) {
-                        requestPermissions(arrayOf(Manifest.permission.CAMERA), REQ_PERM_CAMERA)
-                    } else {
-                        abrirCamara()
-                    }
+        MaterialAlertDialogBuilder(this, R.style.MyDialogTheme)
+            .setTitle("Seleccionar fuente")
+            .setPositiveButton("Cámara") { dialog, _ ->
+                if (checkSelfPermission(Manifest.permission.CAMERA)
+                    != PackageManager.PERMISSION_GRANTED
+                ) {
+                    requestPermissions(arrayOf(Manifest.permission.CAMERA), REQ_PERM_CAMERA)
                 } else {
-                    abrirGaleria()
+                    abrirCamara()
                 }
+                dialog.dismiss()
+            }
+            .setNegativeButton("Galería") { dialog, _ ->
+                abrirGaleria()
+                dialog.dismiss()
             }
             .show()
     }
+
+
 
 
 

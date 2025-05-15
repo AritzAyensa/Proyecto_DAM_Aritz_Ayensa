@@ -88,6 +88,7 @@
             android:textSize="18sp"
             android:autofillHints=""
             android:layout_marginTop="20sp"
+            android:maxLength="200"
             app:layout_constraintTop_toBottomOf="@id/crearTarea_ly_elementosTitulo"
             tools:ignore="MissingConstraints" />
     </androidx.constraintlayout.widget.ConstraintLayout>

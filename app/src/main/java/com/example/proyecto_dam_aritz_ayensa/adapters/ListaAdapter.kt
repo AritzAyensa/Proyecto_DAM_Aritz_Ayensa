@@ -9,10 +9,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.proyecto_dam_aritz_ayensa.R
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Lista
+import com.example.proyecto_dam_aritz_ayensa.model.entity.Producto
 import com.google.android.material.imageview.ShapeableImageView
 
 class ListaAdapter(
-    private val listas: List<Lista>,
+    private val listas: MutableList<Lista>,
     private val onItemClick: (Lista) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -69,6 +70,12 @@ class ListaAdapter(
         } else if (holder is EmptyViewHolder) {
             holder.textoItemVacio.text = "Sin listas"
         }
+    }
+    @SuppressLint("NotifyDataSetChanged")
+    fun actualizarListas(nuevasListas: MutableList<Lista>) {
+        listas.clear()
+        listas.addAll(nuevasListas)
+        notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int {
