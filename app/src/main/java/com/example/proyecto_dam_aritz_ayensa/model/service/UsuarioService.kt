@@ -145,7 +145,16 @@ class UsuarioService(private val usuarioDAO: UsuarioDAO,
             .distinctUntilChanged()
             .flowOn(Dispatchers.IO)
     }
+    suspend fun getIdMisListasByIdUsuario(idUsuario: String) : List<String> {
+        return usuarioDAO.getIdMisListasByIdUsuario(idUsuario)
+    }
+    suspend fun getIdListasCompartidasByIdUsuario(idUsuario: String) : List<String> {
+        return usuarioDAO.getIdListasCompartidasByIdUsuario(idUsuario)
+    }
 
+    suspend fun getListasCompartidasSizeByIdUsuario(idUsuario: String): Int {
+        return usuarioDAO.getListasCompartidasSizeByIdUsuario(idUsuario)
+    }
 
 
     suspend fun getMisListasSizeByIdUsuario(idUsuario: String): Int {

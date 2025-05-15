@@ -21,15 +21,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
-    <!--<ImageButton
+    <ImageButton
         android:id="@+id/inicio_btn_recargar_listas"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/baseline_autorenew_24"
         app:layout_constraintStart_toEndOf="@id/inicio_tv_mis_listas"
-        android:layout_marginLeft="10sp"
+        android:layout_marginStart="10sp"
         android:background="@android:color/transparent"
-        tools:ignore="MissingConstraints"/>-->
+        tools:ignore="MissingConstraints"
+        app:tint="?attr/colorOnSurface" />
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/mc_recycler_mis_listas"
         android:layout_width="match_parent"
@@ -74,21 +75,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mc_recycler_mis_listas"
         />
-    <!--<ImageButton
+    <ImageButton
         android:id="@+id/inicio_btn_recargar_listas_compartidas"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/baseline_autorenew_24"
         android:layout_marginTop="8sp"
-        android:layout_marginLeft="10sp"
+        android:layout_marginStart="10sp"
 
         android:background="@android:color/transparent"
         app:layout_constraintStart_toEndOf="@id/inicio_tv_listas_compartidas"
-        app:layout_constraintBottom_toTopOf="@id/recycler_listas_compartidas"
-        app:layout_constraintTop_toBottomOf="@id/recycler_mis_listas"
-
-        tools:ignore="MissingConstraints"/>-->
+        app:layout_constraintBottom_toTopOf="@id/mc_recycler_listas_compartidas"
+        app:layout_constraintTop_toBottomOf="@id/mc_recycler_mis_listas"
+        app:tint="?attr/colorOnSurface"
+        tools:ignore="MissingConstraints"/>
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/mc_recycler_listas_compartidas"
         android:layout_width="match_parent"
         android:minHeight="200sp"
         android:layout_height="170sp"
