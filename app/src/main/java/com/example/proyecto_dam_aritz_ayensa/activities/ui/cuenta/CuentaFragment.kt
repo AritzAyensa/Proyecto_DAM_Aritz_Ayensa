@@ -10,9 +10,11 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.proyecto_dam_aritz_ayensa.R
+import com.example.proyecto_dam_aritz_ayensa.activities.BottomNavigationActivity
 import com.example.proyecto_dam_aritz_ayensa.activities.EditarPerfilActivity
 import com.example.proyecto_dam_aritz_ayensa.activities.LoginActivity
 import com.example.proyecto_dam_aritz_ayensa.databinding.FragmentCuentaBinding
@@ -23,6 +25,7 @@ import com.example.proyecto_dam_aritz_ayensa.model.service.NotificacionService
 import com.example.proyecto_dam_aritz_ayensa.model.service.StorageService
 import com.example.proyecto_dam_aritz_ayensa.model.service.UsuarioService
 import com.example.proyecto_dam_aritz_ayensa.utils.SessionManager
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.messaging.FirebaseMessaging
 
 class CuentaFragment : Fragment() {
@@ -40,8 +43,7 @@ class CuentaFragment : Fragment() {
     private lateinit var storageService: StorageService
     private lateinit var notificacionesService: NotificacionService
     private lateinit var sessionManager: SessionManager
-    // This property is only valid between onCreateView and
-    // onDestroyView.
+    private lateinit var bottomNav : BottomNavigationView
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -51,7 +53,7 @@ class CuentaFragment : Fragment() {
     ): View {
 
         _binding = FragmentCuentaBinding.inflate(inflater, container, false)
-
+        bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.nav_view)
         notificacionesService = NotificacionService(NotificacionDAO())
         storageService = StorageService(StorageDAO())
         usuarioService = UsuarioService(UsuarioDAO(), notificacionesService)
@@ -85,32 +87,42 @@ class CuentaFragment : Fragment() {
         cargarDatosUsuario()
     }
     private fun cargarDatosUsuario() {
-        val usuario = usuarioService.getUser(userId,
+        val activity = requireActivity() as BottomNavigationActivity
+        activity.blockNavigation()
+
+        usuarioService.getUser(userId,
             onSuccess = { usuario ->
                 if (usuario != null) {
                     Log.d("UserService", "Usuario obtenido: ${usuario.nombre}")
-                    val userId = usuario.id
                     tvNombre.text = usuario.nombre
                     tvCorreo.text = usuario.email
 
-                    // Cargar la foto de perfil usando Glide
-                    storageService.getFotoPerfilUrl(userId,
+                    storageService.getFotoPerfilUrl(usuario.id,
                         onSuccess = { imageUrl ->
                             Glide.with(requireContext())
                                 .load(imageUrl)
                                 .placeholder(R.drawable.perfil)
                                 .circleCrop()
                                 .into(fotoPerfil)
+
+                            activity.unblockNavigation()
                         },
                         onFailure = { exception ->
                             Log.e("StorageService", "Error al obtener la foto de perfil", exception)
-                        })
+                            activity.unblockNavigation()
+                        }
+                    )
+                } else {
+                    activity.unblockNavigation()
                 }
             },
             onFailure = { exception ->
                 Log.e("UserService", "Error al obtener el usuario", exception)
-            })
+                activity.unblockNavigation()
+            }
+        )
     }
+
 
     private fun cerrarSesion() {
 

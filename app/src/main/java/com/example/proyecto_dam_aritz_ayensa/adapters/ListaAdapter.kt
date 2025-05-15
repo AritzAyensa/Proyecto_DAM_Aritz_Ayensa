@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.proyecto_dam_aritz_ayensa.R
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Lista
+import com.google.android.material.imageview.ShapeableImageView
 
 class ListaAdapter(
     private val listas: List<Lista>,
@@ -25,7 +26,7 @@ class ListaAdapter(
     inner class ListaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val nombreTarea: TextView = itemView.findViewById(R.id.nombreLista)
         val numProductos: TextView = itemView.findViewById(R.id.numeroItems)
-        val colorLista: TextView = itemView.findViewById(R.id.colorLista)
+        val colorLista: ShapeableImageView = itemView.findViewById(R.id.colorLista)
 
 
         init {

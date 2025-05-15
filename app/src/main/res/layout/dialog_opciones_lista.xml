@@ -1,9 +1,10 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:padding="24dp"
+    android:background="?attr/colorSurfaceBright"
     android:gravity="center">
 
     <TextView
@@ -12,18 +13,19 @@
         android:layout_height="wrap_content"
         android:text="Opciones"
         android:textSize="18sp"
+        android:textColor="?attr/colorOnSurface"
         android:layout_marginBottom="16dp"/>
 
     <Button
         android:id="@+id/btnBuscarProducto"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="@style/ButtonAccept"
         android:text="Buscar producto"/>
 
     <Button
         android:id="@+id/btnCrearProducto"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="@style/ButtonAccept"
         android:text="Crear producto"
@@ -31,7 +33,7 @@
 
     <Button
         android:id="@+id/btnCompartir"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Compartir lista"
         style="@style/ButtonAccept"
@@ -39,7 +41,7 @@
 
     <Button
         android:id="@+id/btnEliminar"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Eliminar lista"
         style="@style/ButtonCancel"

@@ -1,4 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layout_tareas_campos_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -14,11 +15,27 @@
         android:layout_height="wrap_content">
 
         <!-- Campo de color -->
-        <TextView
+        <!--<TextView
             android:id="@+id/colorLista"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:background="@drawable/btn_circular"/>
+            android:background="@drawable/btn_circular"/>-->
+        <!--<ImageView
+            android:id="@+id/colorLista"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+
+            android:background="@color/negro_2"
+            android:contentDescription="@string/color" />-->
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/colorLista"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@color/negro_2"
+            android:contentDescription="@string/color"
+            app:shapeAppearanceOverlay="@style/CircleImageView" />
+
 
         <!-- Campo de nombre de la tarea -->
         <TextView
