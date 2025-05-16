@@ -54,6 +54,7 @@ import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
@@ -98,6 +99,7 @@ class VistaListaFragment : Fragment() {
     private lateinit var usuarioService: UsuarioService
     private lateinit var sessionManager: SessionManager
     private lateinit var progressBar : ProgressBar
+    private var bloqueado = false
 
     /**
      * Método: onCreateView
@@ -198,7 +200,8 @@ class VistaListaFragment : Fragment() {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 listaService
                     .productosDeListaFlow(idLista, productoService)
-                    .collect { productosRaw ->
+                    .collect collectLatest@{ productosRaw ->
+                        if (bloqueado) return@collectLatest
                         val ordenados = ordenarProductos(productosRaw.toMutableList())
                         listaProductos = ordenados
                         adapter.actualizarProductos(ordenados)
@@ -212,7 +215,8 @@ class VistaListaFragment : Fragment() {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 listaService
                     .productosSeleccionadosDeListaFlow(idLista)
-                    .collect { ids ->
+                    .collect collectLatest@{ ids ->
+                        if (bloqueado) return@collectLatest
                         productosSeleccionados = ids.toMutableList()
                         adapter.actualizarProductosSeleccionados(productosSeleccionados)
                         progressBar.visibility = View.GONE
@@ -372,10 +376,14 @@ class VistaListaFragment : Fragment() {
             positiveButton.setOnClickListener {
                 lifecycleScope.launch(Dispatchers.IO) {
                     try {
+                        bloqueado = true
                         // 1) Eliminar productos de la lista y recargar datos
                         var productosSelec = productosSeleccionados
                         listaService.eliminarProductosSeleccionadosDeLista(idLista, productosSeleccionados)
                         listaService.eliminarProductosDeLista(idLista, productosSelec)
+
+                        delay(500)
+                        bloqueado = false
                         lista = listaService.getListaById(idLista)!!
                         listaProductos = productoService
                             .getProductosByIds(lista.idProductos)
@@ -386,12 +394,13 @@ class VistaListaFragment : Fragment() {
                             adapter.actualizarProductos(listaProductos)
                         }
 
+
                         // 3) Construir datos de la noti interna
                         val nombreUsuario = usuarioService.getUserNameById(userId)
                         val notificacion = Notificacion(
                             tipo = GenericConstants.TIPO_COMPRA,
                             descripcion = "$nombreUsuario ha completado la compra ${lista.titulo}",
-                            idProductos = productosSeleccionados
+                            idProductos = productosSelec
                         )
 
                         // 4) Guardar noti interna y asignar a usuarios
