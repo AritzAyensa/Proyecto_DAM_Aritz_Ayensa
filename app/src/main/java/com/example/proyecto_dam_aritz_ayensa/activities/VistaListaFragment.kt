@@ -436,9 +436,34 @@ class VistaListaFragment : Fragment() {
                                         inputEmail.requestFocus()
                                         return@launch
                                     }
-                                    // Añadir lista compartida y notificar...
                                     usuarioService.añadirListaCompartidaAUsuario(idLista, usuario.id)
-                                    // ... resto de tu lógica de notificaciones ...
+
+                                    val nombreUsuario = usuarioService.getUserNameById(userId)
+                                    val notificacionEmergenteData = mapOf(
+                                        "toUid"     to usuario.id,
+                                        "fromUid"   to userId,
+                                        "fromName"  to nombreUsuario,
+                                        "listName"  to lista.titulo,
+                                        "timestamp" to FieldValue.serverTimestamp(),
+                                        "tipo"      to GenericConstants.TIPO_LISTA_COMPRATIDA
+                                    )
+                                    notificacionEmergenteService.saveNotificacionEmergente(
+                                        notificacionEmergenteData,
+                                        onSuccess = { Log.i("VistaListaFragment", "Notificacion emergente creada") },
+                                        onError   = { Log.e("VistaListaFragment", "Error al crear la notificacion emergente") }
+                                    )
+
+                                    val noti = Notificacion().apply {
+                                        tipo = GenericConstants.TIPO_LISTA_COMPRATIDA
+                                        descripcion = "$nombreUsuario ha compartido la lista \"${lista.titulo}\" con ${usuario.nombre}"
+                                        idProductos = lista.idProductos.toMutableList()
+                                        fecha = LocalDate.now()
+                                            .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                                    }
+                                    val idsUsuarios = usuarioService.getUserIdsByListId(lista.id)
+                                    val idNotificacion = notificacionesService.saveNotificacion(noti)
+                                    usuarioService.añadirNotificacionAUsuarios(idsUsuarios, idNotificacion)
+
 
                                     Utils.mostrarMensaje(requireContext(),
                                         "Lista \"${lista.titulo}\" compartida con ${usuario.nombre}")
