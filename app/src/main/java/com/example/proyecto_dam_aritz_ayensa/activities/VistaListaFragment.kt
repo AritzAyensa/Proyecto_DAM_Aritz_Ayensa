@@ -295,7 +295,7 @@ class VistaListaFragment : Fragment() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun completarCompra() {
-        val dialog = AlertDialog.Builder(requireContext())
+        val dialog = MaterialAlertDialogBuilder(requireContext(), R.style.MyDialogTheme)
             .setTitle("Completar compra")
             .setMessage("¿Estás seguro de que quieres completar esta compra?")
             .setNegativeButton("Cancelar", null)
@@ -502,7 +502,7 @@ class VistaListaFragment : Fragment() {
 
 
     private fun eliminarLista(context: Context) {
-            val dialog = AlertDialog.Builder(context)
+            val dialog = MaterialAlertDialogBuilder(context, R.style.MyDialogTheme)
                 .setTitle("Eliminar lista")
                 .setNegativeButton("Cancelar", null)
                 .create()
@@ -546,7 +546,7 @@ class VistaListaFragment : Fragment() {
             }
 
             dialog.show()
-        }
+    }
         private fun abrirAnadirProducto() {
             val bundle = Bundle().apply {
                 putString("idLista", idLista)
@@ -647,7 +647,7 @@ class VistaListaFragment : Fragment() {
                 val imageView = dialogView.findViewById<ImageView>(R.id.imageViewMapa)
                 val btnCerrar = dialogView.findViewById<Button>(R.id.btnCerrar)
 
-                val builder = AlertDialog.Builder(requireContext())
+                val builder = MaterialAlertDialogBuilder(requireContext(), R.style.MyDialogTheme)
                     .setView(dialogView)
                 val dialog = builder.create()
                 dialog.show()

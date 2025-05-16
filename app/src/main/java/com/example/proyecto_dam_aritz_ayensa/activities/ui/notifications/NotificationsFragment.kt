@@ -36,6 +36,7 @@ import com.example.proyecto_dam_aritz_ayensa.utils.GenericConstants
 import com.example.proyecto_dam_aritz_ayensa.utils.SessionManager
 import com.example.proyecto_dam_aritz_ayensa.utils.Utils
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -129,7 +130,7 @@ class NotificationsFragment : Fragment() {
             return
         }
 
-        val dialog = AlertDialog.Builder(requireContext())
+        val dialog = MaterialAlertDialogBuilder(requireContext(), R.style.MyDialogTheme)
             .setTitle("Eliminar notificaciones seleccionadas")
             .setNegativeButton("Cancelar", null)
             .create()
@@ -171,7 +172,7 @@ class NotificationsFragment : Fragment() {
 
 
     fun mostrarDetalleNotificacion(notificacion: Notificacion) {
-        val builder = AlertDialog.Builder(requireContext())
+        val builder = MaterialAlertDialogBuilder(requireContext(), R.style.MyDialogTheme)
 
         val contentLayout = LinearLayout(requireContext()).apply {
             orientation = LinearLayout.VERTICAL
