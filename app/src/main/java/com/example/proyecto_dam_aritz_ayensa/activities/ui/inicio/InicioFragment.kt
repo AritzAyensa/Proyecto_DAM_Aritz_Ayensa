@@ -53,7 +53,17 @@ class InicioFragment : Fragment() {
 
 
     private val binding get() = _binding!!
-
+    /**
+     * Método: onCreateView
+     *
+     * Infla el layout del fragmento, inicializa servicios y vistas,
+     * configura RecyclerViews y botones, y lanza la carga inicial de datos.
+     *
+     * @param inflater Inflater para la vista del fragmento
+     * @param container Contenedor padre de la vista
+     * @param savedInstanceState Bundle con estado previo
+     * @return View raíz del fragmento
+     */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -78,11 +88,31 @@ class InicioFragment : Fragment() {
         return binding.root
     }
 
-
+    /**
+     * Método: abrirAñadirLista
+     *
+     * Comprueba el número de listas del usuario y,
+     * si no supera el límite, navega al fragmento de creación de lista.
+     */
     private fun abrirAñadirLista() {
-        findNavController().navigate(R.id.action_inicioFragment_to_crearListaFragment)
-    }
+        lifecycleScope.launch {
+            if (usuarioService.getMisListasSizeByIdUsuario(sessionManager.getUserId().toString()) > 6){
+                Utils.mostrarMensaje(context, "No puedes crear mas de 6 listas")
+            }else{
+                findNavController().navigate(R.id.action_inicioFragment_to_crearListaFragment)
 
+            }
+        }
+
+    }
+    /**
+     * Método: abrirLista
+     *
+     * Verifica si la lista existe y, si es así,
+     * navega al fragmento de vista de lista con su ID.
+     *
+     * @param idLista ID de la lista a abrir
+     */
     private fun abrirLista(idLista : String) {
         lifecycleScope.launch {
             if (listaService.getListaById(idLista) == null){
@@ -95,6 +125,12 @@ class InicioFragment : Fragment() {
             }
         }
     }
+    /**
+     * Método: cargarBotones
+     *
+     * Asocia listeners a los botones de recarga y añadir lista
+     * para invocar sus correspondientes acciones.
+     */
     private fun cargarBotones() {
         buttonRecargarMisListas = binding.inicioBtnRecargarListas
         if (buttonRecargarMisListas != null) {
@@ -115,6 +151,12 @@ class InicioFragment : Fragment() {
             }
         }
     }
+    /**
+     * Método: cargarMisListas
+     *
+     * Muestra un ProgressBar, obtiene las listas del usuario,
+     * actualiza el adapter y oculta el ProgressBar.
+     */
     private fun cargarMisListas() {
         lifecycleScope.launch {
             progressBar.visibility = View.VISIBLE
@@ -129,7 +171,11 @@ class InicioFragment : Fragment() {
             progressBar.visibility = View.GONE
         }
     }
-
+    /**
+     * Método: cargarListasCompartidas
+     *
+     * Similar a cargarMisListas(), pero para listas compartidas.
+     */
     private fun cargarListasCompartidas() {
         lifecycleScope.launch {
             progressBar2.visibility = View.VISIBLE
@@ -145,9 +191,12 @@ class InicioFragment : Fragment() {
         }
     }
 
-
-
-    override fun onDestroyView() {
+    /**
+     * Método: onDestroyView
+     *
+     * Limpia el binding para evitar fugas de memoria cuando
+     * la vista del fragmento se destruye.
+     */    override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }

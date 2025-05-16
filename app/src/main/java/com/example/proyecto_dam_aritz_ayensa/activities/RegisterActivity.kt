@@ -16,7 +16,11 @@ import com.example.proyecto_dam_aritz_ayensa.model.service.NotificacionService
 import com.example.proyecto_dam_aritz_ayensa.utils.SessionManager
 import com.example.proyecto_dam_aritz_ayensa.utils.Utils
 import com.google.firebase.messaging.FirebaseMessaging
-
+/**
+ * Clase: RegisterActivity
+ *
+ * Actividad para registrar usuario con validación y manejo de sesión.
+ */
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var usuarioService: UsuarioService
@@ -25,7 +29,10 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var textoError: TextView
     private lateinit var inputContraseña: EditText
     private lateinit var sessionManager: SessionManager
-
+    /**
+     * onCreate:
+     * Inicializa servicios y referencias de vistas.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
@@ -38,6 +45,10 @@ class RegisterActivity : AppCompatActivity() {
         sessionManager = SessionManager(this)
 
     }
+    /**
+     * registrarUsuario:
+     * Valida campos, crea usuario y guarda sesión.
+     */
     fun registrarUsuario(view: View) {
         val email = inputCorreo.text.toString().trim()
         val password = inputContraseña.text.toString().trim()
@@ -61,7 +72,10 @@ class RegisterActivity : AppCompatActivity() {
             Utils.mostrarMensaje(this, "Ingrese el correo y la contraseña")
         }
     }
-
+    /**
+     * crearUsuario:
+     * Valida email y contraseña, guarda usuario y maneja éxito o error.
+     */
     @SuppressLint("SetTextI18n")
     fun crearUsuario(
         email: String,
@@ -109,7 +123,10 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
-
+    /**
+     * goToCancelar:
+     * Cierra la actividad actual.
+     */
     fun goToCancelar(view: View) {
         finish();
     }

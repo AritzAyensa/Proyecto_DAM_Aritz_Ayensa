@@ -10,12 +10,21 @@ import androidx.core.view.WindowInsetsCompat
 import com.example.proyecto_dam_aritz_ayensa.R
 import com.example.proyecto_dam_aritz_ayensa.utils.Utils
 import com.google.firebase.auth.FirebaseAuth
-
+/**
+ * Clase: CambiarContrasenaActivity
+ *
+ * Permite al usuario solicitar un correo para restablecer su contraseña.
+ * Utiliza Firebase Authentication para enviar el enlace de restablecimiento.
+ */
 class CambiarContrasenaActivity : AppCompatActivity() {
     private lateinit var emailEditText: EditText
     private lateinit var sendResetLinkButton: Button
 
-
+    /**
+     * Método: onCreate
+     *
+     * Inicializa la actividad y configura el listener del botón.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cambiar_contrasena)
@@ -35,7 +44,11 @@ class CambiarContrasenaActivity : AppCompatActivity() {
             }
         }
     }
-
+    /**
+    * Método: sendPasswordResetEmail
+    *
+    * Envía un correo de restablecimiento de contraseña utilizando FirebaseAuth.
+    */
     private fun sendPasswordResetEmail(email: String) {
         FirebaseAuth.getInstance().sendPasswordResetEmail(email)
             .addOnCompleteListener { task ->

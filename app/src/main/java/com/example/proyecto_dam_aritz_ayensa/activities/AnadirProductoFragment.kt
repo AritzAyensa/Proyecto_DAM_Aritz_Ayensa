@@ -36,7 +36,13 @@ import com.example.proyecto_dam_aritz_ayensa.model.dao.NotificacionDAO
 import com.example.proyecto_dam_aritz_ayensa.model.service.NotificacionService
 import com.example.proyecto_dam_aritz_ayensa.utils.GenericConstants
 
-
+/**
+ * Fragmento: AnadirProductoFragment
+ *
+ * Permite al usuario buscar y añadir productos a una lista existente.
+ * Incluye funcionalidades de búsqueda por nombre y categoría, y muestra
+ * los productos en un RecyclerView.
+ */
 class AnadirProductoFragment : Fragment() {
     private var _binding: FragmentAnadirProductoBinding? = null
     private val binding get() = _binding!!
@@ -60,6 +66,12 @@ class AnadirProductoFragment : Fragment() {
     private lateinit var progressBar : ProgressBar
     private lateinit var buttonCrearProducto : Button
     private lateinit var adapter: ProductoParaAnadirAdapter
+    /**
+     * Método: onCreateView
+     *
+     * Infla la vista del fragmento, inicializa servicios y configura
+     * elementos de la interfaz como el menú desplegable y el buscador.
+     */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -87,7 +99,12 @@ class AnadirProductoFragment : Fragment() {
         cargarProductos()
         return binding.root
     }
-
+    /**
+     * Método: cargarProductos
+     *
+     * Carga los productos disponibles y configura el RecyclerView.
+     * Permite añadir productos a la lista actual.
+     */
     private fun cargarProductos() {
         lifecycleScope.launch {
             progressBar.visibility = View.VISIBLE
@@ -138,7 +155,12 @@ class AnadirProductoFragment : Fragment() {
             progressBar.visibility = View.GONE
         }
     }
-
+/**
+ * Método: configurarDropdownMenu
+ *
+ * Configura el menú desplegable para seleccionar categorías de productos.
+ * Al seleccionar una categoría, se actualiza la lista de productos mostrados.
+ */
     private fun configurarDropdownMenu() {
 
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, GenericConstants.PRIORIDAD_CATEGORIAS.keys.sorted().toList())
@@ -151,7 +173,12 @@ class AnadirProductoFragment : Fragment() {
             buscarProductos()
         }
     }
-
+    /**
+     * Método: configurarBuscador
+     *
+     * Configura el campo de búsqueda para filtrar productos por nombre.
+     * Al escribir en el campo, se actualiza la lista de productos mostrados.
+     */
     private fun configurarBuscador() {
         val etBuscar = binding.etBuscarProducto
         etBuscar.addTextChangedListener { editable ->
@@ -160,7 +187,12 @@ class AnadirProductoFragment : Fragment() {
         }
     }
 
-
+    /**
+     * Método: buscarProductos
+     *
+     * Filtra los productos disponibles según el texto y la categoría seleccionada.
+     * Actualiza el RecyclerView con los productos filtrados.
+     */
     private fun buscarProductos() {
         lifecycleScope.launch(Dispatchers.IO) {
             withContext(Dispatchers.Main) {
@@ -175,7 +207,11 @@ class AnadirProductoFragment : Fragment() {
             }
         }
     }
-
+    /**
+     * Método: onDestroyView
+     *
+     * Limpia la referencia al binding para evitar fugas de memoria.
+     */
 
     override fun onDestroyView() {
         super.onDestroyView()

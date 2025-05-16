@@ -45,7 +45,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Locale
-
+/**
+ * Fragmento encargado de mostrar y gestionar las notificaciones del usuario.
+ *
+ * Este fragmento permite visualizar una lista de notificaciones, marcarlas como leídas,
+ * eliminarlas y mostrar detalles adicionales según el tipo de notificación.
+ *
+ * Utiliza un RecyclerView para listar las notificaciones y proporciona funcionalidades
+ * para interactuar con ellas.
+ */
 class NotificationsFragment : Fragment() {
 
     private var _binding: FragmentNotificationsBinding? = null
@@ -93,7 +101,12 @@ class NotificationsFragment : Fragment() {
 
         return binding.root
     }
-
+    /**
+     * Carga las notificaciones del usuario y las muestra en el RecyclerView.
+     *
+     * Este método observa un flujo de notificaciones y actualiza la interfaz de usuario
+     * en consecuencia. También marca las notificaciones como leídas una vez que se muestran.
+     */
     private fun cargarNotificaciones() {
         progressBar.visibility = View.VISIBLE
 
@@ -125,7 +138,13 @@ class NotificationsFragment : Fragment() {
         }
     }
 
-
+    /**
+     * Elimina las notificaciones seleccionadas por el usuario.
+     *
+     * Si no hay notificaciones seleccionadas, muestra un mensaje indicando que se debe
+     * seleccionar al menos una. Si hay notificaciones seleccionadas, muestra un diálogo
+     * de confirmación y, al aceptar, procede a eliminarlas.
+     */
     private fun eliminarNotificacion() {
         if (notificacionesSeleccionadas.isEmpty()) {
             Utils.mostrarMensaje(requireContext(), "Seleccione al menos una notificación")
@@ -172,7 +191,14 @@ class NotificationsFragment : Fragment() {
     }
 
 
-
+    /**
+     * Muestra un diálogo con los detalles de una notificación específica.
+     *
+     * @param notificacion La notificación cuyos detalles se desean mostrar.
+     *
+     * Si la notificación es de tipo compra, se muestran los productos asociados y el
+     * precio total estimado.
+     */
     fun mostrarDetalleNotificacion(notificacion: Notificacion) {
         val builder = MaterialAlertDialogBuilder(requireContext(), R.style.MyDialogTheme)
 
@@ -236,9 +262,11 @@ class NotificationsFragment : Fragment() {
     }
 
 
-
-
-
+    /**
+     * Se llama cuando la vista del fragmento se destruye.
+     *
+     * Libera los recursos asociados al binding para evitar fugas de memoria.
+     */
 
     override fun onDestroyView() {
         super.onDestroyView()

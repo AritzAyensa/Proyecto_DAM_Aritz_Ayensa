@@ -16,7 +16,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-
+/**
+ * Clase: ListaDAO
+ *
+ * DAO para gestionar listas en Firestore (crear, eliminar, actualizar, consultar).
+ */
 
 class ListaDAO {
 
@@ -31,14 +35,12 @@ class ListaDAO {
 
 
     /**
-     * Método: saveUser
+     * Método: saveLista
      *
-     * Guarda un nuevo usuario en Firebase Authentication y Firestore.
-     * Si la creación del usuario en Authentication es exitosa, se almacena la información del usuario en Firestore.
+     * Guarda una nueva lista en Firestore y devuelve su ID generado.
      *
-     * @param usuario Objeto Usuario que contiene la información del usuario a guardar.
-     * @param onSuccess Función de callback que se ejecuta si la operación es exitosa.
-     * @param onFailure Función de callback que se ejecuta si ocurre un error durante la operación.
+     * @param lista Objeto Lista con los datos a guardar.
+     * @return ID generado de la lista.
      */
     suspend fun saveLista(lista: Lista): String {
         val docRef = listasCollection.document()
@@ -54,7 +56,13 @@ class ListaDAO {
         docRef.set(listaData).await()
         return docRef.id
     }
-
+    /**
+     * Método: eliminarLista
+     *
+     * Elimina una lista de Firestore dado su ID.
+     *
+     * @param idLista ID de la lista a eliminar.
+     */
     suspend fun eliminarLista(idLista: String) {
         if (idLista.isNotBlank()) {
             listasCollection.document(idLista).delete().await()
@@ -62,7 +70,14 @@ class ListaDAO {
             throw IllegalArgumentException("El ID de la lista no puede estar vacío")
         }
     }
-
+    /**
+     * Método: eliminarProductosDeLista
+     *
+     * Elimina varios productos de una lista mediante sus IDs.
+     *
+     * @param idLista ID de la lista.
+     * @param idsAEliminar Lista de IDs de productos a eliminar.
+     */
     suspend fun eliminarProductosDeLista(idLista: String, idsAEliminar: List<String>) {
         if (idLista.isBlank()) {
             throw IllegalArgumentException("El ID de la lista no puede estar vacío")
@@ -77,7 +92,14 @@ class ListaDAO {
             throw IllegalArgumentException("Error al completar compra")
         }
     }
-
+    /**
+     * Método: eliminarProductosSeleccionadosDeLista
+     *
+     * Elimina varios productos seleccionados de una lista.
+     *
+     * @param idLista ID de la lista.
+     * @param idsAEliminar Lista de IDs de productos seleccionados a eliminar.
+     */
     suspend fun eliminarProductosSeleccionadosDeLista(idLista: String, idsAEliminar: List<String>) {
         if (idLista.isBlank()) {
             throw IllegalArgumentException("El ID de la lista no puede estar vacío")
@@ -92,7 +114,14 @@ class ListaDAO {
             throw IllegalArgumentException("Error al completar compra")
         }
     }
-
+    /**
+     * Método: eliminarProductoDeLista
+     *
+     * Elimina un producto específico de una lista.
+     *
+     * @param idLista ID de la lista.
+     * @param idProducto ID del producto a eliminar.
+     */
     suspend fun eliminarProductoDeLista(idLista: String, idProducto: String) {
         require(idLista.isNotBlank()) { "El ID de la lista no puede estar vacío" }
         require(idProducto.isNotBlank()) { "El ID del producto no puede estar vacío" }
@@ -106,7 +135,14 @@ class ListaDAO {
         }
     }
 
-
+    /**
+     * Método: eliminarProductoSeleccionadoDeLista
+     *
+     * Elimina un producto seleccionado específico de una lista.
+     *
+     * @param idLista ID de la lista.
+     * @param idProducto ID del producto seleccionado a eliminar.
+     */
     suspend fun eliminarProductoSeleccionadoDeLista(idLista: String, idProducto: String) {
         require(idLista.isNotBlank()) { "El ID de la lista no puede estar vacío" }
         require(idProducto.isNotBlank()) { "El ID del producto no puede estar vacío" }
@@ -121,7 +157,14 @@ class ListaDAO {
     }
 
 
-
+    /**
+     * Método: getMisListasByUsuarioId
+     *
+     * Recupera las listas que coinciden con los IDs dados.
+     *
+     * @param idListas Lista de IDs de listas a recuperar.
+     * @return Lista de objetos Lista.
+     */
     suspend fun getMisListasByUsuarioId(idListas: List<String>): List<Lista> {
         if (idListas.isEmpty()) return emptyList()
 
@@ -140,7 +183,14 @@ class ListaDAO {
 
         return listas
     }
-
+    /**
+     * Método: getListaById
+     *
+     * Obtiene una lista por su ID.
+     *
+     * @param idLista ID de la lista a buscar.
+     * @return Objeto Lista o null si no existe.
+     */
     suspend fun getListaById(idLista: String): Lista? {
         if (idLista.isBlank()) return null
 
@@ -165,12 +215,29 @@ class ListaDAO {
             null
         }
     }
+    /**
+     * Método: añadirProducto
+     *
+     * Añade un producto a la lista especificada.
+     *
+     * @param idProducto ID del producto a añadir.
+     * @param idLista ID de la lista donde añadir.
+     */
     suspend fun añadirProducto(idProducto: String, idLista: String) {
         listasCollection
             .document(idLista)
             .update("idProductos", FieldValue.arrayUnion(idProducto))
             .await()
     }
+
+    /**
+     * Método: añadirProductoSeleccionado
+     *
+     * Añade un producto seleccionado a la lista.
+     *
+     * @param idProducto ID del producto a añadir.
+     * @param idLista ID de la lista.
+     */
     suspend fun añadirProductoSeleccionado(idProducto: String, idLista: String) {
         listasCollection
             .document(idLista)
@@ -178,6 +245,15 @@ class ListaDAO {
             .await()
     }
 
+    /**
+     * Método: productosDeListaFlow
+     *
+     * Devuelve un Flow que emite la lista de productos asociados a una lista en tiempo real.
+     *
+     * @param idLista ID de la lista.
+     * @param productoService Servicio para obtener productos por IDs.
+     * @return Flow con la lista de productos.
+     */
     fun productosDeListaFlow(
         idLista: String,
         productoService: ProductoService
@@ -209,36 +285,14 @@ class ListaDAO {
         awaitClose { listener.remove() }
     }
 
-    /*fun productosSeleccionadosDeListaFlow(
-        idLista: String,
-        productoService: ProductoService
-    ): Flow<List<Producto>> = callbackFlow {
-        val docRef = listasCollection.document(idLista)
-
-        val listener = docRef.addSnapshotListener { snapshot, error ->
-            if (error != null) {
-                close(error)
-                return@addSnapshotListener
-            }
-            if (snapshot != null && snapshot.exists()) {
-                val ids = snapshot.get("idProductosSeleccionados") as? List<*>
-                    ?: emptyList<String>()
-
-                CoroutineScope(Dispatchers.IO).launch {
-                    try {
-                        @Suppress("UNCHECKED_CAST")
-                        val idStrings = ids.filterIsInstance<String>()
-                        val productos = productoService.getProductosByIds(idStrings)
-                        trySend(productos).isSuccess
-                    } catch (e: Exception) {
-                        close(e)
-                    }
-                }
-            }
-        }
-
-        awaitClose { listener.remove() }
-    }*/
+    /**
+     * Método: productosSeleccionadosDeListaFlow
+     *
+     * Devuelve un Flow que emite los IDs de productos seleccionados de una lista en tiempo real.
+     *
+     * @param idLista ID de la lista.
+     * @return Flow con lista de IDs de productos seleccionados.
+     */
     fun productosSeleccionadosDeListaFlow(
         idLista: String
     ): Flow<List<String>> = callbackFlow {

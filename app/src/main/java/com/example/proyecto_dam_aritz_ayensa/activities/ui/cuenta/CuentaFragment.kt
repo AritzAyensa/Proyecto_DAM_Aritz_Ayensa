@@ -33,7 +33,6 @@ class CuentaFragment : Fragment() {
     private var _binding: FragmentCuentaBinding? = null
     lateinit var buttonCerrarSesion : Button
     private lateinit var userId : String
-    // Datos del usuario
     private lateinit var tvNombre: TextView
     private lateinit var tvCorreo: TextView
     private lateinit var fotoPerfil: ImageView
@@ -45,7 +44,18 @@ class CuentaFragment : Fragment() {
     private lateinit var sessionManager: SessionManager
     private lateinit var bottomNav : BottomNavigationView
     private val binding get() = _binding!!
-
+    /**
+     * Método: onCreateView
+     *
+     * Infla el layout del fragmento, inicializa servicios,
+     * obtiene referencias de vistas y configura listeners
+     * para botones de cerrar sesión y editar perfil.
+     *
+     * @param inflater LayoutInflater para inflar la vista
+     * @param container ViewGroup contenedor de la UI
+     * @param savedInstanceState Bundle con estado previo
+     * @return View raíz del fragmento
+     */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -81,11 +91,26 @@ class CuentaFragment : Fragment() {
 
         return binding.root
     }
-
+    /**
+     * Método: onResume
+     *
+     * Llamado cuando el fragmento vuelve a primer plano.
+     * Recarga los datos del usuario para reflejar cambios.
+     */
     override fun onResume() {
         super.onResume()
         cargarDatosUsuario()
     }
+    /**
+     * Método: cargarDatosUsuario
+     *
+     * Bloquea la navegación inferior, obtiene los datos
+     * del usuario actual desde Firestore y muestra nombre,
+     * correo y foto de perfil en la UI.
+     *
+     * Desbloquea la navegación una vez completada la carga,
+     * incluso si ocurre un error.
+     */
     private fun cargarDatosUsuario() {
         val activity = requireActivity() as BottomNavigationActivity
         activity.blockNavigation()
@@ -123,10 +148,15 @@ class CuentaFragment : Fragment() {
         )
     }
 
-
+    /**
+     * Método: cerrarSesion
+     *
+     * Elimina el token FCM asociado al usuario en Firestore,
+     * cierra la sesión localmente y redirige a la pantalla de login.
+     * Registra errores de token sin interrumpir la navegación.
+     */
     private fun cerrarSesion() {
 
-        // Verifica que el contexto no sea nulo
         if (context != null) {
             val uid = sessionManager.getUserId()
             FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
@@ -155,14 +185,24 @@ class CuentaFragment : Fragment() {
             Log.e("CuentaFragment", "Contexto nulo al cerrar sesión")
         }
     }
-
+    /**
+     * Método: goToEditarPerfil
+     *
+     * Navega a la actividad de edición de perfil permitiendo
+     * al usuario actualizar sus datos.
+     */
     private fun goToEditarPerfil() {
         activity?.let { safeActivity ->
             val intent = Intent(safeActivity, EditarPerfilActivity::class.java)
             safeActivity.startActivity(intent)
         }
     }
-
+    /**
+     * Método: onDestroyView
+     *
+     * Limpia el binding para evitar fugas de memoria cuando
+     * la vista del fragmento se destruye.
+     */
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

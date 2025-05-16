@@ -11,7 +11,10 @@ import com.example.proyecto_dam_aritz_ayensa.R
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Lista
 
 import com.google.android.material.imageview.ShapeableImageView
-
+/**
+ * ListaAdapter:
+ * Adapter para RecyclerView que muestra listas o mensaje de vacío.
+ */
 class ListaAdapter(
     private val listas: List<Lista>,
     private val onItemClick: (Lista) -> Unit

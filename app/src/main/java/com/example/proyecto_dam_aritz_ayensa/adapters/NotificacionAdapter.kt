@@ -10,7 +10,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.proyecto_dam_aritz_ayensa.R
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Notificacion
-
+/**
+ * NotificacionAdapter:
+ * Adapter para RecyclerView que muestra notificaciones o mensaje vacío.
+ */
 class NotificacionAdapter(
     private val notificaciones: List<Notificacion>,
     private val onItemClick: (Notificacion) -> Unit,

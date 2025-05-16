@@ -13,7 +13,9 @@ import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import kotlinx.coroutines.tasks.await
 
-
+/**
+ * DAO para gestionar productos en Firestore.
+ */
 class ProductoDAO {
 
     // Instancia de Firestore para interactuar con la base de datos
@@ -27,14 +29,12 @@ class ProductoDAO {
 
 
     /**
-     * Método: saveUser
+     * Método: saveProducto
      *
-     * Guarda un nuevo usuario en Firebase Authentication y Firestore.
-     * Si la creación del usuario en Authentication es exitosa, se almacena la información del usuario en Firestore.
+     * Guarda un nuevo producto en la colección "productos" de Firestore.
      *
-     * @param usuario Objeto Usuario que contiene la información del usuario a guardar.
-     * @param onSuccess Función de callback que se ejecuta si la operación es exitosa.
-     * @param onFailure Función de callback que se ejecuta si ocurre un error durante la operación.
+     * @param producto Objeto Producto con los datos a guardar.
+     * @return ID del documento creado.
      */
     suspend fun saveProducto(producto: Producto): String {
         val docRef = productosCollection.document()
@@ -51,7 +51,15 @@ class ProductoDAO {
         docRef.set(productoData).await()
         return docRef.id
     }
-
+    /**
+     * Método: updateProducto
+     *
+     * Actualiza los datos de un producto existente en Firestore.
+     *
+     * @param producto Objeto Producto con datos actualizados (debe tener un ID válido).
+     * @throws IllegalArgumentException si el ID del producto está vacío.
+     * @throws Exception si ocurre un error durante la actualización.
+     */
     suspend fun updateProducto(producto: Producto) {
         if (producto.id.isBlank()) {
             throw IllegalArgumentException("El ID del producto no puede estar vacío")
@@ -78,7 +86,15 @@ class ProductoDAO {
         }
     }
 
-
+    /**
+    * Método: getProductosByIds
+    *
+    * Obtiene una lista de productos a partir de una lista de IDs.
+    * Realiza consultas por lotes para optimizar el rendimiento.
+    *
+    * @param idProductos Lista de IDs de productos a buscar.
+    * @return Lista de objetos Producto correspondientes a los IDs proporcionados.
+    */
     suspend fun getProductosByIds(idProductos: List<String>): List<Producto> {
         if (idProductos.isEmpty()) return emptyList()
 
@@ -97,6 +113,14 @@ class ProductoDAO {
         return productos
     }
 
+    /**
+     * Método: getProductoById
+     *
+     * Obtiene un producto a partir de su ID.
+     *
+     * @param idProducto ID del producto a buscar.
+     * @return Objeto Producto correspondiente al ID proporcionado, o null si no se encuentra.
+     */
     suspend fun getProductoById(idProducto: String): Producto? {
         if (idProducto.isBlank()) return null
 
@@ -115,7 +139,15 @@ class ProductoDAO {
         }
     }
 
-
+    /**
+     * Método: getProductosByNombreYCategoria
+     *
+     * Obtiene una lista de productos filtrados por nombre y categoría.
+     *
+     * @param nombre Nombre del producto a buscar.
+     * @param categoria Categoría del producto a buscar.
+     * @return Lista de objetos Producto que coinciden con los filtros proporcionados.
+     */
 
 
     suspend fun getProductosByNombreYCategoria(nombre: String, categoria: String): List<Producto> {
@@ -141,7 +173,14 @@ class ProductoDAO {
             emptyList()
         }
     }
-
+    /**
+     * Método: calcularPrecioTotal
+     *
+     * Calcula el precio total aproximado de una lista de productos a partir de sus IDs.
+     *
+     * @param idsProductos Lista de IDs de productos a calcular el precio total.
+     * @return Precio total aproximado de los productos, o 0.0 si ocurre un error.
+     */
     suspend fun calcularPrecioTotal(idsProductos: List<String>): Double {
         return try {
             val productosSnapshot = productosCollection
@@ -157,7 +196,13 @@ class ProductoDAO {
         }
     }
 
-
+    /**
+     * Método: getProductos
+     *
+     * Obtiene todos los productos de la colección "productos" en Firestore.
+     *
+     * @return Lista de objetos Producto correspondientes a todos los documentos de la colección.
+     */
 
     suspend fun getProductos(): List<Producto> {
         return try {
@@ -172,6 +217,16 @@ class ProductoDAO {
             emptyList()
         }
     }
+
+    /**
+     * Método: getProductoPorCodigoBarras
+     *
+     * Obtiene un producto a partir de su código de barras.
+     * Se limita la consulta a un solo resultado para optimizar el rendimiento.
+     *
+     * @param codigoBarras Código de barras del producto a buscar.
+     * @return Objeto Producto correspondiente al código de barras proporcionado, o null si no se encuentra.
+     */
     suspend fun getProductoPorCodigoBarras(codigoBarras: String): Producto? {
         return try {
             val querySnapshot = productosCollection
@@ -190,7 +245,13 @@ class ProductoDAO {
             null
         }
     }
-
+    /**
+     * Método: getAllCodigosBarras
+     *
+     * Obtiene todos los códigos de barras de los productos almacenados en Firestore.
+     *
+     * @return Lista de códigos de barras de todos los productos.
+     */
     suspend fun getAllCodigosBarras(): List<String> {
         try {
             // Obtener todos los documentos de la colección "productos"

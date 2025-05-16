@@ -20,7 +20,13 @@ import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.navigation.NavigationBarView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.launch
-
+/**
+ * Clase: BottomNavigationActivity
+ *
+ * Actividad principal que gestiona la navegación inferior de la aplicación.
+ * Configura el `BottomNavigationView`, observa las notificaciones no leídas
+ * y maneja la navegación entre fragmentos.
+ */
 class BottomNavigationActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityBottomNavigationBinding
@@ -38,7 +44,11 @@ class BottomNavigationActivity : AppCompatActivity() {
     private lateinit var usuarioService: UsuarioService
     private lateinit var sessionManager: SessionManager
     private lateinit var userId: String
-
+    /**
+     * Método: onCreate
+     *
+     * Inicializa la actividad, configurando la vista, los servicios y la navegación.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityBottomNavigationBinding.inflate(layoutInflater)
@@ -80,7 +90,11 @@ class BottomNavigationActivity : AppCompatActivity() {
         // Asignar el listener que navega
         bottomNav.setOnItemSelectedListener(originalNavListener)
     }
-
+    /**
+     * Método: observeNotificationCount
+     *
+     * Observa el flujo de notificaciones no leídas y actualiza el badge en el ítem correspondiente.
+     */
     private fun observeNotificationCount(userId: String) {
         val notifItemId = R.id.navigation_notifications
         lifecycleScope.launch {
@@ -94,19 +108,29 @@ class BottomNavigationActivity : AppCompatActivity() {
                 }
         }
     }
-
-    /** Desactiva toda navegación y atenúa la barra */
+    /**
+     * Método: blockNavigation
+     *
+     * Bloquea la navegación desactivando los ítems del BottomNavigationView.
+     */
     fun blockNavigation() {
         bottomNav.setOnItemSelectedListener { false }
         bottomNav.alpha = 0.5f
     }
-
-    /** Restaura la navegación normal y opacidad */
+    /**
+     * Método: unblockNavigation
+     *
+     * Desbloquea la navegación restaurando el listener original y la opacidad.
+     */
     fun unblockNavigation() {
         bottomNav.setOnItemSelectedListener(originalNavListener)
         bottomNav.alpha = 1f
     }
-
+    /**
+     * Método: onSupportNavigateUp
+     *
+     * Maneja la navegación hacia arriba en la jerarquía de fragmentos.
+     */
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp() || super.onSupportNavigateUp()
     }

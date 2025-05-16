@@ -59,7 +59,13 @@ import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-
+/**
+ * Fragmento: VistaListaFragment
+ *
+ * Gestiona la vista de una lista de compra:
+ * - Muestra productos disponibles y seleccionados.
+ * - Permite escanear, añadir, eliminar y completar compra.
+ */
 class VistaListaFragment : Fragment() {
 
     private var _binding: FragmentVistaListaBinding? = null
@@ -92,6 +98,13 @@ class VistaListaFragment : Fragment() {
     private lateinit var usuarioService: UsuarioService
     private lateinit var sessionManager: SessionManager
     private lateinit var progressBar : ProgressBar
+
+    /**
+     * Método: onCreateView
+     *
+     * Inflar el layout, inicializar servicios, obtener argumentos
+     * y configurar RecyclerView, adapters y botones.
+     */
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -144,7 +157,7 @@ class VistaListaFragment : Fragment() {
                     productosSeleccionados.remove(producto.id)
                 }
 
-                adapter.actualizarProductosSeleccionados(listaProductos, productosSeleccionados.toMutableList())
+                adapter.actualizarProductosSeleccionados(productosSeleccionados.toMutableList())
                 listaProductos = ordenarProductos(listaProductos)
                 adapter.actualizarProductos(listaProductos)
             }
@@ -157,7 +170,12 @@ class VistaListaFragment : Fragment() {
         return binding.root
     }
 
-
+    /**
+     * Método: onViewCreated
+     *
+     * Carga inicial de datos de la lista y observa cambios
+     * en productos y seleccionados mediante Flows.
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -196,14 +214,19 @@ class VistaListaFragment : Fragment() {
                     .productosSeleccionadosDeListaFlow(idLista)
                     .collect { ids ->
                         productosSeleccionados = ids.toMutableList()
-                        adapter.actualizarProductosSeleccionados(listaProductos, productosSeleccionados)
+                        adapter.actualizarProductosSeleccionados(productosSeleccionados)
                         progressBar.visibility = View.GONE
                     }
             }
         }
     }
 
-
+    /**
+     * Método: cargarBotones
+     *
+     * Asocia listeners a los botones de opciones, escaner,
+     * mapa y completar compra.
+     */
     @RequiresApi(Build.VERSION_CODES.S)
     private fun cargarBotones() {
         buttonOpciones = binding.btnOpciones
@@ -229,7 +252,12 @@ class VistaListaFragment : Fragment() {
             completarCompra()
         }
     }
-
+    /**
+     * Método: configurarDropdownMenu
+     *
+     * Carga todos los productos disponibles en un AutoCompleteTextView
+     * y maneja la selección para añadirlos a la lista.
+     */
     private fun configurarDropdownMenu() {
         lifecycleScope.launch {
             todosLosProductos = productoService.getProductos().toMutableList()
@@ -280,7 +308,12 @@ class VistaListaFragment : Fragment() {
         }
 
     }
-
+    /**
+     * Método: onProductoSeleccionadoDropdown
+     *
+     * Controla la lógica interna al seleccionar un producto desde el dropdown:
+     * verifica duplicados, actualiza Firestore y la UI.
+     */
     @SuppressLint("InflateParams")
     private fun opciones() {
         val view = LayoutInflater.from(requireContext())
@@ -318,7 +351,12 @@ class VistaListaFragment : Fragment() {
         dialog.show()
     }
 
-
+    /**
+     * Método: completarCompra
+     *
+     * Muestra confirmación de compra, elimina productos seleccionados,
+     * registra la notificación interna y FCM para usuarios relacionados.
+     */
     @SuppressLint("NotifyDataSetChanged")
     private fun completarCompra() {
         val dialog = MaterialAlertDialogBuilder(requireContext(), R.style.MyDialogTheme)
@@ -397,14 +435,26 @@ class VistaListaFragment : Fragment() {
 
         dialog.show()
     }
-
+    /**
+     * Método: goToCrearProducto
+     *
+     * Navega al fragmento de creación de producto, pasando el ID de la lista como argumento.
+     */
     private fun goToCrearProducto() {
         val bundle = Bundle().apply {
             putString("idLista", idLista)
         }
         findNavController().navigate(R.id.action_vistaListaFragment_to_crearProductoFragment, bundle)
     }
-
+    /**
+     * Método: compartirLista
+     *
+     * Muestra un diálogo para ingresar un correo y compartir la lista con otro usuario.
+     * Si todas las validaciones pasan, añade la lista al usuario receptor,
+     * envía notificaciones emergentes (FCM) y almacena la notificación en Firestore.
+     *
+     * @param context Contexto necesario para inflar el layout y mostrar el diálogo.
+     */
     @SuppressLint("SetTextI18n")
     private fun compartirLista(context: Context) {
         // 1. Infla el layout personalizado
@@ -523,7 +573,17 @@ class VistaListaFragment : Fragment() {
     }
 
 
-
+    /**
+     * Método: eliminarLista
+     *
+     * Muestra un diálogo de confirmación para eliminar la lista.
+     * Comportamiento según rol del usuario:
+     *   - Si es el creador, elimina la lista de Firestore y la desasocia de todos los usuarios.
+     *   - Si es colaborador, solo elimina su acceso compartido a la lista.
+     * Al confirmar, cierra el diálogo y hace popBackStack().
+     *
+     * @param context Contexto para construir y mostrar el diálogo.
+     */
     private fun eliminarLista(context: Context) {
             val dialog = MaterialAlertDialogBuilder(context, R.style.MyDialogTheme)
                 .setTitle("Eliminar lista")
@@ -570,14 +630,24 @@ class VistaListaFragment : Fragment() {
 
             dialog.show()
     }
-        private fun abrirAnadirProducto() {
-            val bundle = Bundle().apply {
-                putString("idLista", idLista)
-            }
-            findNavController().navigate(R.id.action_vista_listaFragment_to_añadir_productoFragment, bundle)
-
+    /**
+     * Método: abrirAnadirProducto
+     *
+     * Abre el fragment de añadir producto.
+     */
+    private fun abrirAnadirProducto() {
+        val bundle = Bundle().apply {
+            putString("idLista", idLista)
         }
+        findNavController().navigate(R.id.action_vista_listaFragment_to_añadir_productoFragment, bundle)
 
+    }
+    /**
+     * Método: escanearProducto
+     *
+     * Lanza el escáner de códigos de barras y maneja el resultado
+     * mediante el callback barcodeLauncher.
+     */
     @RequiresApi(Build.VERSION_CODES.S)
     private fun escanearProducto() {
         try{
@@ -590,6 +660,12 @@ class VistaListaFragment : Fragment() {
             Utils.mostrarMensaje(requireContext(), e.message.toString())
         }
     }
+    /**
+     * Callback: barcodeLauncher
+     *
+     * Gestiona el resultado del escaneo: valida el código,
+     * busca el producto, lo añade o muestra errores.
+     */
     @RequiresApi(Build.VERSION_CODES.S)
     private val barcodeLauncher = registerForActivityResult<ScanOptions, ScanIntentResult>(
         ScanContract()
@@ -624,7 +700,15 @@ class VistaListaFragment : Fragment() {
 
         }
     }
-
+    /**
+     * Método: ordenarProductos
+     *
+     * Ordena primero por selección (no seleccionados al final),
+     * luego por prioridad de categoría.
+     *
+     * @param lista Lista de productos a ordenar
+     * @return Lista ordenada según criterios
+     */
     private fun ordenarProductos(lista: MutableList<Producto>): MutableList<Producto> {
         return lista
             .sortedWith(
@@ -635,6 +719,14 @@ class VistaListaFragment : Fragment() {
     }
 
 
+    /**
+     * Método: mostrarOpcionesEdicionEliminar
+     *
+     * Presenta un diálogo con opciones para editar o eliminar
+     * un producto de la lista.
+     *
+     * @param producto Producto sobre el que actuar
+     */
     @SuppressLint("SuspiciousIndentation")
     private fun mostrarOpcionesEdicionEliminar(producto: Producto) {
         MaterialAlertDialogBuilder(requireContext(), R.style.MyDialogTheme)
@@ -661,7 +753,12 @@ class VistaListaFragment : Fragment() {
             }
             .show()
     }
-
+    /**
+     * Método: abrirMapa
+     *
+     * Abre un diálogo que muestra un SVG del mapa coloreando
+     * la categoría del primer producto seleccionado.
+     */
     fun abrirMapa() {
         if (!listaProductos.isNullOrEmpty()){
             if (!listaProductos[0].categoria.isNullOrEmpty()){
@@ -697,7 +794,11 @@ class VistaListaFragment : Fragment() {
     }
 
 
-
+    /**
+     * Método: onDestroyView
+     *
+     * Limpia el binding al destruir la vista para prevenir fugas de memoria.
+     */
 
     override fun onDestroyView() {
         super.onDestroyView()

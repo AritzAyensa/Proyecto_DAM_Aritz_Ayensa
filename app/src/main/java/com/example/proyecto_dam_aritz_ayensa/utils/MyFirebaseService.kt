@@ -12,21 +12,42 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-
+/**
+ * Clase: MyFirebaseService
+ *
+ * Servicio para manejar tokens FCM y mostrar notificaciones push.
+ */
 class MyFirebaseService : FirebaseMessagingService() {
 
     private val CHANNEL_ID = "notificacionesEmergentes"
 
+    /**
+     * Método: onCreate
+     *
+     * Se llama al crear el servicio. Crea el canal de notificaciones.
+     */
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
     }
-
+    /**
+     * Método: onNewToken
+     *
+     * Recibe un nuevo token FCM generado. Lo guarda en Firestore.
+     *
+     * @param token Nuevo token FCM generado para el dispositivo.
+     */
     override fun onNewToken(token: String) {
         super.onNewToken(token)
         guardarTokenEnFirestore(token)
     }
-
+    /**
+     * Método: guardarTokenEnFirestore
+     *
+     * Guarda el token FCM en el documento del usuario en Firestore.
+     *
+     * @param token Token FCM a guardar.
+     */
     private fun guardarTokenEnFirestore(token: String) {
         val sessionManager = SessionManager(applicationContext)
         FirebaseFirestore.getInstance()
@@ -36,7 +57,13 @@ class MyFirebaseService : FirebaseMessagingService() {
             .addOnSuccessListener { Log.d("FCM", "Token guardado correctamente") }
             .addOnFailureListener { e -> Log.e("FCM", "Error al guardar token", e) }
     }
-
+    /**
+     * Método: onMessageReceived
+     *
+     * Recibe un mensaje push de Firebase Cloud Messaging y muestra notificación.
+     *
+     * @param remoteMessage Mensaje recibido de FCM.
+     */
     @SuppressLint("MissingPermission")
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         // Extraer datos
@@ -69,7 +96,11 @@ class MyFirebaseService : FirebaseMessagingService() {
         mostrarNotificacion(title, body)
         Log.d("FCM", "Notificación recibida: tipo=$tipo, from=$from, list=$list")
     }
-
+    /**
+     * Método: createNotificationChannel
+     *
+     * Crea un canal de notificaciones para Android Oreo y superior.
+     */
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -81,7 +112,14 @@ class MyFirebaseService : FirebaseMessagingService() {
                 .createNotificationChannel(channel)
         }
     }
-
+    /**
+     * Método: mostrarNotificacion
+     *
+     * Construye y muestra una notificación con título y cuerpo dados.
+     *
+     * @param title Título de la notificación.
+     * @param body  Texto del cuerpo de la notificación.
+     */
     @SuppressLint("MissingPermission")
     private fun mostrarNotificacion(title: String, body: String) {
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)

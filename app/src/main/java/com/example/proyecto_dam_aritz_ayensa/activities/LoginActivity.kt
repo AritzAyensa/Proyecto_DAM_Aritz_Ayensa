@@ -33,7 +33,11 @@ import com.example.proyecto_dam_aritz_ayensa.utils.Utils
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.messaging.FirebaseMessaging
-
+/**
+ * Clase: LoginActivity
+ *
+ * Actividad para login con Firebase, gestión de sesión, permisos y navegación.
+ */
 class LoginActivity : AppCompatActivity() {
     private lateinit var usuarioService: UsuarioService
     private lateinit var notificacionService: NotificacionService
@@ -44,7 +48,10 @@ class LoginActivity : AppCompatActivity() {
     private val auth = FirebaseAuth.getInstance()
     private lateinit var usuario: Usuario
 
-
+    /**
+     * onCreate:
+     * Inicializa servicios, verifica permisos, maneja sesión y autocompleta campos.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -92,13 +99,19 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-
+    /**
+     * goToRegister:
+     * Navega a la pantalla de registro.
+     */
     fun goToRegister(view: View?) {
         // Crear el Intent para abrir la actividad de registro
         val intent = Intent(this@LoginActivity, RegisterActivity::class.java)
         startActivity(intent) // Inicia la actividad de registro
     }
-
+    /**
+     * goToForgotPassword:
+     * Navega a la pantalla para cambiar contraseña.
+     */
 
     fun goToForgotPassword(view: View?) {
         // Crear el Intent para abrir la actividad de registro
@@ -106,7 +119,10 @@ class LoginActivity : AppCompatActivity() {
         startActivity(intent) // Inicia la actividad de registro
     }
 
-
+    /**
+     * goToMainDesdeLogin:
+     * Valida campos, verifica conexión, inicia sesión en Firebase y guarda sesión.
+     */
     fun goToMainDesdeLogin(view: View?) {
 
         if (!hayConexionInternet()) {
@@ -165,7 +181,10 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
     }
-
+    /**
+     * cargarDatosUsuario:
+     * Obtiene datos de usuario desde el servicio por email.
+     */
     private fun cargarDatosUsuario(email: String, callback: (Usuario?) -> Unit) {
         usuarioService.getUserByEmail(
             email,
@@ -179,35 +198,10 @@ class LoginActivity : AppCompatActivity() {
         )
     }
 
-
-    private fun verificarCredencialesFirebase(email: String, password: String) {
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { authTask ->
-                if (authTask.isSuccessful) {
-                    Log.d(
-                        "Auth",
-                        "Credenciales correctas en Firebase, verificando cambio de contraseña..."
-                    )
-
-                    // Verificamos si el usuario cambió su contraseña
-                    // comprobarCambioDePassword(email, password)
-                } else {
-                    Log.e("Auth", "Error en autenticación Firebase", authTask.exception)
-                    Utils.mostrarMensaje(this, "Correo o contraseña incorrectos")
-                }
-            }
-    }
-
-    /*private fun comprobarCambioDePassword(email: String, password: String) {
-        val hashedPassword = HashUtil.hashPassword(password)
-        if (usuario.contrasena == hashedPassword) {
-            Log.d("LOGIN", "El usuario no ha cambiado la contraseña")
-        } else {
-            usuarioService.updatePassword(usuario.id, hashedPassword)
-            Log.d("LOGIN", "El usuario ha cambiado la contraseña")
-        }
-        iniciarSesion()
-    }*/
+    /**
+     * iniciarSesion:
+     * Inicia actividad principal y cierra login.
+     */
 
     private fun iniciarSesion() {
 
@@ -215,10 +209,9 @@ class LoginActivity : AppCompatActivity() {
         finish()
     }
 
-
     /**
-     * PERMISO NOTIFICACIONES
-     * Verificar y solicitar permisos de notificación
+     * verificarYSolicitarPermisos:
+     * Verifica y solicita permisos de cámara y notificaciones (Android 13+).
      */
     private fun verificarYSolicitarPermisos() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -239,7 +232,10 @@ class LoginActivity : AppCompatActivity() {
             }
         }
     }
-
+    /**
+     * hayConexionInternet:
+     * Comprueba si hay conexión a internet.
+     */
     private fun hayConexionInternet(): Boolean {
         val connectivityManager = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
         val network = connectivityManager.activeNetwork ?: return false
@@ -249,8 +245,8 @@ class LoginActivity : AppCompatActivity() {
 
 
     /**
-     * PERMISO NOTIFICACIONES
-     * Manejo de la respuesta al solicitar permisos
+     * onRequestPermissionsResult:
+     * Maneja respuesta a solicitudes de permisos y muestra mensajes.
      */
     override fun onRequestPermissionsResult(
         requestCode: Int,

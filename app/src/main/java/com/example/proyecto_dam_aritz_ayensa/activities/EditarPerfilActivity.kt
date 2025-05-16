@@ -32,7 +32,12 @@ import com.example.proyecto_dam_aritz_ayensa.utils.Utils
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.io.File
 import java.io.FileOutputStream
-
+/**
+ * Clase: EditarPerfilActivity
+ *
+ * Actividad para editar el perfil del usuario, modificar nombre y foto de perfil.
+ * Permite tomar foto con cámara o seleccionar imagen de galería.
+ */
 class EditarPerfilActivity : AppCompatActivity() {
     // Códigos de petición
     companion object {
@@ -56,6 +61,11 @@ class EditarPerfilActivity : AppCompatActivity() {
     private lateinit var userId: String
     private lateinit var  takePictureLauncher : ActivityResultLauncher<Void?>
     private lateinit var  pickGalleryLauncher : ActivityResultLauncher<String?>
+    /**
+     * Método: onCreate
+     *
+     * Inicializa servicios, vistas, carga datos del usuario y registra launchers para cámara y galería.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_editar_perfil)
@@ -93,7 +103,11 @@ class EditarPerfilActivity : AppCompatActivity() {
         }
 
     }
-
+    /**
+     * Método: cargarDatosUsuario
+     *
+     * Obtiene y carga datos del usuario y su foto de perfil.
+     */
     private fun cargarDatosUsuario() {
         usuarioService.getUser(userId,
             onSuccess = { usuario ->
@@ -118,8 +132,11 @@ class EditarPerfilActivity : AppCompatActivity() {
                 Log.e("UserService", "Error al obtener usuario", it)
             })
     }
-
-    // Abre cámara o galería
+    /**
+     * Método: cambiarFotoPerfil
+     *
+     * Muestra diálogo para seleccionar entre cámara o galería para cambiar foto.
+     */
     fun cambiarFotoPerfil(view: View) {
         MaterialAlertDialogBuilder(this, R.style.MyDialogTheme)
             .setTitle("Seleccionar fuente")
@@ -140,12 +157,11 @@ class EditarPerfilActivity : AppCompatActivity() {
             .show()
     }
 
-
-
-
-
-
-    // Valida y guarda usuario + sube foto
+    /**
+     * Método: guardar
+     *
+     * Valida y actualiza nombre, sube la foto seleccionada o tomada y finaliza actividad.
+     */
     fun guardar(view: View) {
         val nombre = etNombre.text.toString().trim()
         if (!Utils.validarNombreUsuario(nombre)) {
@@ -174,11 +190,21 @@ class EditarPerfilActivity : AppCompatActivity() {
                 Utils.mostrarMensaje(this, "Error al actualizar")
             })
     }
+    /**
+     * Método: cancelar
+     *
+     * Finaliza la actividad sin guardar cambios.
+     */
 
     fun cancelar(view: View) {
         finish()
     }
 
+    /**
+     * Método: abrirCamara
+     *
+     * Inicia intent para tomar foto con cámara si hay app disponible.
+     */
     private fun abrirCamara() {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { intent ->
             // comprobar que exista app de cámara
@@ -189,7 +215,11 @@ class EditarPerfilActivity : AppCompatActivity() {
             }
         }
     }
-
+    /**
+     * Método: abrirGaleria
+     *
+     * Inicia intent para seleccionar imagen de la galería.
+     */
     private fun abrirGaleria() {
         Intent(
             Intent.ACTION_PICK,
@@ -200,7 +230,11 @@ class EditarPerfilActivity : AppCompatActivity() {
             startActivityForResult(it, REQ_GALLERY)
         }
     }
-
+    /**
+     * Método: onRequestPermissionsResult
+     *
+     * Maneja resultado de permiso para cámara, abre cámara si es concedido.
+     */
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -215,7 +249,11 @@ class EditarPerfilActivity : AppCompatActivity() {
             Utils.mostrarMensaje(this, "Permiso de cámara denegado")
         }
     }
-
+    /**
+     * Método: onActivityResult
+     *
+     * Procesa resultado de cámara o galería y actualiza la imagen de perfil.
+     */
     override fun onActivityResult(
         requestCode: Int, resultCode: Int, data: Intent?
     ) {

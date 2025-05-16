@@ -31,7 +31,11 @@ import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
 import kotlinx.coroutines.launch
 
-
+/**
+ * Clase: CrearProductoFragment
+ *
+ * Fragmento que permite crear un producto nuevo, asignarlo a una lista y escanear su código de barras.
+ */
 class CrearProductoFragment : Fragment() {
     private var _binding: FragmentCrearProductoBinding? = null
     private val binding get() = _binding!!
@@ -57,7 +61,12 @@ class CrearProductoFragment : Fragment() {
     private lateinit var buttonCancelar : Button
 
     private var categoriaSeleccionada: String = ""
-
+    /**
+     * Método: onCreateView
+     *
+     * Inicializa la vista del fragmento, los servicios, obtiene el idLista de los argumentos,
+     * configura botones y menú desplegable.
+     */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -87,7 +96,12 @@ class CrearProductoFragment : Fragment() {
 
         return binding.root
     }
-
+    /**
+     * Método: cargarBotones
+     *
+     * Configura los botones para crear producto, escanear código y cancelar,
+     * asignando sus respectivos listeners.
+     */
     private fun cargarBotones() {
         buttonCrearProducto = binding.btnCrearProducto
         if (buttonCrearProducto != null) {
@@ -108,7 +122,11 @@ class CrearProductoFragment : Fragment() {
             }
         }
     }
-
+    /**
+     * Método: crearProducto
+     *
+     * Valida los datos ingresados, crea un nuevo producto y lo añade a la lista correspondiente.
+     */
     private fun crearProducto() {
         try{
             val textNombre = inputNombre.text.toString().trim()
@@ -144,6 +162,11 @@ class CrearProductoFragment : Fragment() {
             Utils.mostrarMensaje(requireContext(), e.message.toString())
         }
     }
+    /**
+     * Método: configurarDropdownMenu
+     *
+     * Configura el menú desplegable para seleccionar la categoría del producto.
+     */
     private fun configurarDropdownMenu() {
         val adapter = ArrayAdapter(requireContext(), R.layout.simple_list_item_1, GenericConstants.PRIORIDAD_CATEGORIAS.keys.sorted().toList())
         val autoCompleteTextView = binding.autoCompleteTextView
@@ -153,7 +176,11 @@ class CrearProductoFragment : Fragment() {
             categoriaSeleccionada = parent.getItemAtPosition(position) as String
         }
     }
-
+    /**
+     * Método: escanearProducto
+     *
+     * Inicia la actividad para escanear un código de barras usando la cámara.
+     */
     private fun escanearProducto() {
         try{
             val options = ScanOptions()
@@ -164,6 +191,11 @@ class CrearProductoFragment : Fragment() {
             Utils.mostrarMensaje(requireContext(), e.message.toString())
         }
     }
+    /**
+     * Método: barcodeLauncher
+     *
+     * Recibe el resultado del escaneo, valida el código de barras y actualiza el campo correspondiente.
+     */
     private val barcodeLauncher = registerForActivityResult<ScanOptions, ScanIntentResult>(
         ScanContract()
     ) { result: ScanIntentResult ->
@@ -187,10 +219,19 @@ class CrearProductoFragment : Fragment() {
 
         }
     }
-
+    /**
+     * Método: cancelar
+     *
+     * Cierra el fragmento actual volviendo al fragmento anterior en el stack.
+     */
     private fun cancelar() {
         parentFragmentManager.popBackStack()
     }
+    /**
+     * Método: onDestroyView
+     *
+     * Limpia el binding para evitar fugas de memoria cuando se destruye la vista.
+     */
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

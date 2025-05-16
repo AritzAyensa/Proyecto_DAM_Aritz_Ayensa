@@ -28,9 +28,9 @@ import kotlinx.coroutines.launch
 
 
 /**
- * A simple [Fragment] subclass.
- * Use the [CrearListaFragment.newInstance] factory method to
- * create an instance of this fragment.
+ * Fragmento: CrearListaFragment
+ *
+ * Permite al usuario crear una nueva lista con título, descripción y color.
  */
 class CrearListaFragment : Fragment() {
 
@@ -52,7 +52,11 @@ class CrearListaFragment : Fragment() {
 
     private lateinit var inputTitulo: EditText
     private lateinit var inputDescripcion: EditText
-
+    /**
+     * Método: onCreateView
+     *
+     * Inicializa la vista del fragmento y configura los componentes.
+     */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -103,6 +107,11 @@ class CrearListaFragment : Fragment() {
 
         return binding.root
     }
+    /**
+     * Método: crearLista
+     *
+     * Valida los campos y crea una nueva lista si es posible.
+     */
     private fun crearLista() {
         val textTitulo = inputTitulo.text.toString().trim()
 
@@ -137,7 +146,11 @@ class CrearListaFragment : Fragment() {
             Utils.mostrarMensaje(requireContext(),"Ingrese un titulo y una descripción")
         }
     }
-
+    /**
+     * Método: seleccionarColor
+     *
+     * Asigna el color seleccionado al botón y a la lista.
+     */
     private fun colorSeleccionadoTarea(menuItem: MenuItem) {
         val color = when (menuItem.itemId) {
             R.id.menuColor_it_colorRojo -> "#FF0000"
@@ -151,11 +164,19 @@ class CrearListaFragment : Fragment() {
         colorSeleccionado = color
         binding.crearListaBtnColor.setBackgroundColor(Color.parseColor(color))
     }
-
+    /**
+     * Método: cancelar
+     *
+     * Cierra el fragmento actual y vuelve al anterior.
+     */
     private fun cancelar() {
        parentFragmentManager.popBackStack()
     }
-
+    /**
+     * Método: onDestroyView
+     *
+     * Libera los recursos del binding al destruir la vista.
+     */
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

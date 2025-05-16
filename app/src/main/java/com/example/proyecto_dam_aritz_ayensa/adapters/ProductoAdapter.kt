@@ -12,7 +12,10 @@ import com.example.proyecto_dam_aritz_ayensa.R
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Notificacion
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Producto
 import com.example.proyecto_dam_aritz_ayensa.utils.GenericConstants
-
+/**
+ * ProductoAdapter:
+ * Adapter para RecyclerView que muestra productos o mensaje vacío.
+ */
 class ProductoAdapter(
     private var productos: MutableList<Producto>,
     private var productosSeleccionados: MutableList<String>,
@@ -37,10 +40,9 @@ class ProductoAdapter(
         val container: View = itemView
 
         fun bind(p: Producto) {
-            /*productos = ordenarProductos(productos)*/
             nombreProducto.text = p.nombre
             precioProducto.text = "${p.precioAproximado}€"
-            // 1) Establece siempre el icono y el fondo según el estado actual:
+
             if (productosSeleccionados.contains(p.id)) {
                 btnCheck.setImageResource(R.drawable.outline_check_box_24)
                 container.setBackgroundColor(Color.GRAY)
@@ -49,7 +51,6 @@ class ProductoAdapter(
                 container.setBackgroundColor(Color.TRANSPARENT)
             }
 
-            // 2) Listener de click: solo cambia el estado y llama al fragment
             btnCheck.setOnClickListener {
                 val nowSelected = if (productosSeleccionados.remove(p.id)) false
                 else { productosSeleccionados.add(p.id); true }
@@ -87,7 +88,7 @@ class ProductoAdapter(
         notifyDataSetChanged()
     }
     @SuppressLint("NotifyDataSetChanged")
-    fun actualizarProductosSeleccionados(nuevosProductos: MutableList<Producto>, nuevosProductosSeleccionados: MutableList<String>) {
+    fun actualizarProductosSeleccionados(nuevosProductosSeleccionados: MutableList<String>) {
         productosSeleccionados.clear()
         productosSeleccionados.addAll(nuevosProductosSeleccionados.toMutableList())
         productos = ordenarProductos(productos)

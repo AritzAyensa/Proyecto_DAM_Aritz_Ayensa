@@ -24,31 +24,31 @@ import kotlinx.coroutines.tasks.await
 
 class UsuarioDAO {
 
-    // Instancia de Firestore para interactuar con la base de datos
     private val db = FirebaseFirestore.getInstance()
 
-    // Instancia de FirebaseAuth para manejar la autenticación de usuarios
     private val auth = FirebaseAuth.getInstance()
 
-    // Referencia a la colección "usuarios" en Firestore
     private val usuariosCollection = db.collection("usuarios")
 
 
-    /**
-     * Método: saveUser
-     *
-     * Guarda un nuevo usuario en Firebase Authentication y Firestore.
-     * Si la creación del usuario en Authentication es exitosa, se almacena la información del usuario en Firestore.
-     *
-     * @param usuario Objeto Usuario que contiene la información del usuario a guardar.
-     * @param onSuccess Función de callback que se ejecuta si la operación es exitosa.
-     * @param onFailure Función de callback que se ejecuta si ocurre un error durante la operación.
-     */
+/**
+ * Método: saveUser
+ *
+ * Crea un usuario en FirebaseAuth y registra sus datos en Firestore.
+ * La contraseña se almacena hasheada y se añade un token FCM inicial.
+ *
+ * @param nombre Nombre del usuario.
+ * @param email Email del usuario.
+ * @param contraseña Contraseña en texto plano.
+ * @param token Token FCM para notificaciones push.
+ * @param onSuccess Callback con el ID del usuario si la operación es exitosa.
+ * @param onFailure Callback con la excepción si ocurre un error.
+ */
     fun saveUser(
         nombre: String,
         email: String,
         contraseña: String,
-        token: String, // 🔹 ahora también recibe el token
+        token: String,
         onSuccess: (String) -> Unit,
         onFailure: (Exception) -> Unit
     ) {
@@ -88,7 +88,16 @@ class UsuarioDAO {
                 }
             }
     }
-
+    /**
+     * Método: añadirTokenAUsuario
+     *
+     * Añade un token FCM a la lista de tokens del usuario si no existe ya.
+     *
+     * @param userId ID del usuario.
+     * @param token Token FCM a añadir.
+     * @param onSuccess Callback si la operación es exitosa.
+     * @param onFailure Callback con la excepción si ocurre un error.
+     */
 
     fun añadirTokenAUsuario(
         userId: String,
@@ -117,70 +126,29 @@ class UsuarioDAO {
     }
 
 
-
+    /**
+     * Método: eliminarFcmToken
+     *
+     * Elimina un token FCM del usuario.
+     *
+     * @param uid ID del usuario.
+     * @param token Token FCM a eliminar.
+     * @param onSuccess Callback si la operación es exitosa.
+     * @param onFailure Callback con la excepción si ocurre un error.
+     */
     fun eliminarFcmToken(uid: String, token: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
             usuariosCollection.document(uid).update("fcmTokens", FieldValue.arrayRemove(token))
             .addOnSuccessListener { onSuccess() }
             .addOnFailureListener { e -> onFailure(e) }
     }
-
-
-    fun getMisListasByUsuarioIdFlow(idUsuario: String, listaService: ListaService): Flow<MutableList<Lista>> = callbackFlow {
-        val docRef = usuariosCollection.document(idUsuario)
-        val listenerRegistration: ListenerRegistration = docRef.addSnapshotListener { snapshot, error ->
-            if (error != null) {
-                close(error)
-                return@addSnapshotListener
-            }
-
-            if (snapshot != null && snapshot.exists()) {
-                val idListas = snapshot.get("idListas") as? List<String> ?: emptyList()
-                launch {
-                    val listas = listaService.getMisListasByListasId(idListas).toMutableList()
-                    trySend(listas).isSuccess
-                }
-            } else {
-                trySend(emptyList<Lista>().toMutableList()).isSuccess
-            }
-        }
-
-        awaitClose { listenerRegistration.remove() }
-    }
-
-    fun getListasCompartidasByUsuarioIdFlow(idUsuario: String, listaService: ListaService): Flow<MutableList<Lista>> = callbackFlow {
-        val docRef = usuariosCollection.document(idUsuario)
-        val listenerRegistration: ListenerRegistration = docRef.addSnapshotListener { snapshot, error ->
-            if (error != null) {
-                close(error)
-                return@addSnapshotListener
-            }
-
-            if (snapshot != null && snapshot.exists()) {
-                val idListasCompartidas = snapshot.get("idListasCompartidas") as? List<String> ?: emptyList()
-                launch {
-                    val listasCompartidas = listaService.getMisListasByListasId(idListasCompartidas)
-                    trySend(listasCompartidas.toMutableList()).isSuccess
-                }
-            } else {
-                trySend(emptyList<Lista>().toMutableList()).isSuccess
-            }
-        }
-
-        awaitClose { listenerRegistration.remove() }
-    }
-    /*suspend fun getIdMisListasByIdUsuario(idUsuario: String) : List<String>{
-        val document = usuariosCollection
-            .document(idUsuario)
-            .get()
-            .await()
-
-        return if (document.exists()) {
-            document.get("idListas") as? List<String> ?: emptyList()
-        } else {
-            emptyList()
-        }
-    }*/
-
+    /**
+     * Método: getUserIdsByListId
+     *
+     * Obtiene IDs de usuarios que tengan una lista propia o compartida específica.
+     *
+     * @param listId ID de la lista a buscar.
+     * @return Lista con IDs de usuarios que contienen esa lista.
+     */
     suspend fun getUserIdsByListId(listId: String): List<String> {
 
 
@@ -205,7 +173,14 @@ class UsuarioDAO {
 
 
 
-
+    /**
+     * Método: getMisListasSizeByIdUsuario
+     *
+     * Obtiene el número de listas propias de un usuario.
+     *
+     * @param idUsuario ID del usuario.
+     * @return Número de listas propias o -1 si hay error.
+     */
     suspend fun getMisListasSizeByIdUsuario(idUsuario: String): Int {
         return try {
             val document = usuariosCollection
@@ -214,19 +189,25 @@ class UsuarioDAO {
                 .await()
 
             if (document.exists()) {
-                // Obtener la lista y verificar que no sea nula
-                val idListas = document.get("idListasCompartidas") as? List<String>
-                idListas?.size ?: 0 // Si es nulo, retorna 0
+                val idListas = document.get("idListas") as? List<String>
+                idListas?.size ?: 0
             } else {
-                0 // Usuario no encontrado
+                0
             }
         } catch (e: Exception) {
             Log.e("Firestore", "Error al obtener tamaño de listas compartidas", e)
-            -1 // Opcional: Retornar -1 en caso de error
+            -1
         }
     }
 
-
+    /**
+     * Método: añadirNotificacionAUsuarios
+     *
+     * Añade una notificación (con estado no leída) a múltiples usuarios.
+     *
+     * @param idsUsuarios Lista de IDs de usuarios.
+     * @param idNotificacion ID de la notificación a añadir.
+     */
     suspend fun añadirNotificacionAUsuarios(
         idsUsuarios: List<String>,
         idNotificacion: String
@@ -237,28 +218,34 @@ class UsuarioDAO {
         for (idUsuario in idsUsuarios) {
             val usuarioRef = usuariosCollection.document(idUsuario)
 
-            // Añadir el ID de notificación al map con valor false (no leída)
             usuarioRef.update("idsNotificaciones.$idNotificacion", false).await()
         }
     }
-
+    /**
+     * Método: eliminarNotificacionesDeUsuarios
+     *
+     * Elimina notificaciones específicas de un usuario.
+     *
+     * @param idUsuario ID del usuario.
+     * @param idsNotificaciones Lista de IDs de notificaciones a eliminar.
+     */
     suspend fun eliminarNotificacionesDeUsuarios(idUsuario : String, idsNotificaciones: List<String>) {
         val usuarioRef = usuariosCollection.document(idUsuario)
 
-        // Para cada ID de notificación, elimina el campo correspondiente del mapa
         for (idNotificacion in idsNotificaciones) {
             usuarioRef.update("idsNotificaciones.$idNotificacion", FieldValue.delete()).await()
         }
 
     }
 
-    suspend fun marcarNotificacionComoLeida(idUsuario: String, idNotificacion: String) {
-        val db = FirebaseFirestore.getInstance()
-        val usuarioRef = db.collection("usuarios").document(idUsuario)
-
-        usuarioRef.update("idsNotificaciones.$idNotificacion", true).await()
-    }
-
+    /**
+     * Método: marcarNotificacionesComoLeidas
+     *
+     * Marca como leídas las notificaciones indicadas para un usuario.
+     *
+     * @param idUsuario ID del usuario.
+     * @param idsNotificaciones Lista de IDs de notificaciones a marcar como leídas.
+     */
     suspend fun marcarNotificacionesComoLeidas(idUsuario: String, idsNotificaciones: List<String>) {
         val db = FirebaseFirestore.getInstance()
         val usuarioRef = db.collection("usuarios").document(idUsuario)
@@ -267,7 +254,14 @@ class UsuarioDAO {
         usuarioRef.update(updates).await()
     }
 
-
+    /**
+     * Método: notificacionesSinLeerCountFlow
+     *
+     * Retorna un flujo que emite el número de notificaciones no leídas de un usuario en tiempo real.
+     *
+     * @param userId ID del usuario.
+     * @return Flow con el conteo de notificaciones sin leer.
+     */
     fun notificacionesSinLeerCountFlow(userId: String): Flow<Int> = callbackFlow {
         val docRef = usuariosCollection.document(userId)
 
@@ -283,7 +277,15 @@ class UsuarioDAO {
 
         awaitClose { registration.remove() }
     }
-
+    /**
+     * Método: notificacionesUsuarioFlow
+     *
+     * Retorna un flujo que emite la lista completa de notificaciones del usuario en tiempo real.
+     *
+     * @param userId ID del usuario.
+     * @param notificacionService Servicio para obtener datos de notificaciones.
+     * @return Flow con lista de objetos Notificacion.
+     */
     fun notificacionesUsuarioFlow(
         userId: String,
         notificacionService: NotificacionService
@@ -300,7 +302,6 @@ class UsuarioDAO {
                 val map = snapshot.get("idsNotificaciones") as? Map<*, *>
                 val ids = map?.keys?.filterIsInstance<String>() ?: emptyList()
 
-                // Llama al servicio para obtener las notificaciones
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
                         val notificaciones = notificacionService.getNotificacionesByIds(ids)
@@ -316,59 +317,40 @@ class UsuarioDAO {
     }
 
 
-
-
-
     /**
      * Método: getUser
      *
-     * Obtiene un usuario específico de Firestore utilizando su ID.
+     * Obtiene un usuario por su ID.
      *
-     * @param usuarioID ID del usuario que se desea obtener.
-     * @param onSuccess Función de callback que se ejecuta si la operación es exitosa. Recibe un objeto Usuario o null si no se encuentra el usuario.
-     * @param onFailure Función de callback que se ejecuta si ocurre un error durante la operación.
+     * @param usuarioID ID del usuario a obtener.
+     * @param onSuccess Callback con el objeto Usuario o null si no existe.
+     * @param onFailure Callback con la excepción si ocurre un error.
      */
     fun getUser(usuarioID: String, onSuccess: (Usuario?) -> Unit, onFailure: (Exception) -> Unit) {
-        // Obtener el documento del usuario en Firestore usando su ID
         usuariosCollection.document(usuarioID).get()
             .addOnSuccessListener { document ->
                 if (document.exists()) {
-                    // Mapear los datos del documento a un objeto Usuario
                     val nombre = document.getString("nombre") ?: ""
                     val email = document.getString("email") ?: ""
 
-                    // Crear un objeto Usuario con los datos obtenidos
                     val usuario = Usuario(id = usuarioID, nombre = nombre, email = email)
                     onSuccess(usuario)
                 } else {
-                    // Si el documento no existe, retornar null
                     onSuccess(null)
                 }
             }
             .addOnFailureListener { exception ->
-                // Manejar errores y ejecutar el callback onFailure
                 onFailure(exception)
             }
     }
-
-    suspend fun getUserById(usuarioID: String): Usuario? {
-        return try {
-            val document = usuariosCollection.document(usuarioID).get().await()
-            if (document.exists()) {
-                val nombre = document.getString("nombre") ?: ""
-                val email = document.getString("email") ?: ""
-                val idListas = document.get("idListas") as? List<String> ?: emptyList()
-                val idListasCompartidas = document.get("idListasCompartidas") as? List<String> ?: emptyList()
-                Usuario(usuarioID, nombre, email, idListas, idListasCompartidas)
-            } else {
-                null
-            }
-        } catch (e: Exception) {
-            Log.e("UsuarioDAO", "Error al obtener usuario $usuarioID", e)
-            null
-        }
-    }
-
+    /**
+     * Método: getUserNameById
+     *
+     * Obtiene el nombre de un usuario dado su ID.
+     *
+     * @param usuarioID ID del usuario.
+     * @return Nombre del usuario o null si ocurre un error.
+     */
     suspend fun getUserNameById(usuarioID: String): String? {
         return try {
             val document = usuariosCollection.document(usuarioID).get().await()
@@ -379,69 +361,48 @@ class UsuarioDAO {
         }
     }
 
-
-    /*suspend fun getUserIdByEmail(email: String): String? {
-        if (email.isBlank()) return null // Validación inicial
-
-        return try {
-            val query = usuariosCollection
-                .whereEqualTo("email", email)
-
-            val snapshot = query.get().await()
-            snapshot.documents.firstOrNull()?.id // Devuelve null si no hay resultados
-        } catch (e: Exception) {
-            Log.e("Firestore", "Error al buscar usuario", e)
-            null
-        }
-    }*/
-    /**
-     * Método: getAllUsers
-     *
-     * Obtiene todos los usuarios almacenados en Firestore.
-     *
-     * @param onSuccess Función de callback que se ejecuta si la operación es exitosa. Recibe una lista de objetos Usuario.
-     * @param onFailure Función de callback que se ejecuta si ocurre un error durante la operación.
-     */
-    suspend fun getAllUsers(): List<Usuario> {
-        return try {
-            val querySnapshot = usuariosCollection.get().await()
-            val usuarios = querySnapshot.toObjects(Usuario::class.java)
-            usuarios
-        } catch (e: Exception) {
-            emptyList() // Devuelve una lista vacía en caso de error
-        }
-    }
-
     /**
      * Método: updateUser
      *
-     * Actualiza la información de un usuario existente en Firestore.
+     * Actualiza los datos básicos del usuario (solo nombre).
      *
-     * @param usuario Objeto Usuario con la información actualizada.
-     * @param onSuccess Función de callback que se ejecuta si la operación es exitosa.
-     * @param onFailure Función de callback que se ejecuta si ocurre un error durante la operación.
+     * @param usuario Objeto Usuario con datos actualizados.
+     * @param onSuccess Callback si la actualización fue exitosa.
+     * @param onFailure Callback con la excepción si ocurre un error.
      */
     fun updateUser(usuario: Usuario, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
-        // Crear un mapa con los datos actualizados del usuario
         val usuarioData = hashMapOf(
             "nombre" to usuario.nombre
         )
 
-        // Actualizar el documento del usuario en Firestore
         usuariosCollection.document(usuario.id).update(usuarioData as Map<String, Any>)
             .addOnSuccessListener { onSuccess() }
             .addOnFailureListener { exception -> onFailure(exception) }
     }
 
-
+    /**
+     * Método: añadirLista
+     *
+     * Añade una lista propia al usuario.
+     *
+     * @param idLista ID de la lista.
+     * @param usuarioId ID del usuario.
+     */
     suspend fun añadirLista(idLista: String, usuarioId: String) {
         usuariosCollection
             .document(usuarioId)
             .update("idListas", FieldValue.arrayUnion(idLista))
             .await() // Espera a que la operación termine
     }
+    /**
+     * Método: añadirListaCompartida
+     *
+     * Añade una lista compartida al usuario.
+     *
+     * @param idListaCompartida ID de la lista compartida.
+     * @param usuarioId ID del usuario.
+     */
 
-    // Método para añadir lista compartida (versión mejorada)
     suspend fun añadirListaCompartida(idListaCompartida: String, usuarioId: String) {
         usuariosCollection
             .document(usuarioId)
@@ -449,28 +410,56 @@ class UsuarioDAO {
             .await()
     }
 
-
+    /**
+     * Método: eliminarLista
+     *
+     * Elimina una lista propia del usuario.
+     *
+     * @param idLista ID de la lista.
+     * @param usuarioId ID del usuario.
+     */
     suspend fun eliminarLista(idLista: String, usuarioId: String) {
         usuariosCollection
             .document(usuarioId)
             .update("idListas", FieldValue.arrayRemove(idLista))
             .await() // Espera a que la operación termine
     }
-
-    // Método para añadir lista compartida (versión mejorada)
+    /**
+     * Método: eliminarListaCompartida
+     *
+     * Elimina una lista compartida del usuario.
+     *
+     * @param idListaCompartida ID de la lista compartida.
+     * @param usuarioId ID del usuario.
+     */
     suspend fun eliminarListaCompartida(idListaCompartida: String, usuarioId: String) {
         usuariosCollection
             .document(usuarioId)
             .update("idListasCompartidas", FieldValue.arrayRemove(idListaCompartida))
             .await()
     }
-
+    /**
+     * Método: eliminarListaCompartidaDeUsuarios
+     *
+     * Elimina una lista compartida de todos los usuarios que la tengan.
+     *
+     * @param idListaCompartida ID de la lista compartida a eliminar.
+     */
     suspend fun eliminarListaCompartidaDeUsuarios(idListaCompartida: String) {
         val usuariosSnapshot = usuariosCollection.get().await()
         for (document in usuariosSnapshot.documents) {
             document.reference.update("idListasCompartidas", FieldValue.arrayRemove(idListaCompartida)).await()
         }
     }
+
+    /**
+     * Método: getIdMisListasByIdUsuario
+     *
+     * Obtiene las IDs de las listas propias de un usuario.
+     *
+     * @param idUsuario ID del usuario.
+     * @return Lista de IDs de listas propias.
+     */
     suspend fun getIdMisListasByIdUsuario(idUsuario: String) : List<String> {
         val document = usuariosCollection
             .document(idUsuario)
@@ -482,7 +471,16 @@ class UsuarioDAO {
         } else {
             emptyList()
         }
-    }suspend fun getIdListasCompartidasByIdUsuario(idUsuario: String) : List<String>{
+    }
+    /**
+     * Método: getIdListasCompartidasByIdUsuario
+     *
+     * Obtiene las IDs de las listas compartidas de un usuario.
+     *
+     * @param idUsuario ID del usuario.
+     * @return Lista de IDs de listas compartidas.
+     */
+    suspend fun getIdListasCompartidasByIdUsuario(idUsuario: String) : List<String>{
         val document = usuariosCollection
             .document(idUsuario)
             .get()
@@ -495,52 +493,14 @@ class UsuarioDAO {
         }
     }
 
-
-    suspend fun getListasCompartidasSizeByIdUsuario(idUsuario: String): Int {
-        return try {
-            val document = usuariosCollection
-                .document(idUsuario)
-                .get()
-                .await()
-
-            if (document.exists()) {
-                // Obtener la lista y verificar que no sea nula
-                val idListas = document.get("idListas") as? List<String>
-                idListas?.size ?: 0 // Si es nulo, retorna 0
-            } else {
-                0 // Usuario no encontrado
-            }
-        } catch (e: Exception) {
-            Log.e("Firestore", "Error al obtener tamaño de listas", e)
-            -1 // Opcional: Retornar -1 en caso de error
-        }
-    }
-
-
-    /**
-     * Método: deleteUser
-     *
-     * Elimina un usuario de Firestore utilizando su ID.
-     *
-     * @param usuarioID ID del usuario que se desea eliminar.
-     * @param onSuccess Función de callback que se ejecuta si la operación es exitosa.
-     * @param onFailure Función de callback que se ejecuta si ocurre un error durante la operación.
-     */
-    fun deleteUser(usuarioID: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
-        // Eliminar el documento del usuario en Firestore
-        usuariosCollection.document(usuarioID).delete()
-            .addOnSuccessListener { onSuccess() }
-            .addOnFailureListener { exception -> onFailure(exception) }
-    }
-
     /**
      * Método: getUserByEmail
      *
-     * Obtiene un usuario de Firestore utilizando su dirección de correo electrónico.
+     * Busca un usuario por su email.
      *
-     * @param usuarioEmail Dirección de correo electrónico del usuario que se desea obtener.
-     * @param onSuccess Función de callback que se ejecuta si la operación es exitosa. Recibe un objeto Usuario o null si no se encuentra el usuario.
-     * @param onFailure Función de callback que se ejecuta si ocurre un error durante la operación.
+     * @param usuarioEmail Email del usuario a buscar.
+     * @param onSuccess Callback con el Usuario encontrado o null si no existe.
+     * @param onFailure Callback con la excepción si ocurre un error.
      */
     fun getUserByEmail(
         usuarioEmail: String,
@@ -565,26 +525,4 @@ class UsuarioDAO {
             .addOnFailureListener { onFailure(it) }
     }
 
-
-    /**
-     * Método: updatePassword
-     *
-     * Actualiza la contraseña de un usuario en Firestore.
-     *
-     * @param userId ID del usuario cuya contraseña se desea actualizar.
-     * @param password Nueva contraseña que se desea almacenar.
-     */
-    fun updatePassword(userId: String, password: String) {
-        // Actualizar el campo "contrasena" del usuario en Firestore
-        usuariosCollection.document(userId)
-            .update("contrasena", password)
-            .addOnSuccessListener {
-                // Registrar éxito en la actualización
-                Log.d("Firestore", "Contraseña cifrada actualizada")
-            }
-            .addOnFailureListener { e ->
-                // Registrar error en la actualización
-                Log.e("Firestore", "Error al actualizar la contraseña", e)
-            }
-    }
 }

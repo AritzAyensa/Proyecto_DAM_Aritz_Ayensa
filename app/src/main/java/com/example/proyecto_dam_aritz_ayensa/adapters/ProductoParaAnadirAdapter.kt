@@ -10,7 +10,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.proyecto_dam_aritz_ayensa.R
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Producto
 import com.example.proyecto_dam_aritz_ayensa.model.service.ListaService
-
+/**
+ * ProductoAdapter:
+ * Adapter para RecyclerView que muestra productos para añadir o mensaje vacío.
+ */
 class ProductoParaAnadirAdapter(
     private var productos: List<Producto>,
     /*private val onItemClick: (Producto) -> Unit,*/

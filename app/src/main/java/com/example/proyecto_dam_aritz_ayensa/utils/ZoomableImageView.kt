@@ -9,7 +9,11 @@ import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import androidx.appcompat.widget.AppCompatImageView
 import kotlin.math.sqrt
-
+/**
+ * Clase: ZoomableImageView
+ *
+ * ImageView personalizada que permite hacer zoom y desplazamiento mediante gestos multitáctiles.
+ */
 @SuppressLint("ClickableViewAccessibility")
 class ZoomableImageView @JvmOverloads constructor(
     context: Context,
@@ -49,7 +53,14 @@ class ZoomableImageView @JvmOverloads constructor(
             currentScale = scale
         }
     }
-
+    /**
+     * Método: onTouchEvent
+     *
+     * Maneja los eventos táctiles para arrastrar y hacer zoom sobre la imagen.
+     *
+     * @param event Evento de toque detectado por el usuario.
+     * @return true si el evento fue manejado correctamente.
+     */
     override fun onTouchEvent(event: MotionEvent): Boolean {
         scaleDetector.onTouchEvent(event)
 
@@ -86,7 +97,14 @@ class ZoomableImageView @JvmOverloads constructor(
         imageMatrix = matrix
         return true
     }
-
+    /**
+     * Método: onScale
+     *
+     * Aplica el zoom basado en el gesto detectado.
+     *
+     * @param detector Detector de escala que proporciona el factor y foco del gesto.
+     * @return true si el escalado fue manejado correctamente.
+     */
     override fun onScale(detector: ScaleGestureDetector): Boolean {
         val scaleFactor = detector.scaleFactor
         val newScale = currentScale * scaleFactor
@@ -97,23 +115,54 @@ class ZoomableImageView @JvmOverloads constructor(
         }
         return true
     }
-
+    /**
+     * Método: onScaleBegin
+     *
+     * Indica el inicio de un gesto de escala.
+     *
+     * @param detector Detector del gesto de escala.
+     * @return true para aceptar el gesto.
+     */
     override fun onScaleBegin(detector: ScaleGestureDetector): Boolean = true
-
+    /**
+     * Método: onScaleEnd
+     *
+     * Indica el final del gesto de escala.
+     *
+     * @param detector Detector del gesto de escala.
+     */
     override fun onScaleEnd(detector: ScaleGestureDetector) {}
-
+    /**
+     * Método: spacing
+     *
+     * Calcula la distancia entre dos puntos táctiles.
+     *
+     * @param event Evento multitáctil.
+     * @return Distancia entre los dedos.
+     */
     private fun spacing(event: MotionEvent): Float {
         val x = event.getX(0) - event.getX(1)
         val y = event.getY(0) - event.getY(1)
         return kotlin.math.sqrt(x * x + y * y)
     }
-
+    /**
+     * Método: midPoint
+     *
+     * Calcula el punto medio entre dos dedos.
+     *
+     * @param point Objeto donde se guarda el punto medio.
+     * @param event Evento multitáctil.
+     */
     private fun midPoint(point: PointF, event: MotionEvent) {
         val x = event.getX(0) + event.getX(1)
         val y = event.getY(0) + event.getY(1)
         point.set(x / 2, y / 2)
     }
-
+    /**
+     * Método: fixTranslation
+     *
+     * Ajusta la posición de la imagen para mantenerla dentro de los límites de la vista.
+     */
     private fun fixTranslation() {
         val values = FloatArray(9)
         matrix.getValues(values)

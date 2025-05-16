@@ -22,14 +22,24 @@ import com.google.firebase.auth.FirebaseAuthException
  */
 class Utils {
     companion object {
-
+        /**
+         * Método: mostrarMensaje
+         *
+         * Muestra un mensaje Toast en pantalla.
+         *
+         * @param context Contexto desde el que se llama.
+         * @param mensaje Texto del mensaje a mostrar.
+         */
         fun mostrarMensaje(context: Context?, mensaje: String?) {
             Toast.makeText(context, mensaje, Toast.LENGTH_SHORT).show()
         }
-
-        fun mostrarMensajeSnackbar(view : View, mensaje: CharSequence) {
-            Snackbar.make(view, mensaje, 500).setDuration(500).show()
-        }
+        /**
+         * Método: vibrator
+         *
+         * Activa la vibración del dispositivo durante 200 milisegundos.
+         *
+         * @param context Contexto desde el que se llama.
+         */
         @RequiresApi(Build.VERSION_CODES.S)
         @SuppressLint("ServiceCast")
         fun vibrator(context: Context) {
@@ -42,24 +52,40 @@ class Utils {
 
         }
 
-
+        /**
+         * Método: comprobarCorreo
+         *
+         * Valida si una dirección de correo electrónico tiene un formato correcto.
+         *
+         * @param email Correo electrónico a comprobar.
+         * @return true si el correo es válido.
+         */
         fun comprobarCorreo(email: String): Boolean {
         val emailRegex =
             "^(?!.*\\.\\.)(?!\\.)(?!.*\\.$)[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$".toRegex()
         return email.matches(emailRegex)
         }
 
-        /*fun comprobarContraseña(contraseña: String): Boolean {
-            val contraseñaRegex =
-                "^(?!.*\\.\\.)(?!\\.)(?!.*\\.$)[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$".toRegex()
-            return contraseña.matches(contraseñaRegex)
-        }*/
-
-
+        /**
+         * Método: validarNombreUsuario
+         *
+         * Valida un nombre de usuario basado en una expresión regular.
+         *
+         * @param username Nombre de usuario a validar.
+         * @return true si el nombre cumple con los requisitos (3-20 caracteres, letras/números/guiones).
+         */
         fun validarNombreUsuario(username: String): Boolean {
             return username.matches("^[a-zA-Z0-9_-]{3,20}$".toRegex())
         }
 
+        /**
+         * Método: obtenerMensajesErrorEspañol
+         *
+         * Traduce excepciones de Firebase a mensajes de error en español.
+         *
+         * @param exception Excepción recibida.
+         * @return Mensaje de error traducido.
+         */
         fun obtenerMensajesErrorEspañol(exception: Exception?): String {
             return when {
                 // 1. Intentar obtener el código de error directamente desde FirebaseAuthException
@@ -73,7 +99,14 @@ class Utils {
                 }
             }
         }
-
+        /**
+         * Método: translateFirebaseCode
+         *
+         * Traduce un código de error de Firebase a un mensaje legible en español.
+         *
+         * @param errorCode Código de error proporcionado por Firebase.
+         * @return Mensaje en español correspondiente al código.
+         */
         fun translateFirebaseCode(errorCode: String?): String {
             return when (errorCode?.trim()) {
                 "INVALID_LOGIN_CREDENTIALS" -> "Correo o contraseña incorrectos"
@@ -88,7 +121,14 @@ class Utils {
                 else -> "Error desconocido. Por favor, inténtalo de nuevo."
             }
         }
-
+        /**
+         * Método: extractErrorCodeFromMessage
+         *
+         * Extrae el código de error de un mensaje de excepción de Firebase.
+         *
+         * @param message Mensaje de la excepción.
+         * @return Código de error extraído o null si no se encuentra.
+         */
         private fun extractErrorCodeFromMessage(message: String?): String? {
             if (message.isNullOrEmpty()) return null
             val regex = Regex("\\[\\s*([A-Z_]+)\\s*]")
