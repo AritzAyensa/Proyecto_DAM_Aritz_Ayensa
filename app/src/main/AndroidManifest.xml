@@ -32,12 +32,6 @@
         <activity
             android:screenOrientation="portrait"
             tools:replace="screenOrientation"
-
-            android:name=".activities.CrearListaFragment"
-            android:exported="false" />
-        <activity
-            android:screenOrientation="portrait"
-            tools:replace="screenOrientation"
             android:name=".activities.EditarPerfilActivity"
             android:exported="false" />
         <activity
