@@ -68,13 +68,25 @@
             android:layout_marginTop="20dp"
             android:layout_marginEnd="30dp"
             android:hint="@string/register_et_contrasena"
-            android:maxLength="100"
+            android:maxLength="50"
             android:inputType="textPassword"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/register_et_usuario"
             android:autofillHints="" />
 
+        <TextView
+            android:id="@+id/texto_error"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/email_incorrecto"
+            android:textSize="15sp"
+            android:textColor="@color/rojo"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/register_et_contraUser"
+            tools:ignore="MissingConstraints" />
         <!-- Bóton de Register en el que te lleva a la ventana Register -->
         <Button
             style="@style/ButtonAccept"

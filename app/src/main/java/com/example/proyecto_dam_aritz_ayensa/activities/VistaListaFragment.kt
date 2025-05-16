@@ -392,7 +392,7 @@ class VistaListaFragment : Fragment() {
             .create()
 
         // 3. Configura el botón Aceptar manualmente para validaciones
-        dialog.setButton(AlertDialog.BUTTON_POSITIVE, "Aceptar") { _, _ -> /* override later */ }
+        dialog.setButton(AlertDialog.BUTTON_POSITIVE, "Aceptar") { _, _ ->  }
 
         dialog.setOnShowListener {
             val btnAceptar = dialog.getButton(AlertDialog.BUTTON_POSITIVE)

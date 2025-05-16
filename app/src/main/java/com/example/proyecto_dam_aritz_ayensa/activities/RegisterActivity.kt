@@ -1,10 +1,12 @@
 package com.example.proyecto_dam_aritz_ayensa.activities
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.util.Log
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.proyecto_dam_aritz_ayensa.R
 import com.example.proyecto_dam_aritz_ayensa.model.dao.NotificacionDAO
@@ -20,6 +22,7 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var usuarioService: UsuarioService
     private lateinit var notificacionService: NotificacionService
     private lateinit var inputCorreo: EditText
+    private lateinit var textoError: TextView
     private lateinit var inputContraseña: EditText
     private lateinit var sessionManager: SessionManager
 
@@ -31,6 +34,7 @@ class RegisterActivity : AppCompatActivity() {
         usuarioService = UsuarioService(UsuarioDAO(), notificacionService)
         inputCorreo = findViewById(R.id.register_et_usuario)
         inputContraseña = findViewById(R.id.register_et_contraUser)
+        textoError = findViewById(R.id.texto_error)
         sessionManager = SessionManager(this)
 
     }
@@ -58,20 +62,30 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     fun crearUsuario(
         email: String,
         password: String,
         onSuccess: (String) -> Unit,
         onFailure: (Exception) -> Unit
     ) {
+        textoError.visibility = View.GONE
         if (!Utils.comprobarCorreo(email)) {
             Utils.mostrarMensaje(this, "Introduce un correo válido")
             onFailure(Exception("Correo inválido"))
             return
-        } else if (password.length < 6) {
-            Utils.mostrarMensaje(this, "La contraseña debe tener al menos 6 caracteres")
-            onFailure(Exception("Contraseña corta"))
-            return
+        } else {
+            val lengthOk     = password.length >= 10
+            val hasLowercase = password.any { it.isLowerCase() }
+            val hasUppercase = password.any { it.isUpperCase() }
+            val hasDigit     = password.any { it.isDigit() }
+
+            if (!lengthOk || !hasLowercase || !hasUppercase || !hasDigit) {
+                textoError.text = "La contraseña debe tener al menos 10 caracteres,1 minúscula, 1 mayúscula y 1 número"
+                textoError.visibility = View.VISIBLE
+                onFailure(Exception("Contraseña no válida"))
+                return
+            }
         }
 
         val nombrePorDefecto = email.substringBefore("@")
