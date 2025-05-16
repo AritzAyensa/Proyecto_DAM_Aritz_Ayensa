@@ -60,7 +60,7 @@
                 android:textSize="18sp"
                 android:autofillHints=""
                 android:inputType="text"
-                android:maxLength="60"/>
+                android:maxLength="20"/>
 
             <!-- Botón para elegir color -->
             <Button

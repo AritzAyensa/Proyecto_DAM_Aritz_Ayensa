@@ -68,7 +68,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="500sp"
             app:cardCornerRadius="8dp"
             app:strokeWidth="2dp"
             app:strokeColor="?attr/colorOnSurface"
@@ -79,8 +79,7 @@
             tools:ignore="MissingConstraints">
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_productos"
-                android:layout_width="match_parent"
-                android:layout_height="450sp"/>
+                android:layout_width="match_parent" android:layout_height="match_parent"/>
         </com.google.android.material.card.MaterialCardView>
         <ProgressBar
             android:id="@+id/loading_spinner"
