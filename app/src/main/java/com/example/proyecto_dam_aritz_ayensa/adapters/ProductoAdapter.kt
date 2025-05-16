@@ -11,9 +11,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.proyecto_dam_aritz_ayensa.R
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Notificacion
 import com.example.proyecto_dam_aritz_ayensa.model.entity.Producto
+import com.example.proyecto_dam_aritz_ayensa.utils.GenericConstants
 
 class ProductoAdapter(
     private var productos: MutableList<Producto>,
+    private var productosSeleccionados: MutableList<String>,
     private val onItemClick: (Producto) -> Unit,
     private val onCheckClick: (Producto, Boolean) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -25,7 +27,7 @@ class ProductoAdapter(
     }
 
 
-    private val selectedIds = mutableSetOf<String>()
+    /*private var selectedIds = productosSeleccionados.toMutableList()*/
 
     // ViewHolder para elementos normales
     inner class ProductoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -35,11 +37,11 @@ class ProductoAdapter(
         val container: View = itemView
 
         fun bind(p: Producto) {
+            /*productos = ordenarProductos(productos)*/
             nombreProducto.text = p.nombre
             precioProducto.text = "${p.precioAproximado}€"
-
             // 1) Establece siempre el icono y el fondo según el estado actual:
-            if (selectedIds.contains(p.id)) {
+            if (productosSeleccionados.contains(p.id)) {
                 btnCheck.setImageResource(R.drawable.outline_check_box_24)
                 container.setBackgroundColor(Color.GRAY)
             } else {
@@ -49,17 +51,25 @@ class ProductoAdapter(
 
             // 2) Listener de click: solo cambia el estado y llama al fragment
             btnCheck.setOnClickListener {
-                val nowSelected = if (selectedIds.remove(p.id)) false
-                else { selectedIds.add(p.id); true }
+                val nowSelected = if (productosSeleccionados.remove(p.id)) false
+                else { productosSeleccionados.add(p.id); true }
+
                 onCheckClick(p, nowSelected)
             }
-
             nombreProducto.setOnClickListener {
                 onItemClick(p)
             }
         }
 
 
+    }
+    private fun ordenarProductos(lista: MutableList<Producto>): MutableList<Producto> {
+        return lista
+            .sortedWith(
+                compareBy<Producto> { productosSeleccionados.contains(it.id) }
+                    .thenBy { GenericConstants.PRIORIDAD_CATEGORIAS[it.categoria] ?: Double.MAX_VALUE }
+            )
+            .toMutableList()
     }
 
     // ViewHolder para lista vacía
@@ -73,7 +83,15 @@ class ProductoAdapter(
     @SuppressLint("NotifyDataSetChanged")
     fun actualizarProductos(nuevosProductos: MutableList<Producto>) {
         productos.clear()
-        productos.addAll(nuevosProductos)
+        productos.addAll(ordenarProductos(nuevosProductos))
+        notifyDataSetChanged()
+    }
+    @SuppressLint("NotifyDataSetChanged")
+    fun actualizarProductosSeleccionados(nuevosProductos: MutableList<Producto>, nuevosProductosSeleccionados: MutableList<String>) {
+        productosSeleccionados.clear()
+        productosSeleccionados.addAll(nuevosProductosSeleccionados.toMutableList())
+        productos = ordenarProductos(productos)
+
         notifyDataSetChanged()
     }
 

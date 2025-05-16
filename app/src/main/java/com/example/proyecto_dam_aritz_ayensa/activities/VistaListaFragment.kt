@@ -87,7 +87,7 @@ class VistaListaFragment : Fragment() {
     private lateinit var notificacionesService: NotificacionService
     private lateinit var notificacionEmergenteService: NotificacionEmergenteService
     private var listaProductos: MutableList<Producto> = mutableListOf()
-    private val productosSeleccionados = mutableListOf<String>()
+    private var productosSeleccionados : MutableList<String> = mutableListOf()
     private var todosLosProductos = mutableListOf<Producto>()
     private lateinit var usuarioService: UsuarioService
     private lateinit var sessionManager: SessionManager
@@ -127,12 +127,24 @@ class VistaListaFragment : Fragment() {
         binding.recyclerProductos.layoutManager = LinearLayoutManager(requireContext())
         adapter = ProductoAdapter(
             listaProductos,
+            productosSeleccionados,
             onItemClick = {producto -> mostrarOpcionesEdicionEliminar(producto) },
             onCheckClick = { producto, isSelected ->
                 // Alternar selección y reordenar
-                if (isSelected) productosSeleccionados.add(producto.id)
-                else            productosSeleccionados.remove(producto.id)
+                if (isSelected) {
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        listaService.añadirProductoSeleccionado(producto.id, idLista)
+                    }
+                    productosSeleccionados.add(producto.id)
+                }
+                else {
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        listaService.eliminarProductoSeleccionadoDeLista(idLista, producto.id)
+                    }
+                    productosSeleccionados.remove(producto.id)
+                }
 
+                adapter.actualizarProductosSeleccionados(listaProductos, productosSeleccionados.toMutableList())
                 listaProductos = ordenarProductos(listaProductos)
                 adapter.actualizarProductos(listaProductos)
             }
@@ -149,33 +161,48 @@ class VistaListaFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Carga inicial de la lista
         viewLifecycleOwner.lifecycleScope.launch {
             progressBar.visibility = View.VISIBLE
             val listaObtenida = withContext(Dispatchers.IO) {
                 listaService.getListaById(idLista)
             } ?: run {
-                withContext(Dispatchers.Main) {
-                    Utils.mostrarMensaje(requireContext(), "Lista no encontrada")
-                    progressBar.visibility = View.GONE
-                }
+                Utils.mostrarMensaje(requireContext(), "Lista no encontrada")
+                progressBar.visibility = View.GONE
                 return@launch
             }
             lista = listaObtenida
-            tvTituloLista.text = listaObtenida.titulo
-            viewLifecycleOwner.lifecycle
-                .repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    listaService
-                        .productosDeListaFlow(idLista, productoService)
-                        .collect { productosRaw ->
-                            val ordenados = ordenarProductos(productosRaw.toMutableList())
-                            listaProductos = ordenados;
-                            adapter.actualizarProductos(ordenados)
-                            progressBar.visibility = View.GONE
+            tvTituloLista.text = lista.titulo
+        }
 
-                        }
-                }
+        // Observa productos de la lista
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                listaService
+                    .productosDeListaFlow(idLista, productoService)
+                    .collect { productosRaw ->
+                        val ordenados = ordenarProductos(productosRaw.toMutableList())
+                        listaProductos = ordenados
+                        adapter.actualizarProductos(ordenados)
+                        progressBar.visibility = View.GONE
+                    }
+            }
+        }
+
+        // Observa productos seleccionados
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                listaService
+                    .productosSeleccionadosDeListaFlow(idLista)
+                    .collect { ids ->
+                        productosSeleccionados = ids.toMutableList()
+                        adapter.actualizarProductosSeleccionados(listaProductos, productosSeleccionados)
+                        progressBar.visibility = View.GONE
+                    }
+            }
         }
     }
+
 
     @RequiresApi(Build.VERSION_CODES.S)
     private fun cargarBotones() {
@@ -308,7 +335,9 @@ class VistaListaFragment : Fragment() {
                 lifecycleScope.launch(Dispatchers.IO) {
                     try {
                         // 1) Eliminar productos de la lista y recargar datos
-                        listaService.eliminarProductosDeLista(idLista, productosSeleccionados.toList())
+                        var productosSelec = productosSeleccionados
+                        listaService.eliminarProductosSeleccionadosDeLista(idLista, productosSeleccionados)
+                        listaService.eliminarProductosDeLista(idLista, productosSelec)
                         lista = listaService.getListaById(idLista)!!
                         listaProductos = productoService
                             .getProductosByIds(lista.idProductos)

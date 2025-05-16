@@ -43,6 +43,15 @@ class ListaService(private val listaDAO: ListaDAO) {
         return listaDAO.eliminarProductoDeLista(idLista, idProducto)
     }
 
+    suspend fun eliminarProductosSeleccionadosDeLista(idLista: String, idsAEliminar: List<String>) {
+        return listaDAO.eliminarProductosSeleccionadosDeLista(idLista, idsAEliminar)
+    }
+
+
+    suspend fun eliminarProductoSeleccionadoDeLista(idLista: String, idProducto: String) {
+        return listaDAO.eliminarProductoSeleccionadoDeLista(idLista, idProducto)
+    }
+
     suspend fun getListaById(idLista: String) : Lista? {
         return listaDAO.getListaById(idLista)
     }
@@ -57,8 +66,26 @@ class ListaService(private val listaDAO: ListaDAO) {
     }
 
 
+    suspend fun añadirProductoSeleccionado(idProducto: String, idLista: String) {
+        // Delegar la operación al DAO
+        listaDAO.añadirProductoSeleccionado(idProducto, idLista)
+    }
+
+
     fun productosDeListaFlow(idLista: String, productoService: ProductoService): Flow<List<Producto>> {
         return listaDAO.productosDeListaFlow(idLista, productoService)
+            .distinctUntilChanged()
+            .flowOn(Dispatchers.IO)
+    }
+
+
+    /*fun productosSeleccionadosDeListaFlow(idLista: String, productoService: ProductoService): Flow<List<Producto>> {
+        return listaDAO.productosSeleccionadosDeListaFlow(idLista, productoService)
+            .distinctUntilChanged()
+            .flowOn(Dispatchers.IO)
+    }*/
+    fun productosSeleccionadosDeListaFlow(idLista: String): Flow<List<String>> {
+        return listaDAO.productosSeleccionadosDeListaFlow(idLista)
             .distinctUntilChanged()
             .flowOn(Dispatchers.IO)
     }

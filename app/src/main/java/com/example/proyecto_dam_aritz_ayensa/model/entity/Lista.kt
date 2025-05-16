@@ -6,5 +6,6 @@ data class Lista (
     var descripcion: String = "",
     var color: String = "",
     var idCreador: String = "",
-    var idProductos: List<String> = emptyList()
+    var idProductos: List<String> = emptyList(),
+    var idProductosSeleccionados: List<String> = emptyList()
 )

@@ -78,6 +78,21 @@ class ListaDAO {
         }
     }
 
+    suspend fun eliminarProductosSeleccionadosDeLista(idLista: String, idsAEliminar: List<String>) {
+        if (idLista.isBlank()) {
+            throw IllegalArgumentException("El ID de la lista no puede estar vacío")
+        }
+        if (idsAEliminar.isEmpty()) throw IllegalArgumentException("La lista esta vacía")
+
+        try {
+            listasCollection.document(idLista)
+                .update("idProductosSeleccionados", FieldValue.arrayRemove(*idsAEliminar.toTypedArray()))
+                .await()
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Error al completar compra")
+        }
+    }
+
     suspend fun eliminarProductoDeLista(idLista: String, idProducto: String) {
         require(idLista.isNotBlank()) { "El ID de la lista no puede estar vacío" }
         require(idProducto.isNotBlank()) { "El ID del producto no puede estar vacío" }
@@ -91,6 +106,19 @@ class ListaDAO {
         }
     }
 
+
+    suspend fun eliminarProductoSeleccionadoDeLista(idLista: String, idProducto: String) {
+        require(idLista.isNotBlank()) { "El ID de la lista no puede estar vacío" }
+        require(idProducto.isNotBlank()) { "El ID del producto no puede estar vacío" }
+
+        try {
+            listasCollection.document(idLista)
+                .update("idProductosSeleccionados", FieldValue.arrayRemove(idProducto))
+                .await()
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Error al eliminar el producto de la lista", e)
+        }
+    }
 
 
 
@@ -126,7 +154,8 @@ class ListaDAO {
                     descripcion = document.getString("descripcion") ?: "",
                     color = document.getString("color") ?: "#FFFFFF",
                     idCreador = document.getString("idCreador") ?: "",
-                    idProductos = document.get("idProductos") as? List<String> ?: emptyList()
+                    idProductos = document.get("idProductos") as? List<String> ?: emptyList(),
+                    idProductosSeleccionados = document.get("idProductosSeleccionados") as? List<String> ?: emptyList()
                 )
             } else {
                 null
@@ -142,6 +171,12 @@ class ListaDAO {
             .update("idProductos", FieldValue.arrayUnion(idProducto))
             .await()
     }
+    suspend fun añadirProductoSeleccionado(idProducto: String, idLista: String) {
+        listasCollection
+            .document(idLista)
+            .update("idProductosSeleccionados", FieldValue.arrayUnion(idProducto))
+            .await()
+    }
 
     fun productosDeListaFlow(
         idLista: String,
@@ -149,18 +184,15 @@ class ListaDAO {
     ): Flow<List<Producto>> = callbackFlow {
         val docRef = listasCollection.document(idLista)
 
-        // Escucha en tiempo real el documento de la lista
         val listener = docRef.addSnapshotListener { snapshot, error ->
             if (error != null) {
                 close(error)
                 return@addSnapshotListener
             }
             if (snapshot != null && snapshot.exists()) {
-                // Suponemos que idProductos es un List<String>
                 val ids = snapshot.get("idProductos") as? List<*>
                     ?: emptyList<String>()
 
-                // En background obtén los productos
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
                         @Suppress("UNCHECKED_CAST")
@@ -176,6 +208,60 @@ class ListaDAO {
 
         awaitClose { listener.remove() }
     }
+
+    /*fun productosSeleccionadosDeListaFlow(
+        idLista: String,
+        productoService: ProductoService
+    ): Flow<List<Producto>> = callbackFlow {
+        val docRef = listasCollection.document(idLista)
+
+        val listener = docRef.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                close(error)
+                return@addSnapshotListener
+            }
+            if (snapshot != null && snapshot.exists()) {
+                val ids = snapshot.get("idProductosSeleccionados") as? List<*>
+                    ?: emptyList<String>()
+
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        @Suppress("UNCHECKED_CAST")
+                        val idStrings = ids.filterIsInstance<String>()
+                        val productos = productoService.getProductosByIds(idStrings)
+                        trySend(productos).isSuccess
+                    } catch (e: Exception) {
+                        close(e)
+                    }
+                }
+            }
+        }
+
+        awaitClose { listener.remove() }
+    }*/
+    fun productosSeleccionadosDeListaFlow(
+        idLista: String
+    ): Flow<List<String>> = callbackFlow {
+        val docRef = listasCollection.document(idLista)
+
+        val listener = docRef.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                close(error)
+                return@addSnapshotListener
+            }
+            if (snapshot != null && snapshot.exists()) {
+                val ids = snapshot.get("idProductosSeleccionados") as? List<*>
+                    ?: emptyList<String>()
+
+                // Filtramos solo strings y los enviamos
+                val idStrings = ids.filterIsInstance<String>()
+                trySend(idStrings).isSuccess
+            }
+        }
+
+        awaitClose { listener.remove() }
+    }
+
 
 
 
