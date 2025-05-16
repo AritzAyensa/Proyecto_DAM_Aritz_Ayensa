@@ -84,7 +84,6 @@ class AnadirProductoFragment : Fragment() {
         }
         configurarDropdownMenu()
         configurarBuscador()
-        /*cargarBotones()*/
         cargarProductos()
         return binding.root
     }
@@ -140,14 +139,6 @@ class AnadirProductoFragment : Fragment() {
         }
     }
 
-    /*private fun cargarBotones() {
-        buttonCrearProducto = binding.btnCrearProducto
-        if (buttonCrearProducto != null) {
-            buttonCrearProducto.setOnClickListener {
-                goToCrearProducto()
-            }
-        }
-    }*/
     private fun configurarDropdownMenu() {
 
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, GenericConstants.PRIORIDAD_CATEGORIAS.keys.sorted().toList())
@@ -185,16 +176,6 @@ class AnadirProductoFragment : Fragment() {
         }
     }
 
-
-
-
-
-    /*private fun goToCrearProducto() {
-        val bundle = Bundle().apply {
-            putString("idLista", idLista)
-        }
-        findNavController().navigate(R.id.action_añadir_productoFragment_to_crearProductoFragment, bundle)
-    }*/
 
     override fun onDestroyView() {
         super.onDestroyView()

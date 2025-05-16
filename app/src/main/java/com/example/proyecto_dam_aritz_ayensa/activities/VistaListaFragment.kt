@@ -207,7 +207,7 @@ class VistaListaFragment : Fragment() {
         lifecycleScope.launch {
             todosLosProductos = productoService.getProductos().toMutableList()
 
-            val adapterDropdown = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, todosLosProductos)
+            val adapterDropdown = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, todosLosProductos.sortedBy { it.nombre.lowercase() })
             val autoCompleteTextView = binding.autoCompleteTextView
             autoCompleteTextView.setAdapter(adapterDropdown)
 

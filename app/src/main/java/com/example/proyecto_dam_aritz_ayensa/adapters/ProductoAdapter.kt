@@ -107,6 +107,6 @@ class ProductoAdapter(
     
 
     override fun getItemCount(): Int {
-        return if (productos.isEmpty()) 1 else productos.size // 1 para el ítem vacío
+        return if (productos.isEmpty()) 1 else productos.size
     }
 }
