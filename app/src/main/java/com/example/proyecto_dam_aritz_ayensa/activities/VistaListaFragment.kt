@@ -654,9 +654,7 @@ class VistaListaFragment : Fragment() {
                 val svg = SVG.getFromInputStream(inputStream)
 
 
-                val css = "#$categoria { fill: #FF0000; }"
-
-                // Aplicar las reglas CSS al renderizar
+                val css = "[id=\"${categoria}\"] { fill: #FF0000; }"
                 val renderOptions = RenderOptions.create().css(css)
                 val picture = svg.renderToPicture(renderOptions)
                 val drawable = PictureDrawable(picture)

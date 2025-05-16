@@ -65,7 +65,7 @@
         <path stroke="#000000" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="butt" d="m274.53793 357.21127l0 -119.43306l13.8897705 0l0 119.43306z" fill-rule="evenodd"/>
         <path id="Sin glúten" fill="#cfe2f3" d="m370.30783 362.6361l0 -143.11812l13.8897705 0l0 143.11812z" fill-rule="evenodd"/>
         <path stroke="#000000" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="butt" d="m370.30783 362.6361l0 -143.11812l13.8897705 0l0 143.11812z" fill-rule="evenodd"/>
-        <path id="Higiéne personal" fill="#cfe2f3" d="m384.1976 362.6828l0 -143.1181l13.8897705 0l0 143.1181z" fill-rule="evenodd"/>
+        <path id="Higiene personal" fill="#cfe2f3" d="m384.1976 362.6828l0 -143.1181l13.8897705 0l0 143.1181z" fill-rule="evenodd"/>
         <path stroke="#000000" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="butt" d="m384.1976 362.6828l0 -143.1181l13.8897705 0l0 143.1181z" fill-rule="evenodd"/>
         <path id="Lácteos" fill="#cfe2f3" d="m408.06955 18.485994l0 144.59843l-25.039368 0l0 -144.59843z" fill-rule="evenodd"/>
         <path stroke="#000000" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="butt" d="m408.06955 18.485994l0 144.59843l-25.039368 0l0 -144.59843z" fill-rule="evenodd"/>
@@ -127,9 +127,9 @@
         <path stroke="#000000" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="butt" d="m786.1755 301.29745l0 -66.677155l13.8897705 0l0 66.677155z" fill-rule="evenodd"/>
         <path id="Tomate frito" fill="#cfe2f3" d="m786.2014 365.99228l0 -64.69293l13.8897705 0l0 64.69293z" fill-rule="evenodd"/>
         <path stroke="#000000" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="butt" d="m786.2014 365.99228l0 -64.69293l13.8897705 0l0 64.69293z" fill-rule="evenodd"/>
-        <path id="Higiéne dental" fill="#cfe2f3" d="m539.41473 300.83157l0 -66.677155l13.8897705 0l0 66.677155z" fill-rule="evenodd"/>
+        <path id="Higiene dental" fill="#cfe2f3" d="m539.41473 300.83157l0 -66.677155l13.8897705 0l0 66.677155z" fill-rule="evenodd"/>
         <path stroke="#000000" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="butt" d="m539.41473 300.83157l0 -66.677155l13.8897705 0l0 66.677155z" fill-rule="evenodd"/>
-        <path id="Higiéne femenina" fill="#cfe2f3" d="m539.4407 365.5264l0 -64.69293l13.8897705 0l0 64.69293z" fill-rule="evenodd"/>
+        <path id="Higiene femenina" fill="#cfe2f3" d="m539.4407 365.5264l0 -64.69293l13.8897705 0l0 64.69293z" fill-rule="evenodd"/>
         <path stroke="#000000" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="butt" d="m539.4407 365.5264l0 -64.69293l13.8897705 0l0 64.69293z" fill-rule="evenodd"/>
         <path id="Limpieza" fill="#cfe2f3" d="m613.41156 365.66754l0 -131.65355l13.8897705 0l0 131.65355z" fill-rule="evenodd"/>
         <path stroke="#000000" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="butt" d="m613.41156 365.66754l0 -131.65355l13.8897705 0l0 131.65355z" fill-rule="evenodd"/>
@@ -137,13 +137,13 @@
         <path stroke="#000000" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="butt" d="m599.3998 365.66754l0 -131.65355l13.8897705 0l0 131.65355z" fill-rule="evenodd"/>
         <path id="Parafarmacia" fill="#cfe2f3" d="m500.31433 365.66754l0 -131.65355l13.8897705 0l0 131.65355z" fill-rule="evenodd"/>
         <path stroke="#000000" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="butt" d="m500.31433 365.66754l0 -131.65355l13.8897705 0l0 131.65355z" fill-rule="evenodd"/>
-        <path id="Higiéne personal" fill="#cfe2f3" d="m486.30252 365.66754l0 -131.65355l13.8897705 0l0 131.65355z" fill-rule="evenodd"/>
+        <path id="Higiene personal" fill="#cfe2f3" d="m486.30252 365.66754l0 -131.65355l13.8897705 0l0 131.65355z" fill-rule="evenodd"/>
         <path stroke="#000000" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="butt" d="m486.30252 365.66754l0 -131.65355l13.8897705 0l0 131.65355z" fill-rule="evenodd"/>
         <path id="Pasta" fill="#cfe2f3" d="m854.1787 300.8267l0 -66.67717l13.8897705 0l0 66.67717z" fill-rule="evenodd"/>
         <path stroke="#000000" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="butt" d="m854.1787 300.8267l0 -66.67717l13.8897705 0l0 66.67717z" fill-rule="evenodd"/>
         <path id="Arroz" fill="#cfe2f3" d="m854.20465 365.52148l0 -64.6929l13.8897705 0l0 64.6929z" fill-rule="evenodd"/>
         <path stroke="#000000" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="butt" d="m854.20465 365.52148l0 -64.6929l13.8897705 0l0 64.6929z" fill-rule="evenodd"/>
-        <path id="Higiéne personal" fill="#cfe2f3" d="m448.10123 365.7542l0 -131.65353l13.8897705 0l0 131.65353z" fill-rule="evenodd"/>
+        <path id="Higiene personal" fill="#cfe2f3" d="m448.10123 365.7542l0 -131.65353l13.8897705 0l0 131.65353z" fill-rule="evenodd"/>
         <path stroke="#000000" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="butt" d="m448.10123 365.7542l0 -131.65353l13.8897705 0l0 131.65353z" fill-rule="evenodd"/>
         <path id="Cosmeticos" fill="#cfe2f3" d="m434.08942 365.7542l0 -131.65353l13.8897705 0l0 131.65353z" fill-rule="evenodd"/>
         <path stroke="#000000" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="butt" d="m434.08942 365.7542l0 -131.65353l13.8897705 0l0 131.65353z" fill-rule="evenodd"/>

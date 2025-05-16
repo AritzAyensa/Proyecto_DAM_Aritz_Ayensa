@@ -15,11 +15,11 @@ object GenericConstants {
 
     val PRIORIDAD_CATEGORIAS: Map<String, Double> = mapOf(
         "Sin glúten" to 1.0,
-        "Higiéne personal" to 1.2,
+        "Higiene personal" to 1.2,
         "Cosmeticos" to 1.4,
         "Parafarmacia" to 1.5,
-        "Higiéne dental" to 1.6,
-        "Higiéne femenina" to 1.7,
+        "Higiene dental" to 1.6,
+        "Higiene femenina" to 1.7,
         "Bebés" to 1.5,
         "Mascotas" to 2.0,
         "Limpieza" to 3.0,
