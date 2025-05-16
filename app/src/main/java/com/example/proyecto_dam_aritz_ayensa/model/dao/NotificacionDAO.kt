@@ -55,7 +55,6 @@ class NotificacionDAO {
                 .await()
             querySnapshot
                 .toObjects(Notificacion::class.java)
-                .sortedByDescending { LocalDate.parse(it.fecha, formatter) }
         } catch (e: Exception) {
             Log.e("NotificacionDAO", "Error al obtener notificaciones para el usuario $idUsuario", e)
             emptyList()
@@ -76,7 +75,6 @@ class NotificacionDAO {
             notificaciones.addAll(querySnapshot.toObjects(Notificacion::class.java))
         }
         return notificaciones
-            .sortedByDescending { LocalDate.parse(it.fecha, formatter) }
     }
 
 
@@ -137,7 +135,6 @@ class NotificacionDAO {
                 try {
                     val list = snapshots
                         ?.toObjects(Notificacion::class.java)
-                        ?.sortedByDescending { LocalDate.parse(it.fecha, formatter) }
                     trySend(list?.size ?: 0).isSuccess
                 } catch (e: Exception) {
                     close(e)

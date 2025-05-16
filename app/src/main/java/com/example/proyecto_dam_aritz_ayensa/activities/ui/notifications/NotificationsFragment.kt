@@ -43,6 +43,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class NotificationsFragment : Fragment() {
 
@@ -99,11 +101,11 @@ class NotificationsFragment : Fragment() {
             usuarioService.notificacionesUsuarioFlow(userId)
                 .flowWithLifecycle(lifecycle)
                 .collectLatest { notificaciones ->
-                    if (bloqueado) return@collectLatest  // Ignora mientras está bloqueado
+                    if (bloqueado) return@collectLatest
 
                     progressBar.visibility = View.GONE
                     adapter = NotificacionAdapter(
-                        notificaciones,
+                        notificaciones.sorted(),
                         onItemClick = { notif -> mostrarDetalleNotificacion(notif) },
                         onCheckClick = { notif, isSelected ->
                             if (isSelected) notificacionesSeleccionadas.add(notif.id)
@@ -188,7 +190,13 @@ class NotificationsFragment : Fragment() {
         }
 
         val fechaView = TextView(requireContext()).apply {
-            text = "Fecha: ${notificacion.fecha}"
+            val date = notificacion.fecha?.toDate()
+            val formato = SimpleDateFormat("HH:mm, dd/MM/yyyy", Locale.getDefault())
+            text = if (date != null) {
+                "Fecha: ${formato.format(date)}"
+            } else {
+                "Fecha no disponible"
+            }
         }
 
         contentLayout.addView(descripcionView)

@@ -2,7 +2,6 @@ package com.example.proyecto_dam_aritz_ayensa.activities
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.app.Dialog
 import android.content.Context
 import android.graphics.drawable.PictureDrawable
 import android.os.Build
@@ -325,10 +324,7 @@ class VistaListaFragment : Fragment() {
                         val notificacion = Notificacion(
                             tipo = GenericConstants.TIPO_COMPRA,
                             descripcion = "$nombreUsuario ha completado la compra ${lista.titulo}",
-                            idProductos = productosSeleccionados,
-                            fecha = LocalDate
-                                .now()
-                                .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                            idProductos = productosSeleccionados
                         )
 
                         // 4) Guardar noti interna y asignar a usuarios
@@ -453,13 +449,11 @@ class VistaListaFragment : Fragment() {
                                         onError   = { Log.e("VistaListaFragment", "Error al crear la notificacion emergente") }
                                     )
 
-                                    val noti = Notificacion().apply {
-                                        tipo = GenericConstants.TIPO_LISTA_COMPRATIDA
-                                        descripcion = "$nombreUsuario ha compartido la lista \"${lista.titulo}\" con ${usuario.nombre}"
+                                    val noti = Notificacion(
+                                        tipo = GenericConstants.TIPO_LISTA_COMPRATIDA,
+                                        descripcion = "$nombreUsuario ha compartido la lista \"${lista.titulo}\" con ${usuario.nombre}",
                                         idProductos = lista.idProductos.toMutableList()
-                                        fecha = LocalDate.now()
-                                            .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
-                                    }
+                                    )
                                     val idsUsuarios = usuarioService.getUserIdsByListId(lista.id)
                                     val idNotificacion = notificacionesService.saveNotificacion(noti)
                                     usuarioService.añadirNotificacionAUsuarios(idsUsuarios, idNotificacion)
